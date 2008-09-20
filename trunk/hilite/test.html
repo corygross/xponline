@@ -1,41 +1,35 @@
 <html>
 <head>
 <script type="text/javascript">
-var childMousePos = [0,0];
-var myIFrame;// = document.getElementById("myI");
-var mainDoc;// = document;
+// Global Declarations (so they are accessible to both main document and the inline frame)
+var myIFrame;
+var mainDoc;
 
-var elm;// = document.getElementById("myI");
-	
-var mx;// = document.getElementById("mX");
-var my;// = document.getElementById("mY");
-var ox;// = document.getElementById("oX");
-var oy;// = document.getElementById("oY");
+var mouse_x_box;
+var mouse_y_box;
+var cursor_line_box;
+var cursor_char_box;
 
 var rawDoc = new Array();
 var lastModifiedLine = 0;
 var lastModifiedChar = 0;
 
-function init()
-{
+function init() {
 	myIFrame = document.getElementById("myI");
 	mainDoc = document;
-
-	elm = document.getElementById("myI");
 	
-	mx = document.getElementById("mX");
-	my = document.getElementById("mY");
-	ox = document.getElementById("oX");
-	oy = document.getElementById("oY");
+	mouse_x_box = document.getElementById("mX");
+	mouse_y_box = document.getElementById("mY");
+	cursor_line_box = document.getElementById("cL");
+	cursor_char_box = document.getElementById("cC");	
 	
 	myIFrame.contentDocument.designMode = "on";
-	myIFrame.contentWindow.document.addEventListener("mousemove",function(e){displayPos(e);highlightCursor();}, true);
+	myIFrame.contentWindow.document.addEventListener("mousemove",function(e){displayMousePos(e);highlightCursor();}, true);
 	//myIFrame.contentWindow.document.addEventListener("click",highlightCursor, true);
-	
-	// populate our data structure with already present information
+
+	//*****Populate our data structure***********
 	var curline = "";
 	var nextline = 0;
-
 	try {
 	while (curline = myIFrame.contentWindow.document.getElementById("line"+nextline).innerHTML)
 	{
@@ -43,53 +37,49 @@ function init()
 		nextline++;
 	}
 	}catch (e) {}
-	//alert(rawDoc);
+	//********** Done populating data structure **********
 }
 
-function iframeKeyHandler(e) 
-{
-	
+function displayCursorPos() {
+	cursor_line_box.value = lastModifiedLine;
+	cursor_char_box.value = lastModifiedChar;
 }
 
 function getMousePos(e) {
-	var x = e.pageX;
-	var y = e.pageY;
-	return [x,y];
+	return [e.pageX, e.pageY];
 }
 
-function getElementPos(element) {
-	var current_left = current_top = 0;
-	if (element.offsetParent) {
-		do {
-			current_left += element.offsetLeft;
-			current_top += element.offsetTop;
-		} while (element = element.offsetParent);
-	}
+// Don't need this (yet?) 
+//********** USELESS **********
+//function getElementPos(element) {
+//	var current_left = current_top = 0;
+//	if (element.offsetParent) {
+//		do {
+//			current_left += element.offsetLeft;
+//			current_top += element.offsetTop;
+//		} while (element = element.offsetParent);
+//	}
+//
+//	return [current_left,current_top];
+//}
+// ************* END USELESS ******************
 
-	return [current_left,current_top];
-}
-
-function displayPos(e) {
+function displayMousePos(e) {
 	var mousePos = getMousePos(e);
-	//var objPos = getElementPos(elm);
 
-	mx.value = mousePos[0];
-	my.value = mousePos[1];
-	//ox.value = objPos[0];
-	//oy.value = objPos[1];
+	mouse_x_box.value = mousePos[0];
+	mouse_y_box.value = mousePos[1];
 }
 
 function highlightCursor() {
-	// Determine line #
-	//alert("cursor");
-	var currow = Math.floor((my.value - 8)/16);
-	if (currow > rawDoc.length) currow = rawDoc.length;
-	var curcol = Math.floor((mx.value - 8)/8);
+	// Determine line # and ensure valid input
+	var currow = Math.floor((mouse_y_box.value - 8)/16);
+	if (currow > rawDoc.length) currow = rawDoc.length-1;
+	var curcol = Math.floor((mouse_x_box.value - 8)/8);
 	if (curcol < 0) curcol =0;
-	if (curcol > rawDoc[currow].length) curcol = rawDoc[currow].length;
-	//alert(currow + " , " + curcol);
+	if (curcol > rawDoc[currow].length) curcol = rawDoc[currow].length-1;
 	
-	// Clear cursor if switching lines
+	// Make sure to clear cursor if we switched lines, and update current line
 	if (lastModifiedLine != currow)
 	{
 		myIFrame.contentWindow.document.getElementById("line"+lastModifiedLine).innerHTML = rawDoc[lastModifiedLine];
@@ -102,25 +92,26 @@ function highlightCursor() {
 	{
 		// Perform cursor highlight operation
 		var curline = new String(rawDoc[currow]);
-		
 		var lineArray = [curline.substr(0,curcol),curline.substr(curcol, 1),	curline.substr(curcol+1,curline.length-1)];
 		lineArray[1] = lineArray[1].fontcolor("red");
-		//alert(lineArray.toString());
+
 		// display new formatting
 		myIFrame.contentWindow.document.getElementById("line"+currow).innerHTML = lineArray.join("");
-		//alert(lineArray.toString());
+
 	} else {} // Do nothing if it's already highlighted
 	lastModifiedChar = curcol;
+	
+	// Display current cursor position
+	displayCursorPos();
 		
 }
 </script>
 </head>
 <body onload="init()" >
 <iframe id="myI" src="editableContent.html"></iframe><br />
-<input type="text" id="mX" />mX
-<input type="text" id="mY" />mY
-<br />
-<input type="text" id="oX" />oX
-<input type="text" id="oY" />oY
+line#:<input type="text" id="cL" />
+col#:<input type="text" id="cC" /><br />
+MouseX:<input type="text" id="mX" />
+MouseY:<input type="text" id="mY" />
 </body>
 </html>
