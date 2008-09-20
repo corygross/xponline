@@ -1,0 +1,126 @@
+<html>
+<head>
+<script type="text/javascript">
+var childMousePos = [0,0];
+var myIFrame;// = document.getElementById("myI");
+var mainDoc;// = document;
+
+var elm;// = document.getElementById("myI");
+	
+var mx;// = document.getElementById("mX");
+var my;// = document.getElementById("mY");
+var ox;// = document.getElementById("oX");
+var oy;// = document.getElementById("oY");
+
+var rawDoc = new Array();
+var lastModifiedLine = 0;
+var lastModifiedChar = 0;
+
+function init()
+{
+	myIFrame = document.getElementById("myI");
+	mainDoc = document;
+
+	elm = document.getElementById("myI");
+	
+	mx = document.getElementById("mX");
+	my = document.getElementById("mY");
+	ox = document.getElementById("oX");
+	oy = document.getElementById("oY");
+	
+	myIFrame.contentDocument.designMode = "on";
+	myIFrame.contentWindow.document.addEventListener("mousemove",function(e){displayPos(e);highlightCursor();}, true);
+	//myIFrame.contentWindow.document.addEventListener("click",highlightCursor, true);
+	
+	// populate our data structure with already present information
+	var curline = "";
+	var nextline = 0;
+
+	try {
+	while (curline = myIFrame.contentWindow.document.getElementById("line"+nextline).innerHTML)
+	{
+		rawDoc.push(curline);
+		nextline++;
+	}
+	}catch (e) {}
+	//alert(rawDoc);
+}
+
+function iframeKeyHandler(e) 
+{
+	
+}
+
+function getMousePos(e) {
+	var x = e.pageX;
+	var y = e.pageY;
+	return [x,y];
+}
+
+function getElementPos(element) {
+	var current_left = current_top = 0;
+	if (element.offsetParent) {
+		do {
+			current_left += element.offsetLeft;
+			current_top += element.offsetTop;
+		} while (element = element.offsetParent);
+	}
+
+	return [current_left,current_top];
+}
+
+function displayPos(e) {
+	var mousePos = getMousePos(e);
+	//var objPos = getElementPos(elm);
+
+	mx.value = mousePos[0];
+	my.value = mousePos[1];
+	//ox.value = objPos[0];
+	//oy.value = objPos[1];
+}
+
+function highlightCursor() {
+	// Determine line #
+	//alert("cursor");
+	var currow = Math.floor((my.value - 8)/16);
+	if (currow > rawDoc.length) currow = rawDoc.length;
+	var curcol = Math.floor((mx.value - 8)/8);
+	if (curcol < 0) curcol =0;
+	if (curcol > rawDoc[currow].length) curcol = rawDoc[currow].length;
+	//alert(currow + " , " + curcol);
+	
+	// Clear cursor if switching lines
+	if (lastModifiedLine != currow)
+	{
+		myIFrame.contentWindow.document.getElementById("line"+lastModifiedLine).innerHTML = rawDoc[lastModifiedLine];
+	}
+	else {}
+	lastModifiedLine = currow;
+	
+	//Be more efficient
+	if (lastModifiedChar != curcol)
+	{
+		// Perform cursor highlight operation
+		var curline = new String(rawDoc[currow]);
+		
+		var lineArray = [curline.substr(0,curcol),curline.substr(curcol, 1),	curline.substr(curcol+1,curline.length-1)];
+		lineArray[1] = lineArray[1].fontcolor("red");
+		//alert(lineArray.toString());
+		// display new formatting
+		myIFrame.contentWindow.document.getElementById("line"+currow).innerHTML = lineArray.join("");
+		//alert(lineArray.toString());
+	} else {} // Do nothing if it's already highlighted
+	lastModifiedChar = curcol;
+		
+}
+</script>
+</head>
+<body onload="init()" >
+<iframe id="myI" src="editableContent.html"></iframe><br />
+<input type="text" id="mX" />mX
+<input type="text" id="mY" />mY
+<br />
+<input type="text" id="oX" />oX
+<input type="text" id="oY" />oY
+</body>
+</html>
