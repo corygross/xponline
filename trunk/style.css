@@ -1,0 +1,19 @@
+#error {
+   font-size: 15px;
+   font-weight: bold;
+   color: #FF0000;
+   margin: 0px 0px 10px 0px;
+   padding: 5px 10px 5px 10px;
+   border: solid 1px #000000;
+   background: #ffebe8;
+}
+
+#success {
+   font-size: 15px;
+   font-weight: bold;
+   color: BLACK;
+   margin: 0px 0px 10px 0px;
+   padding: 5px 10px 5px 10px;
+   border: solid 1px #000000;
+   background: #99ff99;
+}
