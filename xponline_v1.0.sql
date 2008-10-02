@@ -12,7 +12,7 @@ SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
 -- 
 -- Database: `xponline`
 -- 
-DROP DATABASE `xponline`;
+-- DROP DATABASE `xponline`;
 CREATE DATABASE `xponline` DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci;
 USE `xponline`;
 
