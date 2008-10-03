@@ -11,3 +11,13 @@ function showMessenger(){
 	document.getElementById('collapse1').style.display = "none";
 	document.getElementById('collapse2').style.display = "none";
 }
+
+function showHideMessengerGroup(id){
+	var group = document.getElementById(id);
+	if(group.style.display == "none"){
+		group.style.display = "";
+	}
+	else{
+		group.style.display = "none";
+	}
+}
