@@ -1,7 +1,6 @@
 table,tr,td{
 	margin:0px;
 	padding:0px;
-
 }
 
 div.messenger_head {
@@ -21,6 +20,31 @@ td.details {
 tr.top_row{
 	background-image:url('images/top_black.jpg');
 	background-repeat:repeat-x;
+}
+
+div.window_head{
+	background-image:url('images/top_black.jpg');
+	background-repeat:repeat-x;
+	text-align: center;
+	font-size: 15px;
+    font-weight: bold;
+    color: #FFFFFF;
+	height:32px;
+}
+
+div.window{
+	background: white; 
+	border: 1px solid #777777;
+}
+
+td.window_min{
+	width:10%;
+	cursor:pointer;
+	font-weight:bold;
+}
+
+td.window_min:hover{
+	background:#777777;
 }
 
 td.collapsed{
@@ -71,3 +95,52 @@ td.menu:hover, td.menu_item:hover, td.arrows:hover{
 }
 
 /**   END MENU  **/
+
+/** MESSENGER **/
+
+ul.contacts{
+	list-style-type: none;
+	text-align: left;
+	margin-left: 2px;
+	margin-right: 2px;
+	padding-left: 0px;
+}
+
+li.contact:hover, li.contact_new_msg:hover, li.contact_old_msg:hover, div.contact_group:hover{
+	background:#777777;
+}
+
+li.contact{
+	border: 1px solid #000;
+	margin-top: 1px;
+	padding-left: 1px;
+	cursor: pointer;
+}
+
+div.contact_group{
+	cursor: pointer;
+	margin-left: 2px;
+	margin-right: 2px;	
+}
+
+ul.contact_onoff{
+	border: 1px solid #000;
+	margin-top: 1px;
+	padding-left: 1px;
+}
+
+li.contact_new_msg{
+	border: 1px solid #F97708;
+	margin-top: 1px;
+	padding-left: 1px;
+	cursor: pointer;
+}
+
+li.contact_old_msg{
+	border: 1px solid #4B06FB;
+	margin-top: 1px;
+	padding-left: 1px;
+	cursor: pointer;
+}
+
+/** END MESSENGER **/

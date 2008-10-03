@@ -11,6 +11,7 @@ if(isset($_SESSION['uID']) == false || $_SESSION['uID'] == ""){
 <link rel="stylesheet" href="black.css" type="text/css" />
 <script language="javascript" src="menu.js"></script>
 <script language="javascript" src="messenger.js"></script>
+<script language="javascript" src="windows.js"></script>
 </head>
 <body style="margin:0px;padding:0px;">
 <table style="width:100%;height:100%;" border="0">
@@ -63,7 +64,10 @@ echo "Welcome " . $_SESSION['uName'] . "!";
 This will be the main project page...
 </div>
 </td>
-<td  id="mess2" bgcolor="black">
+<td  id="mess2" bgcolor="gray" valign="top">
+<?php
+require_once "messenger.php";
+?>
 </td>
 <td id="collapse2" class="collapsed" style="display:none;" valign="top">
 <table>

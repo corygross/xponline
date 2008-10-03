@@ -1,7 +1,3 @@
-<input type="button" value="Open a new window" onclick="makeNewPopup()"/>
-
-<script language=javascript>
-
 var startTop,startLeft;
 var offsetTop,offsetLeft;
 var myWindow;
@@ -45,11 +41,21 @@ function getEvent(e){
 	return e;
 }
 
+function openPopup(id, title){
+	if(document.getElementById(id) == null){
+		makeNewPopup(id, title);
+	}
+	else{
+		makePopupVisible(id);
+	}
+}
+
 var windowCount = 0;
 var lastNewTop = 0;
 var lastNewLeft = 100;
-function makeNewPopup(){
-var popupID = "mypopup" + windowCount;
+function makeNewPopup(id, title){
+//var popupID = "mypopup" + windowCount;
+var popupID = id;
 windowCount++;
 
 if(lastNewTop == 0 || lastNewTop > 250){
@@ -61,21 +67,26 @@ else{
 lastNewLeft += 15;
 
 var newHTML = "";
-newHTML += "<div  align='center' style='background: blue;' onmousedown=\"grab('" + popupID + "', event);\">&nbsp;Click to drag</div>";
-newHTML += "<textarea style='width: 100%;' rows='12' readonly='readonly'>" + popupID + "</textarea>";
+newHTML += "<div class='window_head' onmousedown=\"grab('" + popupID + "', event);\">";
+newHTML += "<table style='width:100%;'><tr style='width:100%;'><td style='width:10%;'></td><td style='width:80%;'>"+title+"</td><td class='window_min' onClick=\"hidePopup('"+popupID+"')\">&#8211;</td></tr></table></div>";
+newHTML += "<textarea style='width: 98%;' rows='12' readonly='readonly'>" + popupID + "</textarea>";
 newHTML += "<br/>";
-newHTML += "<textarea style='width:100%;' rows='4'></textarea>";
+newHTML += "<textarea style='width:98%;' rows='4'></textarea>";
 
 var newElm = document.createElement("div");
 newElm.setAttribute('id',popupID);
 newElm.setAttribute('name',popupID);
-newElm.setAttribute("style","position: absolute; width: 300px; height: 350px; display: none; background: white; border: 5px solid #005599;top:"+lastNewTop+"px;left:"+lastNewLeft+"px;");
+newElm.setAttribute("style","position: absolute; width: 300px; height: 350px; display: none; top:"+lastNewTop+"px;left:"+lastNewLeft+"px;");
+newElm.setAttribute("class","window");
+//newElm.setAttribute("style","position: absolute; width: 300px; height: 350px; display: none; background: white; border: 2px solid #005599;top:"+lastNewTop+"px;left:"+lastNewLeft+"px;");
 newElm.onmousedown = moveToFront;
 
 //an IE fix
 var ua = navigator.userAgent.toLowerCase();
 if((ua.indexOf("msie") != -1)){
-newElm.style.setAttribute("cssText","position: absolute; width: 300px; height: 350px; display: none; background: white; border: 5px solid #005599;top:"+lastNewTop+"px;left:"+lastNewLeft+"px;",0);
+newElm.style.setAttribute("cssText","position: absolute; width: 300px; height: 350px; display: none; top:"+lastNewTop+"px;left:"+lastNewLeft+"px;",0);
+newElm.className = "window";
+//newElm.style.setAttribute("cssText","position: absolute; width: 300px; height: 350px; display: none; background: white; border: 2px solid #005599;top:"+lastNewTop+"px;left:"+lastNewLeft+"px;",0);
 }
 
 newElm.innerHTML = newHTML;
@@ -96,5 +107,3 @@ function hidePopup(id){
 function moveToFront(){
 	this.style.zIndex = z++;
 }
-
-</script>
