@@ -30,7 +30,7 @@ function downloadMenuClick()
 
 function colorMenuClick()
 {
-	alert("color");
+	openPopup('color_pick','Color Scheme','color');
 }
 
 function highlighMenuClick()
@@ -40,10 +40,10 @@ function highlighMenuClick()
 
 function addBookmarkMenuClick()
 {
-	alert("add bm");
+	openPopup('add_bm','Add Bookmark','addBM');
 }
 
 function findBookmarkMenuClick()
 {
-	alert("find bm");
+	openPopup('find_bm','Find Bookmark','findBM');
 }
