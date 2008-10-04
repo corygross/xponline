@@ -17,9 +17,9 @@ Contacts
 <ul class="contacts">
 <li><div class="contact_group" onClick="showHideMessengerGroup('online');">Online</div>
 <ul id="online" class="contacts">
-<li class="contact_new_msg" onClick="openPopup('user1','Another User 1');">Another User 1</li>
-<li class="contact_old_msg" onClick="openPopup('user2','Another User 2');">Another User 2</li>
-<li class="contact" onClick="openPopup('user3','Another User 3');">Another User 3</li>
+<li class="contact_new_msg" onClick="openPopup('user1','Another User 1','chat');">Another User 1</li>
+<li class="contact_old_msg" onClick="openPopup('user2','Another User 2','chat');">Another User 2</li>
+<li class="contact" onClick="openPopup('user3','Another User 3','chat');">Another User 3</li>
 </li>
 </ul>
 <li><div class="contact_group" onClick="showHideMessengerGroup('offline');">Offline</div>
