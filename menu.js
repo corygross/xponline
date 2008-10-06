@@ -28,6 +28,21 @@ function downloadMenuClick()
 	alert("download");
 }
 
+function findMenuClick()
+{
+	alert("find");
+}
+
+function replaceMenuClick()
+{
+	alert("replace");
+}
+
+function selectAllMenuClick()
+{
+	alert("select all");
+}
+
 function colorMenuClick()
 {
 	openPopup('color_pick','Color Scheme','color');
@@ -46,4 +61,19 @@ function addBookmarkMenuClick()
 function findBookmarkMenuClick()
 {
 	openPopup('find_bm','Find Bookmark','findBM');
+}
+
+function cutIconClicked()
+{
+	alert("cut");
+}
+
+function copyIconClicked()
+{
+	alert("copy");
+}
+
+function pasteIconClicked()
+{
+	alert("paste");
 }

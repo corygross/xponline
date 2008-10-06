@@ -29,7 +29,7 @@ require_once "menu.php";
 <table style="margin-left:auto; margin-right:0px;">
 <tr>
 <td class="details"><span id="curLineCol">Ln:32 Col:18</span></td>
-<td class="details">&nbsp;&nbsp;&nbsp;windows.php</td>
+<td class="details"><span id="fileName">&nbsp;&nbsp;&nbsp;windows.php</span></td>
 </tr>
 </table>
 </td>

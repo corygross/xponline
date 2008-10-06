@@ -81,6 +81,12 @@ td.menu_item{
 	padding-right: 5px;
 }
 
+td.menu_icon{
+	cursor: pointer;
+	padding-left: 1px;
+	padding-right: 1px;
+}
+
 td.menu{
 	background:#000000;
 	padding:0;
@@ -122,13 +128,13 @@ div.contact_group{
 	margin-left: 2px;
 	margin-right: 2px;	
 }
-
+/*
 ul.contact_onoff{
 	border: 1px solid #000;
 	margin-top: 1px;
 	padding-left: 1px;
 }
-
+*/
 li.contact_new_msg{
 	border: 1px solid #F97708;
 	margin-top: 1px;
@@ -143,4 +149,40 @@ li.contact_old_msg{
 	cursor: pointer;
 }
 
+div.messenger_button{
+	background-image:url('images/top_black.jpg');
+	background-repeat:repeat-x;
+	text-align: center;
+	font-size: 15px;
+    font-weight: bold;
+    color: #FFFFFF;
+	height:18px;	
+	margin-left:5px;
+	margin-right:5px;
+	cursor: pointer;
+}
+
 /** END MESSENGER **/
+
+/** FIND BM **/
+
+ul.bms{
+	list-style-type: none;
+	text-align: left;
+	margin-left: 2px;
+	margin-right: 2px;
+	padding-left: 0px;
+}
+
+li.bm{
+	border: 1px solid #000;
+	margin-top: 1px;
+	padding-left: 1px;
+	cursor: pointer;
+}
+
+li.bm:hover{
+	background:#777777;
+}
+
+/** END FIND BM **/

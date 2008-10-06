@@ -21,3 +21,15 @@ function showHideMessengerGroup(id){
 		group.style.display = "none";
 	}
 }
+
+function changeMessengerArrow(id){
+	var img = document.getElementById(id);
+	var oldSrc = img.src;
+	
+	if(oldSrc.indexOf("arrow.gif") == -1){
+		img.src = "images/arrow.gif";
+	}
+	else{
+		img.src = "images/arrow-down.gif";
+	}
+}

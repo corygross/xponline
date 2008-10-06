@@ -106,7 +106,20 @@ newHTML += "<tr><td></td><td align='right'><input type='button' value='Cancel' o
 newHTML += "</table><br />";
 }
 else if(type == 'findBM'){
+var bmHash = {"10":"TODO: Write some code here","23":"TODO: Fix this","42":"TODO: Make more efficient"};
 
+newHTML += "<table style='width:100%;'><tr><td style='width:10%;'></td><td style='width:80%;'>Current bookmarks:</td><td style='width:10%;'></td></tr>";
+newHTML += "<tr><td>&nbsp;</td><td>";
+newHTML += "<div style='overflow:auto;background-color:white;margin-left:5px;margin-right:5px;height:250px;'>";
+newHTML += "<ul class='bms'>";
+for (key in bmHash) {
+	newHTML += "<li class='bm' onClick=\"alert('goto line:"+key+"');\">"+bmHash[key]+"</li>";
+}
+newHTML += "</ul></div>";
+newHTML += "</td><td></td></tr>";
+newHTML += "<tr><td>&nbsp;</td><td></td><td></td></tr>";
+newHTML += "<tr><td></td><td align='right'><input type='button' value='Cancel' onClick=\"hidePopup('"+popupID+"')\"/><input type='button' value='Ok'/></td><td></td></tr>";
+newHTML += "</table><br />";
 }
 else if(type == 'color'){
 newHTML += "<form><table style='width:100%;'><tr><td style='width:10%;'></td><td style='width:80%;'>Select a color scheme:</td><td style='width:10%;'></td></tr>";
@@ -115,6 +128,14 @@ newHTML += "<tr><td></td><td><input type='radio' name='color' value='blue'/>Blue
 newHTML += "<tr><td></td><td><input type='radio' name='color' value='gray'/>Gray</td><td></td></tr>";
 newHTML += "<tr><td>&nbsp;</td><td></td><td></td></tr>";
 newHTML += "<tr><td></td><td align='right'><input type='button' value='Cancel' onClick=\"hidePopup('"+popupID+"')\"/><input type='button' id='submitColor' name='submitColor' value='Ok'/></td><td></td></tr>";
+newHTML += "</table>";
+newHTML += "</form>";
+}
+else if(type == 'addContact'){
+newHTML += "<form><table style='width:100%;'><tr><td style='width:10%;'></td><td style='width:80%;'>Search for a contact:</td><td style='width:10%;'></td></tr>";
+newHTML += "<tr><td></td><td><input type='text' style='width:200px;' name='txtContact' id='txtContact' value='an auto-suggest search box?'/></td><td></td></tr>";
+newHTML += "<tr><td>&nbsp;</td><td></td><td></td></tr>";
+newHTML += "<tr><td></td><td align='right'><input type='button' value='Cancel' onClick=\"hidePopup('"+popupID+"')\"/><input type='button' id='subAddContact' name='subAddContact' value='Ok' disabled='disabled'/></td><td></td></tr>";
 newHTML += "</table>";
 newHTML += "</form>";
 }
