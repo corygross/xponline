@@ -6,7 +6,7 @@
 </tr>
 <tr>
 <td>
-<div style="margin-left:5px;margin-right:5px;">
+<div class="contacts_label">
 Contacts
 </div>
 </td>

@@ -12,6 +12,7 @@ if(isset($_SESSION['uID']) == false || $_SESSION['uID'] == ""){
 <script language="javascript" src="menu.js"></script>
 <script language="javascript" src="messenger.js"></script>
 <script language="javascript" src="windows.js"></script>
+<script language="javascript" src="bm.js"></script>
 </head>
 <body style="margin:0px;padding:0px;">
 <table style="width:100%;height:100%;" border="0">
@@ -80,6 +81,13 @@ require_once "messenger.php";
 <td>
 <div class="messenger_head">
 M<br />E<br />S<br />S<br />E<br />N<br />G<br />E<br />R
+</div>
+</td>
+</tr>
+<tr>
+<td>
+<div id="waiting_msg" style="text-align:center;">
+<img src="images/red-blink.gif" align="middle"/>
 </div>
 </td>
 </tr>
