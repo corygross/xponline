@@ -95,15 +95,15 @@ newHTML += "<br/>";
 newHTML += "<textarea style='width:98%;' rows='4'></textarea>";
 }
 else if(type == 'addBM'){
-newHTML += "<table style='width:100%;'><tr><td style='width:10%;'></td><td style='width:80%;'>Select a bookmark type:</td><td style='width:10%;'></td></tr>";
-newHTML += "<tr><td></td><td><input type='radio' name='bmType' value='todo'/>Todo</td><td></td></tr>";
-newHTML += "<tr><td></td><td><input type='radio' name='bmType' value='other1'/>other1</td><td></td></tr>";
-newHTML += "<tr><td></td><td><input type='radio' name='bmType' value='other2'/>other2</td><td></td></tr>";
+newHTML += "<form name='addBMForm'><table style='width:100%;'><tr><td style='width:10%;'></td><td style='width:80%;'>Select a bookmark type:</td><td style='width:10%;'></td></tr>";
+newHTML += "<tr><td></td><td><input type='radio' name='bmType' value='TODO' checked='checked'/>TODO</td><td></td></tr>";
+newHTML += "<tr><td></td><td><input type='radio' name='bmType' value='FIXME'/>FIXME</td><td></td></tr>";
+newHTML += "<tr><td></td><td><input type='radio' name='bmType' value='HACK'/>HACK</td><td></td></tr>";
 newHTML += "<tr><td>&nbsp;</td><td></td><td></td></tr>";
 newHTML += "<tr><td>&nbsp;</td><td>Write a comment:</td><td></td></tr>";
-newHTML += "<tr><td>&nbsp;</td><td><textarea style='width:98%;' rows='4'></textarea></td><td></td></tr>";
-newHTML += "<tr><td></td><td align='right'><input type='button' value='Cancel' onClick=\"hidePopup('"+popupID+"')\"/><input type='button' id='addBM' name='addBM' value='Ok'/></td><td></td></tr>";
-newHTML += "</table><br />";
+newHTML += "<tr><td>&nbsp;</td><td><textarea id='bmText' style='width:98%;' rows='4'></textarea></td><td></td></tr>";
+newHTML += "<tr><td></td><td align='right'><input type='button' value='Cancel' onClick=\"hidePopup('"+popupID+"')\"/><input type='button' value='Ok' onClick=\"addBM('"+popupID+"')\"/></td><td></td></tr>";
+newHTML += "</table><br /></form>";
 }
 else if(type == 'findBM'){
 var bmHash = {"10":"TODO: Write some code here","23":"TODO: Fix this","42":"TODO: Make more efficient"};
@@ -113,12 +113,12 @@ newHTML += "<tr><td>&nbsp;</td><td>";
 newHTML += "<div style='overflow:auto;background-color:white;margin-left:5px;margin-right:5px;height:250px;'>";
 newHTML += "<ul class='bms'>";
 for (key in bmHash) {
-	newHTML += "<li class='bm' onClick=\"alert('goto line:"+key+"');\">"+bmHash[key]+"</li>";
+	newHTML += "<li class='bm' onClick=\"selectBM(this,'"+key+"');\">"+bmHash[key]+"</li>";
 }
 newHTML += "</ul></div>";
 newHTML += "</td><td></td></tr>";
 newHTML += "<tr><td>&nbsp;</td><td></td><td></td></tr>";
-newHTML += "<tr><td></td><td align='right'><input type='button' value='Cancel' onClick=\"hidePopup('"+popupID+"')\"/><input type='button' value='Ok'/></td><td></td></tr>";
+newHTML += "<tr><td></td><td align='right'><input type='button' value='Cancel' onClick=\"hidePopup('"+popupID+"')\"/><input type='button' value='Ok' onClick=\"goToBM('"+popupID+"');\"/></td><td></td></tr>";
 newHTML += "</table><br />";
 }
 else if(type == 'color'){

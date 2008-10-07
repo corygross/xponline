@@ -1,6 +1,6 @@
 table,tr,td{
 	margin:0px;
-	padding:0px;
+	padding:0px;	
 }
 
 div.messenger_head {
@@ -104,12 +104,21 @@ td.menu:hover, td.menu_item:hover, td.arrows:hover{
 
 /** MESSENGER **/
 
+div.contacts_label{
+	margin-left:5px;
+	margin-right:5px;
+	color: #FFFFFF;
+	font-family: arial;
+}
+
 ul.contacts{
 	list-style-type: none;
 	text-align: left;
 	margin-left: 2px;
 	margin-right: 2px;
 	padding-left: 0px;
+	font-family: arial;
+	font-size: 14px;
 }
 
 li.contact:hover, li.contact_new_msg:hover, li.contact_old_msg:hover, div.contact_group:hover{
@@ -128,13 +137,7 @@ div.contact_group{
 	margin-left: 2px;
 	margin-right: 2px;	
 }
-/*
-ul.contact_onoff{
-	border: 1px solid #000;
-	margin-top: 1px;
-	padding-left: 1px;
-}
-*/
+
 li.contact_new_msg{
 	border: 1px solid #F97708;
 	margin-top: 1px;
@@ -175,14 +178,23 @@ ul.bms{
 }
 
 li.bm{
-	border: 1px solid #000;
 	margin-top: 1px;
 	padding-left: 1px;
 	cursor: pointer;
+	border: 1px solid #000;
+	background:#FFF;
+}
+
+li.bm_selected{
+	margin-top: 1px;
+	padding-left: 1px;
+	cursor: pointer;
+	border: 1px solid #000;
+	background:#777777;
 }
 
 li.bm:hover{
-	background:#777777;
+	background:#CCCCCC;
 }
 
 /** END FIND BM **/
