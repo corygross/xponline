@@ -10,7 +10,7 @@
 <body>
 <form action="" method="POST" accept-charset="utf-8">
 	<input type="text" name="input" value="test" id="input">
-	<p><input type="submit" name="submit" value="submit" onclick="ajaxUpdater('input', './server2.php')"></p>
+	<p><input type="submit" id="submit" name="submit" value="submit" onclick="doRequest()"></p>
 </form>
 	<script type="text/javascript">
 		//Create the Comet "object"
@@ -66,20 +66,13 @@
 			  
 				doRequest: function()
 				    {
-				      new Ajax.Request('./server2.php', {
-				        parameters: $('input').serialize(true),
-				 	onerror: function()
-					{
-						alert("There was an error with your submission.");
-					}
-					});
-					
+				     new Ajax.Request('server2.php', {method:'get', parameters:{input: 'test'}});
 					}
 				}
 				
 		function ajaxUpdater(id, url)
 		{
-			alert('im here');
+			alert('id is ' + id + " and url is: "+ url);
 			new Ajax.Updater(id, url, {asynchronous:true});
 		}
 

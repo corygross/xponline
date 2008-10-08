@@ -1,7 +1,9 @@
 <?php
 $myId = "001";
 
-echo $_POST['input'];
+if(empty($_POST['message'])) $errors[] = "Empty message field";
+
+//echo $_POST['input'];
 
 
 //Connect to database
