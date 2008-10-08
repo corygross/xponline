@@ -8,11 +8,14 @@
    <script type="text/javascript" src="prototype.js"></script>
 </head>
 <body>
-<form action="" method="POST" accept-charset="utf-8">
-	<input type="text" name="input" value="test" id="input">
-	<p><input type="submit" id="submit" name="submit" value="submit" onclick="doRequest()"></p>
+	<iframe id="foo" name="foo" style="display:none"></iframe>
+	
+<form id="theForm" action="./server2.php" target="foo" onsubmit="comet.doRequest($('input').value)">
+	<input type="text" name="input" value="" id="input">
+	<input type="submit" id="submit" name="submit" value="submit">
 </form>
 	<script type="text/javascript">
+	
 		//Create the Comet "object"
 		var Comet = Class.create();
 		
@@ -63,19 +66,25 @@
 			    {
 			      $('content').innerHTML += '<div>' + response['msg'] + '</div>';
 			    },
-			  
-				doRequest: function()
-				    {
-				     new Ajax.Request('server2.php', {method:'get', parameters:{input: 'test'}});
-					}
+			  doRequest: function(request)
+			    {
+				var input = $('theForm').getInputs('text');
+				alert("request is  " + request);
+				$('theForm').request({
+					method:'get',
+					parameters:{input:input[1]},
+					onInteractive:function(transport){alert(transport.responseText);},
+					onComplete:function(){alert('submission complete')}
 				}
-				
-		function ajaxUpdater(id, url)
-		{
-			alert('id is ' + id + " and url is: "+ url);
-			new Ajax.Updater(id, url, {asynchronous:true});
-		}
-
+					)
+				}
+			}
+/*			      new Ajax.Request('./server2.php', {
+					method:'GET',
+			        parameters: $('theForm').serialize(true)
+			      });
+				}*/	
+					
 //				alert("Create the comet instance");
 		  var comet = new Comet();
 //			alert("Call the connect method");
