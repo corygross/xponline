@@ -34,6 +34,15 @@ Contacts
 </ul>
 </li>
 </ul>
+
+Received:<input type="text" name="received" value="" id="received"><br/>
+
+<form action="messenger_submit" method="get" accept-charset="utf-8">
+	Message:<input type="text" name="user_input" value="" id="input"><br/>
+	<p><input type="submit" value="Send"></p>
+</form>
+
+
 </div>
 </td>
 </tr>
