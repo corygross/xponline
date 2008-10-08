@@ -1,9 +1,12 @@
 <?php
 $myId = "001";
+@extract($_GET);
 
-if(empty($_POST['message'])) $errors[] = "Empty message field";
 
-//echo $_POST['input'];
+//if(empty($POST['message'])) $errors[] = "Empty message field";
+
+//$cid = (isset($_GET['input'])) ? $_GET['input']: null;
+//echo $_GET['input'];
 
 
 //Connect to database
@@ -47,7 +50,7 @@ function insertMessage($uid, $meId, $inMsg)
 for ($i = 0; $i<10; $i++) { getMessage(); }
 
 ob_end_flush(); //necessary
-
+echo $_GET['input'];
 mysql_close($link); //Close the connection when done
 
 /*
