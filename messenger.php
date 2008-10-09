@@ -46,8 +46,8 @@ Contacts
 </ul>
 </li>
 </ul>
-Received:<br />
-<input type="text" name="received" value="" id="received"><br/>
+
+
 
 <iframe id="foo" name="foo" style="display:none"></iframe>
 	
@@ -56,6 +56,7 @@ Received:<br />
 	Received:<input type="text" name="received" value="" id="response"><br/>
 	Message:<input type="text" name="input" value="" id="input"><br/>
 	<p><input type="submit" value="submit"></p>
+</form>
 
 
 </div>
@@ -90,7 +91,7 @@ Received:<br />
 							//On a successful response 
 							onSuccess:function(transport)
 							{
-								alert("Connection successful!");
+							//	alert("Connection successful!");
 								var response = transport.responseText;
 								document.write("I, the client have received " + response);
 							},
@@ -98,7 +99,7 @@ Received:<br />
 							//When the request is completed
 							onComplete:function()
 							{
-								alert("complete method");
+							//	alert("complete method");
 								//Immediately reconnect
 								this.comet.connect();  //Connect immeidietly after disconnect (e.g. long polling!)
 							},
@@ -131,7 +132,7 @@ Received:<br />
 				var elements = Form.getElements('theForm');
 				elements[1].value = '';
 				var input = $('theForm').getInputs('text');
-				alert("request is  " + request);
+			//	alert("request is  " + request);
 				$('theForm').request({
 					method:'get',
 					parameters:{input:request},
@@ -156,29 +157,3 @@ Received:<br />
 
 </body>
 </html>
-
-
-<tr>
-<td>
-<?php
-/*
-$uID = $_SESSION['uID'];
-$requestsSQL = "SELECT * FROM contacts WHERE (uID1 = $uID AND u1Accept = 0) OR (uID2 = $uID AND u2Accept = 0);";
-$reqResult = runQuery($requestsSQL);
-$num = mysql_num_rows($reqResult);
-if($num > 0){
-echo "<div class='messenger_button' onClick=\"openPopup('confirmContact','Confirm contact request','confirmContact');\">";
-if($num == 1){
-	echo "1 contact request";
-}
-else if($num > 1){
-	echo $num . " contact requests";
-}
-echo "</div>";
-}
-*/
-?>
-
-</td->
-</tr>
-</table>

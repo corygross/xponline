@@ -35,7 +35,7 @@ if($userInput != '')
 
 if (ob_get_level() == 0) ob_start();
 
-me/*
+/*
  * Retrieves a message from the message queue
  *
  * 
