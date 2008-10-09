@@ -1,5 +1,6 @@
 <?php
 session_start();
+require_once "dbConnect.php";
 if(isset($_SESSION['uID']) == false || $_SESSION['uID'] == ""){
 	header( "Location: login.php" );
 }
@@ -13,6 +14,8 @@ if(isset($_SESSION['uID']) == false || $_SESSION['uID'] == ""){
 <script language="javascript" src="messenger.js"></script>
 <script language="javascript" src="windows.js"></script>
 <script language="javascript" src="bm.js"></script>
+<script language="javascript" src="prototype.js"></script>
+<script language="javascript" src="controls/contact_search/suggest_script.js"></script>
 </head>
 <body style="margin:0px;padding:0px;">
 <table style="width:100%;height:100%;" border="0">
@@ -62,7 +65,7 @@ require_once "menu.php";
 echo "Welcome " . $_SESSION['uName'] . "!";
 ?>
 <br /><br />
-This will be the main project page...
+The text editor goes in here...
 </div>
 </td>
 <td  id="mess2" bgcolor="gray" valign="top">

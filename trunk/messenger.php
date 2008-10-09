@@ -34,12 +34,13 @@ Contacts
 </ul>
 </li>
 </ul>
-
-Received:<input type="text" name="received" value="" id="received"><br/>
+Received:<br />
+<input type="text" name="received" value="" id="received"><br/>
 
 <form action="messenger_submit" method="get" accept-charset="utf-8">
-	Message:<input type="text" name="user_input" value="" id="input"><br/>
-	<p><input type="submit" value="Send"></p>
+	Message:<br />
+	<input type="text" name="user_input" value="" id="input"><br/>
+	<input type="submit" value="Send">
 </form>
 
 
@@ -51,6 +52,26 @@ Received:<input type="text" name="received" value="" id="received"><br/>
 <div class="messenger_button" onClick="openPopup('addContact','Add a Contact','addContact');">
 +Contact
 </div>
+</td>
+</tr>
+<tr>
+<td>
+<?php
+$uID = $_SESSION['uID'];
+$requestsSQL = "SELECT * FROM contacts WHERE (uID1 = $uID AND u1Accept = 0) OR (uID2 = $uID AND u2Accept = 0);";
+$reqResult = runQuery($requestsSQL);
+$num = mysql_num_rows($reqResult);
+if($num > 0){
+echo "<div class='messenger_button' onClick=\"openPopup('confirmContact','Confirm contact request','confirmContact');\">";
+if($num == 1){
+	echo "1 contact request";
+}
+else if($num > 1){
+	echo $num . " contact requests";
+}
+echo "</div>";
+}
+?>
 </td>
 </tr>
 </table>

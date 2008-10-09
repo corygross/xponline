@@ -33,3 +33,45 @@ function changeMessengerArrow(id){
 		img.src = "images/arrow-down.gif";
 	}
 }
+
+var contactID = "";
+var contactName = "";
+function selectContact(id, name){
+	contactID = id;
+	contactName = name;
+	if(contactID == ""){
+		document.getElementById('btnAddContact').disabled = true;
+	}
+	else{
+		document.getElementById('btnAddContact').disabled = false;
+	}
+}
+
+function addContact(){
+	if(contactID == ""){
+		alert('Please select a contact to add.');
+		return;
+	}	
+	if(contactName != document.getElementById('search-q').value){
+		alert("Contact '" + document.getElementById('search-q').value + "' not found.  Please try again.");
+		return;
+	}
+	
+	new Ajax.Request('./handlers/addContact.php?userToAdd=' + contactID, {
+		method:'get',
+		onSuccess: function(transport) {			
+			if(transport.responseText == "success"){
+				alert('A contact request has been sent to user.');
+				destroyPopup('addContact');
+			}
+			else{
+				alert('There was a problem adding the contact.  Please try again.');
+			}
+		},		
+		onFailure: function()
+		{
+			alert("Network error, please try again.");
+		}		
+	});
+	
+}
