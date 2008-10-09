@@ -45,7 +45,7 @@
 							{
 								alert("complete method");
 								//Immediately reconnect
-						//		this.comet.connect();  //Connect immeidietly after disconnect (e.g. long polling!)
+								this.comet.connect();  //Connect immeidietly after disconnect (e.g. long polling!)
 							},
 							onInteractive:function(transport)
 							{
@@ -72,9 +72,9 @@
 				alert("request is  " + request);
 				$('theForm').request({
 					method:'get',
-					parameters:{input:input[1]},
+					parameters:{input:request},
 					onInteractive:function(transport){alert(transport.responseText);},
-					onComplete:function(){alert('submission complete')}
+					onComplete:function(){this.comet.connect();}
 				}
 					)
 				}

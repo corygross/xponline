@@ -1,12 +1,20 @@
 <?php
 $myId = "001";
-@extract($_GET);
 
+static $messageId = 0;
+$messageId++;
+if (isset($_GET["input"]))
+{
+	$userInput = $_GET["input"];
+}
+else
+{
+	$userInput = '';
+}
+//$userInput = $_GET["input"];
+$tokenArray =  array();
 
-//if(empty($POST['message'])) $errors[] = "Empty message field";
-
-//$cid = (isset($_GET['input'])) ? $_GET['input']: null;
-//echo $_GET['input'];
+//echo "userInput is $userInput";
 
 
 //Connect to database
@@ -16,9 +24,18 @@ $output_query = "SELECT * FROM msgqueue WHERE mID = $myId";
 //Select our database
 mysql_select_db("xponline", $link);
 
+if($userInput != '')
+{
+	//Only perform parsing actions if the user has sent a message
+	$tokenArray = parseInput($userInput);
+	
+	//Add message to the message queue
+	insertMessage($tokenArray);
+}
+
 if (ob_get_level() == 0) ob_start();
 
-/*
+me/*
  * Retrieves a message from the message queue
  *
  * 
@@ -37,28 +54,57 @@ function getMessage()
 		echo "</body>"; //This is key to have this here, at least for Safari
 		ob_flush();
 	    flush();
-	   	sleep(5);
+		//Wait a second
+	   	usleep(1000000);
 
 	}
 	
 }
 
-function insertMessage($uid, $meId, $inMsg)
+/*
+ * Insert the user sent data into message queue
+ *
+ *
+ */
+function insertMessage($inArray)
 {
+	$input1 = $inArray[0];
+	$input2 = $inArray[1];
+	$input3 = $inArray[2];
+
+	static $msgId = 0;
+	$msgId++;
+
+
+	//Constrct the query string from user parameters and execute
+	//$insertQuery = "INSERT into msgqueue (mId, fromID, toID, msg, sentTime) VALUES ('3', '2', '1', 'Test', '2008-10-07 19:44:2')" or die("error with insert");
+//	$sql = 'INSERT INTO `xponline`.`msgqueue` (`mID`, `fromID`, `toID`, `msg`, `sentTime`) VALUES ('$input1', 2, 1, "ron is testing again 3", CURRENT_TIMESTAMP);';
+	$sql = "INSERT INTO msgqueue VALUES('$msgId', '$input1', '$input2', '$input3', CURRENT_TIMESTAMP)";
+	$result = mysql_query($sql);
+	echo mysql_errno(). ": " . mysql_error();
+}
+
+/*
+ * parseInput
+ *
+ * Extracts the relevant tokens from the 
+ * user input string.
+ *
+ *
+ */
+function parseInput($uInput)
+{
+	//String should arrive in the format sentId/toID/Message
+	$tokens = split("/", $uInput);
+	return $tokens;
 	
 }
+
+//Check for messages, and if found, send to client
 for ($i = 0; $i<10; $i++) { getMessage(); }
 
 ob_end_flush(); //necessary
-echo $_GET['input'];
+//echo $_GET['input'];
 mysql_close($link); //Close the connection when done
 
-/*
-	Things to do server side
-	1. Receive input from the client
-	2. Accept multiple client connections
-	3. Create table of sockets associated with users
-	4. Send text from one client to another.
-
-*/
 ?>
