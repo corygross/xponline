@@ -76,6 +76,7 @@ newElm.setAttribute('name',popupID);
 newElm.setAttribute("style","position: absolute; width: 300px; display: none; top:"+lastNewTop+"px;left:"+lastNewLeft+"px;");
 //newElm.setAttribute("style","position: absolute; width: 300px; height: 350px; display: none; top:"+lastNewTop+"px;left:"+lastNewLeft+"px;");
 newElm.setAttribute("class","window");
+
 newElm.onmousedown = moveToFront;
 
 //an IE fix
@@ -132,16 +133,19 @@ newHTML += "</table>";
 newHTML += "</form>";
 }
 else if(type == 'addContact'){
-newHTML += "<form><table style='width:100%;'><tr><td style='width:10%;'></td><td style='width:80%;'>Search for a contact:</td><td style='width:10%;'></td></tr>";
-newHTML += "<tr><td></td><td><input type='text' style='width:200px;' name='txtContact' id='txtContact' value='an auto-suggest search box?'/></td><td></td></tr>";
+newHTML += "<table style='width:100%;'><tr><td style='width:10%;'></td><td style='width:80%;'>Search for a contact:</td><td style='width:10%;'></td></tr>";
+newHTML += "<tr><td></td><td>";
+newHTML += "<div id='search-wrap'>";
+newHTML += "<input name='search-q' id='search-q' type='text' onkeydown='checkTabKey(event)' onkeyup='autosuggest(event)'/><br />";
+newHTML += "</div><div id='results'></div>";
+newHTML += "</td><td></td></tr>";
 newHTML += "<tr><td>&nbsp;</td><td></td><td></td></tr>";
-newHTML += "<tr><td></td><td align='right'><input type='button' value='Cancel' onClick=\"hidePopup('"+popupID+"')\"/><input type='button' id='subAddContact' name='subAddContact' value='Ok' disabled='disabled'/></td><td></td></tr>";
+newHTML += "<tr><td>&nbsp;</td><td>Note: Before you can chat with a new contact, they must first confirm you as a contact.</td><td></td></tr>";
+newHTML += "<tr><td></td><td align='right'><input type='button' value='Cancel' onClick=\"hidePopup('"+popupID+"');\"/><input type='button' id='btnAddContact' name='btnAddContact' value='Add' disabled='disabled' onClick='addContact();'/></td><td></td></tr>";
 newHTML += "</table>";
-newHTML += "</form>";
 }
 
 newElm.innerHTML = newHTML;
-
 document.body.appendChild(newElm);
 
 makePopupVisible(popupID);
@@ -155,6 +159,10 @@ function makePopupVisible(id) {
 
 function hidePopup(id){
 	document.getElementById(id).style.display="none";
+}
+
+function destroyPopup(id){
+	document.getElementById(id).outerHTML = "";
 }
 
 function moveToFront(){
