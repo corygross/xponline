@@ -18,12 +18,12 @@ td.details {
 }
 
 tr.top_row{
-	background-image:url('images/top_black.jpg');
+	background-image:url(images/top_black.JPG);
 	background-repeat:repeat-x;
 }
 
 div.window_head{
-	background-image:url('images/top_black.jpg');
+	background-image:url(images/top_black.JPG);
 	background-repeat:repeat-x;
 	text-align: center;
 	font-size: 15px;
@@ -140,6 +140,7 @@ div.contact_group{
 
 li.contact_new_msg{
 	border: 1px solid #F97708;
+	background: #F97708;
 	margin-top: 1px;
 	padding-left: 1px;
 	cursor: pointer;

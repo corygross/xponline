@@ -75,3 +75,42 @@ function addContact(){
 	});
 	
 }
+
+function receiveNewMessage(fromID, fromName, message){
+	var chatID = "chat" + fromID;
+	if(windowExists(chatID)==false){
+		openChat(fromID, fromName);
+		hiliteContact(fromID,"viewed");
+	}
+	else{
+		if(windowIsVisible(chatID)==true){
+			hiliteContact(fromID,"viewed");
+		}
+		else{
+			hiliteContact(fromID,"new");
+		}
+	}
+	
+	var recBox = document.getElementById('rec'+chatID);
+	recBox.value += "\n" + message;
+}
+
+function hiliteContact(fromID,type){
+	var contactItem = document.getElementById('contactItem'+fromID);
+	if(type == "none"){
+		contactItem.className = "contact";
+	}
+	else if(type == "viewed"){
+		contactItem.className = "contact_old_msg";
+	}
+	else if(type == "new"){
+		contactItem.className = "contact_new_msg";
+	}
+}
+
+function openChat(id, name){
+	openPopup('chat'+id, 'Chat with '+name, 'chat');
+	if(document.getElementById('contactItem'+id).className == "contact_new_msg"){
+		hiliteContact(id,"viewed");
+	}
+}
