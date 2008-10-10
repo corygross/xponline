@@ -41,10 +41,6 @@ function getEvent(e){
 	return e;
 }
 
-function openChat(id, title){
-	openPopup(id, title, 'chat');
-}
-
 function openPopup(id, title, type){
 	if(document.getElementById(id) == null){
 		makeNewPopup(id, title, type);
@@ -91,9 +87,9 @@ newHTML += "<div class='window_head' onmousedown=\"grab('" + popupID + "', event
 newHTML += "<table style='width:100%;'><tr style='width:100%;'><td style='width:10%;'></td><td style='width:80%;'>"+title+"</td><td class='window_min' onClick=\"hidePopup('"+popupID+"')\">&#8211;</td></tr></table></div>";
 
 if(type == 'chat'){
-newHTML += "<textarea style='width: 98%;' rows='12' readonly='readonly'>" + popupID + "</textarea>";
+newHTML += "<textarea id='rec"+popupID+"' name='rec"+popupID+"' style='width: 98%;' rows='12' readonly='readonly'>" + popupID + "</textarea>";
 newHTML += "<br/>";
-newHTML += "<textarea style='width:98%;' rows='4'></textarea>";
+newHTML += "<textarea id='send"+popupID+"' name='send"+popupID+"' style='width:98%;' rows='4'></textarea>";
 }
 else if(type == 'addBM'){
 newHTML += "<form name='addBMForm'><table style='width:100%;'><tr><td style='width:10%;'></td><td style='width:80%;'>Select a bookmark type:</td><td style='width:10%;'></td></tr>";
@@ -163,6 +159,20 @@ function hidePopup(id){
 
 function destroyPopup(id){
 	document.getElementById(id).outerHTML = "";
+}
+
+function windowExists(id){
+	if(document.getElementById(id)==null){
+		return false;
+	}
+	return true;
+}
+
+function windowIsVisible(id){
+	if(document.getElementById(id).style.display != "none"){
+		return true;
+	}
+	return false;
 }
 
 function moveToFront(){

@@ -66,6 +66,7 @@ echo "Welcome " . $_SESSION['uName'] . "!";
 ?>
 <br /><br />
 The text editor goes in here...
+<input type="button" onClick="receiveNewMessage('1','Bob Bills','CG MESSAGE!');" value="Test Message to Bob Bills"/>
 </div>
 </td>
 <td  id="mess2" bgcolor="gray" valign="top">
