@@ -1,14 +1,12 @@
 #summary Chat-related tasks.
 
-= Introduction =
-
-Describe remaining tasks here
+Remaining tasks related to the chat portion of the project.
 
 
-= Details =
+= Tasks =
 
-*Implement authentication [ ]
-*Implement multi-client communication [ ]
-*Unit testing [ ]
-*Integration testing [ ]
-*Regression Testing [ ]
+  * Implement authentication [ ]
+  * Implement multi-client communication [ ]
+  * Unit testing [ ]
+  * Integration testing [ ]
+  * Regression Testing [ ]
