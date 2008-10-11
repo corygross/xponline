@@ -1,0 +1,14 @@
+#summary Chat-related tasks.
+
+= Introduction =
+
+Describe remaining tasks here
+
+
+= Details =
+
+*Implement authentication [ ]
+*Implement multi-client communication [ ]
+*Unit testing [ ]
+*Integration testing [ ]
+*Regression Testing [ ]
