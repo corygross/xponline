@@ -3,6 +3,7 @@ $myId = "001";
 
 static $messageId = 0;
 $messageId++;
+
 if (isset($_GET["input"]))
 {
 	$userInput = $_GET["input"];
@@ -74,8 +75,6 @@ function insertMessage($inArray)
 
 	static $msgId = 0;
 	$msgId++;
-
-
 	//Constrct the query string from user parameters and execute
 	//$insertQuery = "INSERT into msgqueue (mId, fromID, toID, msg, sentTime) VALUES ('3', '2', '1', 'Test', '2008-10-07 19:44:2')" or die("error with insert");
 //	$sql = 'INSERT INTO `xponline`.`msgqueue` (`mID`, `fromID`, `toID`, `msg`, `sentTime`) VALUES ('$input1', 2, 1, "ron is testing again 3", CURRENT_TIMESTAMP);';
@@ -99,6 +98,8 @@ function parseInput($uInput)
 	return $tokens;
 	
 }
+
+
 
 //Check for messages, and if found, send to client
 for ($i = 0; $i<10; $i++) { getMessage(); }

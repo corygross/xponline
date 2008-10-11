@@ -8,6 +8,7 @@
    <script type="text/javascript" src="prototype.js"></script>
 </head>
 <body>
+<script	type="text/javascript" src="chat.js" />
 	<iframe id="foo" name="foo" style="display:none"></iframe>
 	
 <table style="width:100%;margin-bottom:auto;margin-top:0px;">
@@ -48,7 +49,7 @@ Contacts
 </ul>
 
 
-
+<!-- I help your page not redirect! Keep me here please! -->
 <iframe id="foo" name="foo" style="display:none"></iframe>
 	
 
@@ -70,90 +71,7 @@ Contacts
 </td>
 </tr>
 </table>
-	<script type="text/javascript">
-	
-		//Create the Comet "object"
-		var Comet = Class.create();
-		
-		//Set the properties and methods of the class
-		Comet.prototype = {
-			url:'./server2.php',
-			noerror:true,
-			initialize: function(){},
-			
-			//Define the connection function
-			connect:function()
-				{
-					//Create the AJAX object that inititiate the ajax connection
-					this.ajax = new Ajax.Request(this.url, 
-						{
-							method:'get',
-							//On a successful response 
-							onSuccess:function(transport)
-							{
-							//	alert("Connection successful!");
-								var response = transport.responseText;
-								document.write("I, the client have received " + response);
-							},
-						
-							//When the request is completed
-							onComplete:function()
-							{
-							//	alert("complete method");
-								//Immediately reconnect
-								this.comet.connect();  //Connect immeidietly after disconnect (e.g. long polling!)
-							},
-							onInteractive:function(transport)
-							{
-								var elements = Form.getElements('theForm');
-								elements[0].value = "";
-								elements[0].value = transport.responseText;
-								
-//									//alert("Got something.");
-//									alert(transport.responseText);
-//									$('response').setValue(transport.responseText);
-							},
-							//If there is an error along the way
-							onError:function()
-							{
-								alert("Error");
-							}
-						}
-					);
-					this.ajax.comet=this;
-				
-				},
-				handleResponse: function(response)
-			    {
-			      $('content').innerHTML += '<div>' + response['msg'] + '</div>';
-			    },
-			  doRequest: function(request)
-			    {
-				var elements = Form.getElements('theForm');
-				elements[1].value = '';
-				var input = $('theForm').getInputs('text');
-			//	alert("request is  " + request);
-				$('theForm').request({
-					method:'get',
-					parameters:{input:request},
-					onInteractive:function(transport){/*alert(transport.responseText);*/ elements[0].value = ""; elements[0].value = transport.responseText; },
-					onComplete:function(){this.comet.connect();}
-				}
-					)
-				}
-			}
-/*			      new Ajax.Request('./server2.php', {
-					method:'GET',
-			        parameters: $('theForm').serialize(true)
-			      });
-				}*/	
-					
-//				alert("Create the comet instance");
-		  var comet = new Comet();
-//			alert("Call the connect method");
-		comet.connect();
-//		document.write("making initial request.");
-	</script>
+
 
 </body>
 </html>
