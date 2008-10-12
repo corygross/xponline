@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 -- 
 -- Host: localhost
--- Generation Time: Oct 08, 2008 at 09:27 PM
+-- Generation Time: Oct 12, 2008 at 07:43 PM
 -- Server version: 5.0.45
 -- PHP Version: 5.2.5
 
@@ -53,6 +53,11 @@ CREATE TABLE IF NOT EXISTS `contacts` (
 -- Dumping data for table `contacts`
 -- 
 
+INSERT INTO `contacts` (`uID1`, `uID2`, `u1accept`, `u2accept`) VALUES 
+(7, 9, 1, 1),
+(7, 10, 1, 1),
+(10, 8, 1, 0),
+(10, 9, 1, 1);
 
 -- --------------------------------------------------------
 
@@ -89,12 +94,14 @@ CREATE TABLE IF NOT EXISTS `msgqueue` (
   PRIMARY KEY  (`mID`),
   KEY `fromID` (`fromID`),
   KEY `toID` (`toID`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=20 ;
 
 -- 
 -- Dumping data for table `msgqueue`
 -- 
 
+INSERT INTO `msgqueue` (`mID`, `fromID`, `toID`, `msg`, `sentTime`) VALUES 
+(1, 7, 8, 'corys message', '2008-10-08 23:55:51');
 
 -- --------------------------------------------------------
 
@@ -110,18 +117,20 @@ CREATE TABLE IF NOT EXISTS `users` (
   `uEmail` varchar(32) collate utf8_unicode_ci NOT NULL,
   `uPass` char(32) collate utf8_unicode_ci NOT NULL,
   `uColor` enum('black','blue') collate utf8_unicode_ci NOT NULL default 'black',
+  `uLastActivity` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
   PRIMARY KEY  (`uID`),
   UNIQUE KEY `uEmail` (`uEmail`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=10 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=11 ;
 
 -- 
 -- Dumping data for table `users`
 -- 
 
-INSERT INTO `users` (`uID`, `uFName`, `uLName`, `uEmail`, `uPass`, `uColor`) VALUES 
-(7, 'Cory', 'Gross', 'corygross@hotmail.com', 'dfa9e8660763fd9453cbe56eebff2e39', 'black'),
-(8, 'Cory', 'Gross', 'cor', 'e10adc3949ba59abbe56e057f20f883e', 'black'),
-(9, 'Bob', 'Villa', 'bv@hotmail.com', 'dfa9e8660763fd9453cbe56eebff2e39', 'black');
+INSERT INTO `users` (`uID`, `uFName`, `uLName`, `uEmail`, `uPass`, `uColor`, `uLastActivity`) VALUES 
+(7, 'Cory', 'Gross', 'corygross@hotmail.com', 'dfa9e8660763fd9453cbe56eebff2e39', 'black', '2008-10-12 19:43:13'),
+(8, 'Cory', 'Gross', 'cor', 'e10adc3949ba59abbe56e057f20f883e', 'black', '0000-00-00 00:00:00'),
+(9, 'Bob', 'Villa', 'bv@hotmail.com', 'dfa9e8660763fd9453cbe56eebff2e39', 'black', '2008-10-12 19:43:13'),
+(10, 'Cory', 'Tester', 'corygross@yahoo.com', 'dfa9e8660763fd9453cbe56eebff2e39', 'black', '2008-10-12 19:43:13');
 
 -- 
 -- Constraints for dumped tables
@@ -138,8 +147,8 @@ ALTER TABLE `access`
 -- Constraints for table `contacts`
 -- 
 ALTER TABLE `contacts`
-  ADD CONSTRAINT `contacts_ibfk_2` FOREIGN KEY (`uID2`) REFERENCES `users` (`uID`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `contacts_ibfk_1` FOREIGN KEY (`uID1`) REFERENCES `users` (`uID`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `contacts_ibfk_1` FOREIGN KEY (`uID1`) REFERENCES `users` (`uID`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `contacts_ibfk_2` FOREIGN KEY (`uID2`) REFERENCES `users` (`uID`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- 
 -- Constraints for table `msgqueue`

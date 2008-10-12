@@ -87,9 +87,9 @@ newHTML += "<div class='window_head' onmousedown=\"grab('" + popupID + "', event
 newHTML += "<table style='width:100%;'><tr style='width:100%;'><td style='width:10%;'></td><td style='width:80%;'>"+title+"</td><td class='window_min' onClick=\"hidePopup('"+popupID+"')\">&#8211;</td></tr></table></div>";
 
 if(type == 'chat'){
-newHTML += "<textarea id='rec"+popupID+"' name='rec"+popupID+"' style='width: 98%;' rows='12' readonly='readonly'>" + popupID + "</textarea>";
+newHTML += "<textarea id='rec"+popupID+"' name='rec"+popupID+"' style='width: 98%;' rows='12' readonly='readonly'></textarea>";
 newHTML += "<br/>";
-newHTML += "<textarea id='send"+popupID+"' name='send"+popupID+"' style='width:98%;' rows='4'></textarea>";
+newHTML += "<textarea id='send"+popupID+"' name='send"+popupID+"' style='width:98%;' rows='4' onkeyup=\"checkEnter(event,'"+popupID+"');\"></textarea>";
 }
 else if(type == 'addBM'){
 newHTML += "<form name='addBMForm'><table style='width:100%;'><tr><td style='width:10%;'></td><td style='width:80%;'>Select a bookmark type:</td><td style='width:10%;'></td></tr>";
@@ -139,6 +139,9 @@ newHTML += "<tr><td>&nbsp;</td><td></td><td></td></tr>";
 newHTML += "<tr><td>&nbsp;</td><td>Note: Before you can chat with a new contact, they must first confirm you as a contact.</td><td></td></tr>";
 newHTML += "<tr><td></td><td align='right'><input type='button' value='Cancel' onClick=\"hidePopup('"+popupID+"');\"/><input type='button' id='btnAddContact' name='btnAddContact' value='Add' disabled='disabled' onClick='addContact();'/></td><td></td></tr>";
 newHTML += "</table>";
+}
+else if(type == 'confirmContact'){
+newHTML += "<form name='confirmForm'><div id='pendingContainer' name='pendingContainer'>Retrieving...</div></form>";
 }
 
 newElm.innerHTML = newHTML;
