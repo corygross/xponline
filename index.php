@@ -10,11 +10,10 @@ if(isset($_SESSION['uID']) == false || $_SESSION['uID'] == ""){
 <head>
 <title>XPonline</title>
 <link rel="stylesheet" href="black.css" type="text/css" />
+<script language="javascript" src="prototype.js"></script>
 <script language="javascript" src="menu.js"></script>
-<script language="javascript" src="messenger.js"></script>
 <script language="javascript" src="windows.js"></script>
 <script language="javascript" src="bm.js"></script>
-<script language="javascript" src="prototype.js"></script>
 <script language="javascript" src="controls/contact_search/suggest_script.js"></script>
 </head>
 <body style="margin:0px;padding:0px;">
@@ -66,7 +65,6 @@ echo "Welcome " . $_SESSION['uName'] . "!";
 ?>
 <br /><br />
 The text editor goes in here...
-<input type="button" onClick="receiveNewMessage('1','Bob Bills','CG MESSAGE!');" value="Test Message to Bob Bills"/>
 </div>
 </td>
 <td  id="mess2" bgcolor="gray" valign="top">
