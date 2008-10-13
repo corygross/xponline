@@ -39,7 +39,7 @@ if(isset($_POST['btnRegister']) == true)
 			$error .= "An account already exists for that email address" . "<br />";
 		}
 		else{
-			$regSQL = "INSERT into USERS (uFName,uLName,uEmail,uPass,uColor) VALUES ('".$fName."','".$lName."','".$email."','".md5($pass1)."','black');";
+			$regSQL = "INSERT into users (uFName,uLName,uEmail,uPass,uColor) VALUES ('".$fName."','".$lName."','".$email."','".md5($pass1)."','black');";
 			$result = runQuery($regSQL);
 			$newID = mysql_insert_id();
 			$_SESSION['uID'] = $newID;
