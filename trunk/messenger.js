@@ -112,6 +112,7 @@ function sendMessage(toID){
 	var sendBox = document.getElementById('send'+toID);
 	var textToSend = sendBox.value;
 	recBox.value += "Me" + ":\n" + textToSend;
+	recBox.scrollTop = recBox.scrollHeight;
 	sendBox.value = "";
 	
 	new Ajax.Request('./handlers/sendMessage.php?sendToID=' + userID[1] + "&message=" + textToSend, {
@@ -146,6 +147,8 @@ function receiveNewMessage(fromID, fromName, message){
 	var recBox = document.getElementById('rec'+chatID);
 	var splitName = fromName.split(" ");
 	recBox.value += splitName[0] + ":\n" + message + "\n";
+	//this needs to be done when the chat window is opened too
+	recBox.scrollTop = recBox.scrollHeight;
 }
 
 var currentHilites = new Array();
@@ -215,7 +218,7 @@ function confirmContacts(cbGroup){
 			method:'get',
 			onSuccess: function(transport)
 			{
-				alert(transport.responseText);
+				//alert(transport.responseText);
 				//maybe update their contact list now? probably not.  it will be updated in less than 30 seconds anyway.
 			},
 			onFailure: function()
