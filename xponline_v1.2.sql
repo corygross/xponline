@@ -53,12 +53,6 @@ CREATE TABLE IF NOT EXISTS `contacts` (
 -- Dumping data for table `contacts`
 -- 
 
-INSERT INTO `contacts` (`uID1`, `uID2`, `u1accept`, `u2accept`) VALUES 
-(7, 9, 1, 1),
-(7, 10, 1, 1),
-(10, 8, 1, 0),
-(10, 9, 1, 1);
-
 -- --------------------------------------------------------
 
 -- 
@@ -100,9 +94,6 @@ CREATE TABLE IF NOT EXISTS `msgqueue` (
 -- Dumping data for table `msgqueue`
 -- 
 
-INSERT INTO `msgqueue` (`mID`, `fromID`, `toID`, `msg`, `sentTime`) VALUES 
-(1, 7, 8, 'corys message', '2008-10-08 23:55:51');
-
 -- --------------------------------------------------------
 
 -- 
@@ -128,7 +119,6 @@ CREATE TABLE IF NOT EXISTS `users` (
 
 INSERT INTO `users` (`uID`, `uFName`, `uLName`, `uEmail`, `uPass`, `uColor`, `uLastActivity`) VALUES 
 (7, 'Cory', 'Gross', 'corygross@hotmail.com', 'dfa9e8660763fd9453cbe56eebff2e39', 'black', '2008-10-12 19:43:13'),
-(8, 'Cory', 'Gross', 'cor', 'e10adc3949ba59abbe56e057f20f883e', 'black', '0000-00-00 00:00:00'),
 (9, 'Bob', 'Villa', 'bv@hotmail.com', 'dfa9e8660763fd9453cbe56eebff2e39', 'black', '2008-10-12 19:43:13'),
 (10, 'Cory', 'Tester', 'corygross@yahoo.com', 'dfa9e8660763fd9453cbe56eebff2e39', 'black', '2008-10-12 19:43:13');
 
