@@ -190,7 +190,7 @@ function getPendingContacts(){
 	new Ajax.Request('./handlers/pendingContacts.php?', {
 		method:'get',
 		onSuccess: function(transport) {	
-			$(pendingContainer).innerHTML = transport.responseText;
+			$('pendingContainer').innerHTML = transport.responseText;
 		},		
 		onFailure: function()
 		{
@@ -282,8 +282,13 @@ Comet.prototype = {
 						if(transport.responseText != ""){
 							//alert(transport.responseText);
 							var response_arr = transport.responseText.split("&^*");
-							receiveNewMessage(response_arr[0],response_arr[1],response_arr[2]);
+							var i = 2;
+							while(i<response_arr.length){
+								receiveNewMessage(response_arr[i-2],response_arr[i-1],response_arr[i]);
+								i = i + 3;
+							}
 						}
+						transport.responseText = "";
 					},
 				
 					//When the request is completed
