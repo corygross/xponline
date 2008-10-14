@@ -31,8 +31,8 @@ require_once "menu.php";
 <td>
 <table style="margin-left:auto; margin-right:0px;">
 <tr>
-<td class="details"><span id="curLineCol">Ln:32 Col:18</span></td>
-<td class="details"><span id="fileName">&nbsp;&nbsp;&nbsp;windows.php</span></td>
+<td class="details"><span id="curLineCol" name="curLineCol">Ln:32 Col:18</span></td>
+<td class="details">&nbsp;&nbsp;&nbsp;<span id="fileName" name="fileName">fileName.php</span></td>
 </tr>
 </table>
 </td>

@@ -11,11 +11,13 @@ function hidemenu(elmnt)
 function newMenuClick()
 {
 	alert("new");
+	changeDocTitle('newFilename.xml');
 }
 
 function openMenuClick()
 {
 	alert("open");
+	changeDocTitle('newFilename.xml');
 }
 
 function uploadMenuClick()
@@ -76,4 +78,19 @@ function copyIconClicked()
 function pasteIconClicked()
 {
 	alert("paste");
+}
+
+function changeDocTitle(title)
+{
+	document.getElementById('fileName').innerHTML = title;
+	document.title = "XPonline | " + title;
+}
+
+var lineCol;
+function updateLineCol(line, col)
+{
+	if(lineCol == null){
+		lineCol = document.getElementById('curLineCol');
+	}
+	lineCol.innerHTML = "Ln:" + line + " Col:" + col;
 }
