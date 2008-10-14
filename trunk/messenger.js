@@ -52,7 +52,6 @@ function fixGroupStates(){
 			else{
 				alert('class not found');
 			}
-			item.className = currentHilites[key];
 		}
 	}
 }
