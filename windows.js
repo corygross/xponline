@@ -161,7 +161,8 @@ function hidePopup(id){
 }
 
 function destroyPopup(id){
-	document.getElementById(id).outerHTML = "";
+	var pop = document.getElementById(id);
+	pop.parentNode.removeChild(pop)
 }
 
 function windowExists(id){
