@@ -41,7 +41,15 @@ function getEvent(e){
 	return e;
 }
 
+var curOpenWindow = null;
 function openPopup(id, title, type){
+	if(type != "chat"){
+		if(curOpenWindow != null){
+			alert("Please close open windows.");
+			return;
+		}
+		curOpenWindow = id;
+	}
 	if(document.getElementById(id) == null){
 		makeNewPopup(id, title, type);
 	}
@@ -70,7 +78,6 @@ var newElm = document.createElement("div");
 newElm.setAttribute('id',popupID);
 newElm.setAttribute('name',popupID);
 newElm.setAttribute("style","position: absolute; width: 300px; display: none; top:"+lastNewTop+"px;left:"+lastNewLeft+"px;");
-//newElm.setAttribute("style","position: absolute; width: 300px; height: 350px; display: none; top:"+lastNewTop+"px;left:"+lastNewLeft+"px;");
 newElm.setAttribute("class","window");
 
 newElm.onmousedown = moveToFront;
@@ -132,16 +139,42 @@ else if(type == 'addContact'){
 newHTML += "<table style='width:100%;'><tr><td style='width:10%;'></td><td style='width:80%;'>Search for a contact:</td><td style='width:10%;'></td></tr>";
 newHTML += "<tr><td></td><td>";
 newHTML += "<div id='search-wrap'>";
-newHTML += "<input name='search-q' id='search-q' type='text' onkeydown='checkTabKey(event)' onkeyup='autosuggest(event)'/><br />";
+newHTML += "<input name='search-q' id='search-q' type='text' onkeydown='checkTabKey(event)' onkeyup='autosuggest(event,\"notFriends\")'/><br />";
 newHTML += "</div><div id='results'></div>";
 newHTML += "</td><td></td></tr>";
 newHTML += "<tr><td>&nbsp;</td><td></td><td></td></tr>";
 newHTML += "<tr><td>&nbsp;</td><td>Note: Before you can chat with a new contact, they must first confirm you as a contact.</td><td></td></tr>";
-newHTML += "<tr><td></td><td align='right'><input type='button' value='Cancel' onClick=\"hidePopup('"+popupID+"');\"/><input type='button' id='btnAddContact' name='btnAddContact' value='Add' disabled='disabled' onClick='addContact();'/></td><td></td></tr>";
+newHTML += "<tr><td></td><td align='right'><input type='button' value='Cancel' onClick=\"destroyPopup('"+popupID+"');\"/><input type='button' id='btnAddContact' name='btnAddContact' value='Add' disabled='disabled' onClick='addContact();'/></td><td></td></tr>";
 newHTML += "</table>";
 }
 else if(type == 'confirmContact'){
 newHTML += "<form name='confirmForm'><div id='pendingContainer' name='pendingContainer'>Retrieving...</div></form>";
+}
+else if(type == 'new_blank'){
+newHTML += "<table style='width:100%;'><tr><td style='width:10%;'></td><td style='width:80%;'>Enter a name for the new file:</td><td style='width:10%;'></td></tr>";
+newHTML += "<tr><td>&nbsp;</td><td><input id='newDocName' name='newDocName' type='text' /></td><td></td></tr>";
+newHTML += "<tr><td>&nbsp;</td><td></td><td></td></tr>";
+newHTML += "<tr><td></td><td align='right'><input type='button' value='Cancel' onClick=\"destroyPopup('"+popupID+"');\"/><input type='button' value='Ok' onClick='newBlankDocument();'/></td><td></td></tr>";
+newHTML += "</table>";
+}
+else if(type == 'open_doc'){
+newHTML += "<div id='openDocContainer' name='openDocContainer'>Retrieving...</div>";
+}
+else if(type == 'grantAccess'){
+newHTML += "<table style='width:100%;'><tr><td style='width:10%;'></td><td style='width:80%;'>Search for a user:</td><td style='width:10%;'></td></tr>";
+newHTML += "<tr><td></td><td>";
+newHTML += "<div id='search-wrap'>";
+newHTML += "<input name='search-q' id='search-q' type='text' onkeydown='checkTabKey(event)' onkeyup='autosuggest(event,\"all\")'/><br />";
+newHTML += "</div><div id='results'></div>";
+newHTML += "</td><td></td></tr>";
+newHTML += "<tr><td>&nbsp;</td><td></td><td></td></tr>";
+newHTML += "<tr><td>&nbsp;</td><td>Select a document:</td><td></td></tr>";
+newHTML += "<tr><td>&nbsp;</td><td><div id='accessDocContainer' name='accessDocContainer'>Retrieving document list...</div></td><td></td></tr>";
+newHTML += "<tr><td>&nbsp;</td><td><form name='grantForm'><input type='radio' name='aLevel' value='r' checked='checked'/>Read<br />";
+newHTML += "<input type='radio' name='aLevel' value='w'/>Write<br />";
+newHTML += "<input type='radio' name='aLevel' value='n'/>None</form></td><td></td></tr>";
+newHTML += "<tr><td></td><td align='right'><input type='button' value='Cancel' onClick=\"destroyPopup('"+popupID+"');\"/><input type='button' value='Grant' onClick='grantAccess();'/></td><td></td></tr>";
+newHTML += "</table>";
 }
 
 newElm.innerHTML = newHTML;
@@ -157,12 +190,17 @@ function makePopupVisible(id) {
 }
 
 function hidePopup(id){
+	//if the window being closed is not a chat window, we do not want to blank the current open window.
+	if(id.indexOf("chat") == -1){
+		curOpenWindow = null;
+	}
 	document.getElementById(id).style.display="none";
 }
 
 function destroyPopup(id){
 	var pop = document.getElementById(id);
-	pop.parentNode.removeChild(pop)
+	pop.parentNode.removeChild(pop);
+	curOpenWindow = null;
 }
 
 function windowExists(id){
