@@ -15,15 +15,22 @@ var http = createObject();
 //The function that calls the server to search
 var selectedItem = -1;
 var lastSearch = "";
-autosuggest = function(ev) 
+var mode;
+autosuggest = function(ev, cur_mode) 
 {
 q = document.getElementById('search-q').value;
+mode = cur_mode;
 
 //Clear the current selected user if something changed
 if(lastSearch != q.trim())
 {
     //userChange("","");
-	selectContact("","");
+	if(mode == "notFriends"){
+		selectContact("","");
+	}
+	else if(mode == "all"){
+		selectUser("","");
+	}
 }
 
 var listHidden = document.getElementById('results').style.display == "none";
@@ -76,7 +83,7 @@ if(q.length < 1)
 
 // Set te random number to add to URL request
 nocache = Math.random();
-http.open('get', 'controls/contact_search/search_contacts.php?q='+q+'&nocache = '+nocache);
+http.open('get', 'controls/contact_search/search_contacts.php?q='+q+'&mode='+mode+'&nocache='+nocache);
 http.onreadystatechange = autosuggestReply;
 http.send(null);
 }
@@ -100,7 +107,12 @@ selectItem = function(name, id)
     document.getElementById('search-q').value = name;
     document.getElementById('results').style.display = "none";
 	//userChange(name, id);
-	selectContact(id, name);
+	if(mode == "notFriends"){
+		selectContact(id, name);
+	}
+	else if(mode == "all"){
+		selectUser(id,name);
+	}
 }
 
 selectItemByKeyPress = function()
@@ -111,7 +123,12 @@ selectItemByKeyPress = function()
 			document.getElementById('search-q').value = data_arr[0];
             document.getElementById('results').style.display = "none";
 			//userChange(data_arr[0],data_arr[1]);
-			selectContact(data_arr[1],data_arr[0]);
+			if(mode == "notFriends"){
+				selectContact(data_arr[1],data_arr[0]);
+			}
+			else if(mode == "all"){
+				selectUser(data_arr[1],data_arr[0]);
+			}
         }
 }
 

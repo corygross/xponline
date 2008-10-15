@@ -10,14 +10,13 @@ function hidemenu(elmnt)
 
 function newMenuClick()
 {
-	alert("new");
-	changeDocTitle('newFilename.xml');
+	openPopup('new_blank','New Document','new_blank');
 }
 
 function openMenuClick()
 {
-	alert("open");
-	changeDocTitle('newFilename.xml');
+	openPopup('open_doc','Open Document','open_doc');
+	getAccessibleDocs();
 }
 
 function uploadMenuClick()
@@ -28,6 +27,12 @@ function uploadMenuClick()
 function downloadMenuClick()
 {
 	alert("download");
+}
+
+function accessMenuClick()
+{
+	openPopup('grantAccess','Grant User Access','grantAccess');
+	getWritableDocs();
 }
 
 function findMenuClick()

@@ -11,6 +11,7 @@ if(isset($_SESSION['uID']) == false || $_SESSION['uID'] == ""){
 <title>XPonline</title>
 <link rel="stylesheet" href="black.css" type="text/css" />
 <script language="javascript" src="prototype.js"></script>
+<script language="javascript" src="documentManagement.js"></script>
 <script language="javascript" src="menu.js"></script>
 <script language="javascript" src="windows.js"></script>
 <script language="javascript" src="bm.js"></script>
@@ -88,7 +89,7 @@ M<br />E<br />S<br />S<br />E<br />N<br />G<br />E<br />R
 </tr>
 <tr>
 <td>
-<div id="waiting_msg" style="text-align:center;">
+<div id="waiting_msg" style="text-align:center;display:none;">
 <img src="images/red-blink.gif" align="middle"/>
 </div>
 </td>

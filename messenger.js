@@ -61,6 +61,9 @@ var contactName = "";
 function selectContact(id, name){
 	contactID = id;
 	contactName = name;
+	if(document.getElementById('btnAddContact') == null){
+		return;
+	}
 	if(contactID == ""){
 		document.getElementById('btnAddContact').disabled = true;
 	}
@@ -140,8 +143,9 @@ function receiveNewMessage(fromID, fromName, message){
 		}
 		else{
 			hiliteContact(fromID,"new");
+			showBlinkerIfNew();
 		}
-	}
+	}	
 	
 	var recBox = document.getElementById('rec'+chatID);
 	var splitName = fromName.split(" ");
@@ -178,11 +182,37 @@ function fixHilites(){
 	}
 }
 
+function showBlinkerIfNew(){
+	var unread = false;
+	for (var key in currentHilites){
+		var item = document.getElementById(key);
+		if(item != null){		
+			if(item.className == "contact_new_msg"){
+				unread = true;
+				break;
+			}
+		}
+	}
+	
+	if(unread == true){
+		document.getElementById('waiting_msg').style.display = "";			
+	}
+	else{
+		document.getElementById('waiting_msg').style.display = "none";
+	}
+}
+
 function openChat(id, name){
 	openPopup('chat'+id, 'Chat with '+name, 'chat');
 	if(document.getElementById('contactItem'+id).className == "contact_new_msg"){
 		hiliteContact(id,"viewed");
 	}
+	showBlinkerIfNew();
+	//scroll to the bottom of the received messages box
+	var recBox = document.getElementById('recchat'+id);	
+	recBox.scrollTop = recBox.scrollHeight;
+	//put the cursor in the send box
+	document.getElementById('sendchat'+id).focus();
 }
 
 function getPendingContacts(){
@@ -195,6 +225,12 @@ function getPendingContacts(){
 		{
 			alert("There was a problem getting your pending contacts.");
 		}		
+	});
+}
+
+function ackMessage(mID){
+	new Ajax.Request('./handlers/ackMessage.php?mID='+mID, {
+		method:'get'		
 	});
 }
 
@@ -245,7 +281,7 @@ new Ajax.PeriodicalUpdater({ success: 'contactList' }, './handlers/updateContact
   });
  }
  
- //This will update the contact list
+//This will update the pending contact button
 function initPendingContactsUpdate(){
 new Ajax.PeriodicalUpdater({ success: 'pendingButton' }, './handlers/updatePendingContactsButton.php',
   {
@@ -255,8 +291,7 @@ new Ajax.PeriodicalUpdater({ success: 'pendingButton' }, './handlers/updatePendi
  }
  
  
- 
- initContactUpdate();
+initContactUpdate();
 initPendingContactsUpdate();
 
 //Create the Comet "object"
@@ -264,7 +299,7 @@ var Comet = Class.create();
 
 //Set the properties and methods of the class
 Comet.prototype = {
-	url:'./server2.php',
+	url:'./handlers/messagePusher.php',
 	noerror:true,
 	initialize: function(){},
 	
@@ -281,10 +316,11 @@ Comet.prototype = {
 						if(transport.responseText != ""){
 							//alert(transport.responseText);
 							var response_arr = transport.responseText.split("&^*");
-							var i = 2;
+							var i = 3;
 							while(i<response_arr.length){
-								receiveNewMessage(response_arr[i-2],response_arr[i-1],response_arr[i]);
-								i = i + 3;
+								receiveNewMessage(response_arr[i-3],response_arr[i-2],response_arr[i-1]);
+								ackMessage(response_arr[i]);
+								i = i + 4;
 							}
 						}
 						transport.responseText = "";
@@ -294,6 +330,7 @@ Comet.prototype = {
 					onComplete:function()
 					{
 						//Immediately reconnect
+						//alert('disconnect');
 						this.comet.connect();  //Connect immeidietly after disconnect (e.g. long polling!)
 					},
 					onInteractive:function(transport)
@@ -316,9 +353,8 @@ Comet.prototype = {
 		{
 		  //$('content').innerHTML += '<div>' + response['msg'] + '</div>';
 		}
-	}
+}
 			
-//				alert("Create the comet instance");
-  var comet = new Comet();
-//			alert("Call the connect method");
+//create the comet instance and connect
+var comet = new Comet();
 comet.connect();
