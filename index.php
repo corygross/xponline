@@ -17,7 +17,9 @@ if(isset($_SESSION['uID']) == false || $_SESSION['uID'] == ""){
 <script language="javascript" src="bm.js"></script>
 <script language="javascript" src="controls/contact_search/suggest_script.js"></script>
 </head>
+
 <body style="margin:0px;padding:0px;">
+
 <table style="width:100%;height:100%;" border="0">
 <tr class="top_row" style="height:32px;">
 <td>
@@ -25,10 +27,13 @@ if(isset($_SESSION['uID']) == false || $_SESSION['uID'] == ""){
 <table style="width:100%;">
 <tr>
 <td>
+
 <?php
 require_once "menu.php";
 ?>
+
 </td>
+
 <td>
 <table style="margin-left:auto; margin-right:0px;">
 <tr>

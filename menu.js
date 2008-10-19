@@ -21,7 +21,10 @@ function openMenuClick()
 
 function uploadMenuClick()
 {
-	alert("upload");
+	//Show the form that will allow for file upload
+	
+	openPopup('upload', 'Upload File ', 'upload');
+//	alert("upload functionality");
 }
 
 function downloadMenuClick()
