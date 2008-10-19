@@ -7,6 +7,7 @@
    <tr><td class="menu" onclick="uploadMenuClick();">Upload New</td></tr>
    <tr><td class="menu" onclick="downloadMenuClick();">Download</td></tr>
    <tr><td class="menu" onclick="accessMenuClick();">Grant Access</td></tr>
+   <tr><td class="menu" onclick="exitMenuClick();">Exit</td></tr>
    </table>
 </td>
 

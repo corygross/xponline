@@ -2,12 +2,12 @@
 session_start();
 
 //Clear session variables
-session_destroy();
 $_SESSION['uID'] = null;
 $_SESSION['uName'] = null;
+session_destroy();
 
 if(isset($_POST['login'])){
-$email = $_POST['email'];
+$email = addslashes($_POST['email']);
 $pass = md5($_POST['pass']);
 
 require_once "dbConnect.php";
@@ -28,4 +28,3 @@ else{
 	header( "Location: login.php" );
 }
 ?>
-validate
