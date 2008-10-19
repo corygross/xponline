@@ -30,6 +30,23 @@ function openDocument(dID, dName)
 {
 	changeDocTitle(dName);
 	//get the document from the server and display it!!!
+	
+	new Ajax.Request('./handlers/getDocumentContents.php?dID=' + dID, {
+		method:'get',
+		onSuccess: function(transport) {
+			if(transport.responseText == "fail"){
+				alert('There was a problem opening the document.  Please try again.');
+			}
+			else{
+				var dText = document.getElementById('docText');
+				dText.value = transport.responseText;
+			}
+		},		
+		onFailure: function()
+		{
+			alert("There was a problem opening the document.  Please try again.");
+		}		
+	});
 }
 
 function selectDocument(id, window)

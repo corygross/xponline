@@ -66,11 +66,7 @@ require_once "menu.php";
 <tr>
 <td>
 <div id="content">
-<?php
-echo "Welcome " . $_SESSION['uName'] . "!";
-?>
-<br /><br />
-The text editor goes in here...
+<textarea id="docText" style="width:99%;height:99%;"></textarea>
 </div>
 </td>
 <td  id="mess2" bgcolor="gray" valign="top">
