@@ -35,6 +35,11 @@ function accessMenuClick()
 	getWritableDocs();
 }
 
+function exitMenuClick()
+{
+	window.location = "logout.php";
+}
+
 function findMenuClick()
 {
 	alert("find");
