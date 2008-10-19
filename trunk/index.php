@@ -66,7 +66,6 @@ require_once "menu.php";
 <tr>
 <td>
 <div id="content">
-<!--<textarea id="docText" style="width:99%;height:99%;"></textarea>-->
 <?php
 require_once "./editor/editor.html";
 ?>
