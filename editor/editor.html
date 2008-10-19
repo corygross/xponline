@@ -2,13 +2,14 @@
 
 /////////////////////////////////////////////////////
 ////////// KNOWN ISSUES SO FAR ///////////////////
-//  - Tab key is not captured correctly (moves to next tab space in overall document rather than types 4 spaces)
-//  - Typing a single quote starts a "quick find" in firefox.  Have not yet prevented this from occurring.
+//  - 
+//  - 
 //  - Using the UP/DOWN arrow keys to move the cursor 'thru' lines with varying lengths does not behave as a user would expect
-//  - The content window scrolls at a different rate than the cursor, so often the cursor disappears from the screen in a long document
+//  - 
 //  - NOT YET IMPLEMENTED:
 //	--> CTL-END, CTL-HOME, PAGEUP, PAGEDWN
 //	--> Handling selection of text (with mouse OR keyboard)
+//	--> Auto-scrolling to follow cursor
 //////////////////////////////////////////////////
 
 ////////////////////////////////////////////////////
@@ -23,6 +24,12 @@
 //
 //  ISSUE : Pressing "ENTER" breaks the app.
 //  SOLUTION : Correctly implemented ENTER-key functionality in the typeSpecial function.  Required an update to the textDocument object, outlined above
+//
+//  ISSUE :  Typing a single quote starts a "quick find" in firefox.  Have not yet prevented this from occurring.
+//  ISSUE :  Tab key is not captured correctly (moves to next tab space in overall document rather than types 4 spaces)
+//  ISSUE :  The content window scrolls at a different rate than the cursor, so often the cursor disappears from the screen in a long document
+//  SOLUTION : Adjusted the <body> tag in editableContent.html to read <body onkeypress="return false;"> in order to prevent the event from bubbling past the doc
+//			Miraculously, it doesn't break text insertion!  Lucky break!
 ///////////////////////////////////////////////////
 
 /**********************************************/
@@ -114,6 +121,12 @@ function textDocument()
 var myIFrame;
 var mainDoc;
 
+// CSS related constants
+var FONT_WIDTH = 8;
+var FONT_HEIGHT = 17;
+var PADDING_TOP = 8;
+var PADDING_LEFT = 8;
+
 // Text document container
 var XPODoc = new textDocument();
 
@@ -182,8 +195,8 @@ function getMouseY() {
 // based on the given parameters representing mouseX,Y
 function deriveCursor(paramMouseX, paramMouseY) {
 	// Calculate line and column number based on mouse position
-	var currow = Math.floor((mouseY - 8)/16);
-	var curcol = Math.floor((mouseX - 8)/8);
+	var currow = Math.floor((mouseY - PADDING_TOP)/FONT_HEIGHT);
+	var curcol = Math.floor((mouseX - PADDING_LEFT)/FONT_WIDTH);
 	// Perform sanity check on calculated values:
 	// If the calculated line is below the last line, then set cursor at last character in document
 	if (currow > XPODoc.getDocumentLength()-1) {
@@ -209,6 +222,12 @@ function getCursorLine() {
 }
 function getCursorColumn() {
 	return cursorColumn;
+}
+function getScrollOffsetX() {
+	return myIFrame.contentWindow.pageXOffset;
+}
+function getScrollOffsetY() {
+	return myIFrame.contentWindow.pageYOffset;
 }
 
 
@@ -393,7 +412,6 @@ function type( paramEvent ) {
 	if ( paramEvent.charCode != 0 ) typeCharacter( paramEvent.charCode );
 	else typeSpecial( paramEvent.keyCode );	
 }
-
 // This function is responsible for text input
 function typeCharacter( paramCharCode ) {
 	var tempCurrentLine = new Array();
@@ -467,6 +485,24 @@ function refreshDocument() {
 		else clearFormatting( l );
 	}
 }
+// This function will perform auto-scrolling of the IFrame to keep the cursor in view at all times
+function adjustScroll() {
+	// TODO: COMMENT THIS FUNCTION
+	var frameWidth = myIFrame.contentWindow.innerWidth;
+	var frameHeight = myIFrame.contentWindow.innerHeight;
+	var cursorDocOffsetX = (cursorColumn*FONT_WIDTH) + PADDING_LEFT;
+	var cursorDocOffsetY = (cursorLine*FONT_HEIGHT) + PADDING_TOP;
+	var visibleEdgeX = getScrollOffsetX()+frameWidth;
+	var visibleEdgeY = getScrollOffsetY()+frameHeight;
+	var scrollAmountX=0;
+	var scrollAmountY=0;
+	
+	if (cursorDocOffsetX>visibleEdgeX) scrollAmountX=cursorDocOffsetX-visibleEdgeX+100;
+	else if (cursorDocOffsetX<getScrollOffsetX()) scrollAmountX=cursorDocOffsetX-getScrollOffsetX()-100;
+	if (cursorDocOffsetY>visibleEdgeY) scrollAmountY=cursorDocOffsetY-visibleEdgeY+100;
+	else if (cursorDocOffsetY<getScrollOffsetY()) scrollAmountY=cursorDocOffsetY-getScrollOffsetY()-100;
+	myIFrame.contentWindow.scrollBy(scrollAmountX, scrollAmountY);
+}
 
 
 
@@ -487,7 +523,7 @@ function init() {
 	cursorColumn = 0;
 
 	myIFrame.contentWindow.document.addEventListener("click",function(e){clearFormatting(cursorLine);captureMousePos(e);deriveCursor();renderCursor();}, true);
-	myIFrame.contentWindow.document.addEventListener("keypress",function(e){clearFormatting(cursorLine);type(e);renderCursor();}, true);
+	myIFrame.contentWindow.document.addEventListener("keypress",function(e){clearFormatting(cursorLine);type(e);renderCursor();adjustScroll();}, true);
 
 	//*****Populate our data structure***********
 	var curline = "";
@@ -503,7 +539,11 @@ function loadNewDoc(docText){
 		XPODoc.appendLine( textArr[i] );
 	}
 	//********** Done populating data structure **********
+	
+	// Render the entire document's HTML
 	refreshDocument();
+	// Enable immediate editing
+	myIFrame.contentWindow.focus();
 }
 
 </script>
