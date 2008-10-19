@@ -1,5 +1,3 @@
-<html>
-<head>
 <script type="text/javascript">
 
 /////////////////////////////////////////////////////
@@ -51,6 +49,10 @@ function textDocument()
 	// This function adds a line to the end of the document
 	this.appendLine = function( paramText ) {
 		this.insertLine( this.getDocumentLength(), paramText );
+	}
+	//  Clears the contents of the document
+	this.blankDocument = function() {
+		this.document = new Array();
 	}
 	// Returns the length of the document in number of lines
 	this.getDocumentLength = function() {
@@ -455,11 +457,12 @@ function refreshDocument() {
 	while ( myDoc.firstChild ) {
 		myDoc.removeChild( myDoc.firstChild );
 	}
+	
 	for (l in XPODoc.document) {
 		var newLine = myIFrame.contentWindow.document.createElement('div');
 		newLine.setAttribute('id', XPODoc.getLineId(l) );
 		newLine.setAttribute('class', "line");		// RELATED TO FIX OF ISSUE #1
-		myDoc.appendChild( newLine );
+		myDoc.appendChild( newLine );				
 		if ( l == cursorLine ) {renderCursor();}
 		else clearFormatting( l );
 	}
@@ -490,23 +493,18 @@ function init() {
 	var curline = "";
 	var curlineName = "";
 	var nextline = 0;
-	
-	var rawRead = myIFrame.contentWindow.document.getElementById("entireDocument").getElementsByTagName("div");
-	var count = 0;			// This is sortof a hack...
-	for (i in rawRead) {
-		if (i != count) break;	// This is part II of the hack.  There are a few non-div items which 
-		count++;				// are given by getElementsByTagName, but i changes to non-numeric values 
-								// for those elements.  Anyway, this works in Firefox at least..
-		XPODoc.appendLine( rawRead[i].innerHTML );
+}
+// FIXME:  ^^^ REALLY THIS SUCKS
+
+function loadNewDoc(docText){
+	XPODoc.blankDocument();
+	var textArr = docText.split(/\r\n|\r|\n/);
+	for(var i=0; i < textArr.length; i++ ){
+		XPODoc.appendLine( textArr[i] );
 	}
 	//********** Done populating data structure **********
 	refreshDocument();
 }
-// FIXME:  ^^^ REALLY THIS SUCKS
 
 </script>
-</head>
-<body onload="init()" >
-<iframe id="myI" src="editableContent.html" width="100%"></iframe><br />
-</body>
-</html>
+<iframe id="myI" src="./editor/editableContent.html" style="width:100%;height:100%;"></iframe><br />
