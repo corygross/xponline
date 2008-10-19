@@ -18,7 +18,7 @@ if(isset($_SESSION['uID']) == false || $_SESSION['uID'] == ""){
 <script language="javascript" src="controls/contact_search/suggest_script.js"></script>
 </head>
 
-<body style="margin:0px;padding:0px;">
+<body style="margin:0px;padding:0px;" onload="init()">
 
 <table style="width:100%;height:100%;" border="0">
 <tr class="top_row" style="height:32px;">
@@ -66,7 +66,10 @@ require_once "menu.php";
 <tr>
 <td>
 <div id="content">
-<textarea id="docText" style="width:99%;height:99%;"></textarea>
+<!--<textarea id="docText" style="width:99%;height:99%;"></textarea>-->
+<?php
+require_once "./editor/editor.html";
+?>
 </div>
 </td>
 <td  id="mess2" bgcolor="gray" valign="top">
