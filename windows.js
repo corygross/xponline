@@ -107,7 +107,7 @@ function makeNewPopup(id, title, type)
 		newHTML += "<textarea id='send"+popupID+"' name='send"+popupID+"' style='width:98%;' rows='4' onkeyup=\"checkEnter(event,'"+popupID+"');\"></textarea>";
 	}
 	else
-	if(type = 'upload')
+	if(type == 'upload')
 	{
 		//Create the form that will allow file selection
 		newHTML +="<iframe id='foo' name='foo' style='display:none'></iframe>";
