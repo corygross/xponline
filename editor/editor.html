@@ -1,0 +1,512 @@
+<html>
+<head>
+<script type="text/javascript">
+
+/////////////////////////////////////////////////////
+////////// KNOWN ISSUES SO FAR ///////////////////
+//  - Tab key is not captured correctly (moves to next tab space in overall document rather than types 4 spaces)
+//  - Typing a single quote starts a "quick find" in firefox.  Have not yet prevented this from occurring.
+//  - Using the UP/DOWN arrow keys to move the cursor 'thru' lines with varying lengths does not behave as a user would expect
+//  - The content window scrolls at a different rate than the cursor, so often the cursor disappears from the screen in a long document
+//  - NOT YET IMPLEMENTED:
+//	--> CTL-END, CTL-HOME, PAGEUP, PAGEDWN
+//	--> Handling selection of text (with mouse OR keyboard)
+//////////////////////////////////////////////////
+
+////////////////////////////////////////////////////
+/////////// RESOLVED ISSUES SO FAR /////////////////
+//  ISSUE : When typing, it is not currently possible to have two consecutive spaces, for some odd reason...
+//  		---- RELATED :  When placing the cursor on an existing space, typing another space makes the cursor disappear and does not add more spaces
+//  SOLUTION : In the HTML "wrapper" of the document being edited, a CSS style of 'white-space:pre' needs to be applied.
+//
+//  ISSUE : Placing the cursor at the last position of the line makes the cursor disappear (although it still works)
+//  SOLUTION <<OUTDATED>>: Added a line in the 'renderCursor' function, which adds a temporary space to the line so that the cursor can be rendered. 
+//  SOLUTION 2 : added BUGFIX_SPACE function to textDocument object, and made cursorColumn-related code compatible to this change
+//
+//  ISSUE : Pressing "ENTER" breaks the app.
+//  SOLUTION : Correctly implemented ENTER-key functionality in the typeSpecial function.  Required an update to the textDocument object, outlined above
+///////////////////////////////////////////////////
+
+/**********************************************/
+/************ CUSTOM DATA TYPES ****************/
+
+// Data structure to hold unformatted document
+function textDocument() 
+{
+	//////////////////////////////////////////////////
+	////////////// MEMBER VARIABLES ////////////////
+	
+	// Sub-data structure for each lineId,lineText pair
+	this.line = function( paramLineId, paramLineText )
+	{
+		this.id = paramLineId;
+		this.text = paramLineText;
+	}
+	this.document = new Array();		// This is to be an array of lines
+	this.uniqueNameCounter = 0;		// This variable is used to provide unique id's to each line
+	
+	//////////////////////////////////////////////////
+	////////////// MEMBER FUNCTIONS ///////////////
+	
+	// This function adds a line to the end of the document
+	this.appendLine = function( paramText ) {
+		this.insertLine( this.getDocumentLength(), paramText );
+	}
+	// Returns the length of the document in number of lines
+	this.getDocumentLength = function() {
+		return this.document.length;
+	}
+	// Returns the length of the specified line
+	this.getLineLength = function( paramLineNum ) {
+		if ( paramLineNum < this.getDocumentLength() ) return this.getLineText( paramLineNum ).length;
+		else return false;
+	}
+	// Returns the id of the specified line
+	this.getLineId = function( paramLineNum ) {
+		if ( paramLineNum < this.document.length ) return this.document[paramLineNum].id;
+	}
+	// Returns the text of the specified line
+	this.getLineText = function( paramLineNum ) {
+		if ( paramLineNum < this.getDocumentLength() ) {
+			return this.document[paramLineNum].text;
+		}
+		else return false;
+	}
+	// Insert a line with the given text into the document at the specified line number
+	this.insertLine = function( paramLineNum, paramText ) {
+		paramText = this.BUGFIX_SPACE( paramText );
+		if ( paramLineNum <= this.getDocumentLength() && paramLineNum >= 0 ) {
+			this.document.splice( paramLineNum, 0, new this.line( "line"+this.uniqueNameCounter, paramText ) );
+			this.uniqueNameCounter++;
+		} else return false;
+	}
+	// Remove a line, specified by line number
+	this.removeLine = function( paramLineNum ) {
+		if ( paramLineNum <= this.getDocumentLength() && paramLineNum >= 0 ) this.document.splice( paramLineNum, 1 );
+		else return false;
+	}
+	/* NOTE: setLineId is deliberately omitted.  Id's shall be handled internally by the document structure during line creation only */
+	// Set the text of a specified line to equal paramText
+	this.setLineText = function( paramLineNum, paramText ) {
+		paramText = this.BUGFIX_SPACE( paramText );
+		if ( paramLineNum < this.getDocumentLength() ) {
+			this.document[paramLineNum].text = paramText;
+		}
+		else return false;
+	}
+	// BUGFIX FUNCTION.  Returns paramText, after ensuring the last char is a space character
+	this.BUGFIX_SPACE = function( paramText ) {
+		// FIX RENDERING ISSUE FOR HTML: If last character of a line is not a space character, then append one.
+		// This fixes 2 things: 1.) allows the cursor to be at the 'true' end of the line
+		//                      2.) fixes bug where blank lines are not rendered
+		if ( paramText.charAt(paramText.length-1) != ' ' ) paramText = paramText + ' ';
+		return paramText;
+	}	
+}
+
+
+/**********************************************/
+/********** DECLARE GLOBAL VARIABLES **********/
+
+// Browser(HTML) document related globals
+var myIFrame;
+var mainDoc;
+
+// Text document container
+var XPODoc = new textDocument();
+
+// Mouse and cursor related globals
+var mouseX;
+var mouseY;
+var cursorLine;
+var cursorColumn;
+var selectionAnchorLine;
+var selectionAnchorColumn;
+
+// Text-editing related global flags (to be treated as BOOLEAN variables)
+var isSelection;
+var isInsertMode;
+var isShiftDown;
+var isCtlDown;
+var isAltDown;
+
+// Global constants
+// Special keys
+var BACKSPACEKEY = 8;
+var TABKEY = 9;
+var ENTERKEY = 13;
+var CAPSLOCKKEY = 20;
+var DELETEKEY = 46;
+var SPACEKEY = 32;
+var PAGEUPKEY = 33;
+var PAGEDOWNKEY = 34;
+var ENDKEY = 35;
+var HOMEKEY = 36;
+var LEFTARROWKEY = 37;
+var UPARROWKEY = 38;
+var RIGHTARROWKEY = 39;
+var DOWNARROWKEY = 40;
+var INSERTKEY = 45;
+
+// Input modes
+var INSERT = 0;
+var OVERWRITE = 1;
+
+// Other GUI related handles
+var cursor_line_box;
+var cursor_column_box;
+var mouse_x_box;
+var mouse_y_box;
+
+/**********************************************/
+/**** MOUSE AND CURSOR ACCESSOR FUNCTIONS *****/
+
+// These functions are self-explanatory
+function captureMousePos(e) {
+	mouseX = e.pageX;
+	mouseY = e.pageY;
+}
+function getMouseCoords() {
+	return [mouseX, mouseY];
+}
+function getMouseX() {
+	return mouseX;
+}
+function getMouseY() {
+	return mouseY;
+}
+
+// This function calculates the position of the cursor 
+// based on the given parameters representing mouseX,Y
+function deriveCursor(paramMouseX, paramMouseY) {
+	// Calculate line and column number based on mouse position
+	var currow = Math.floor((mouseY - 8)/16);
+	var curcol = Math.floor((mouseX - 8)/8);
+	// Perform sanity check on calculated values:
+	// If the calculated line is below the last line, then set cursor at last character in document
+	if (currow > XPODoc.getDocumentLength()-1) {
+		currow = XPODoc.getDocumentLength()-1;
+		curcol = XPODoc.getLineLength( XPODoc.getDocumentLength()-1 );
+	}
+	// If the calculated cursor is beyond the first or last character in a line, 
+	// then set the cursor to the first or last character, respectively
+	else {
+		if ( curcol < 0 ) curcol = 0;
+		if ( curcol >= XPODoc.getLineLength(currow) ) curcol = XPODoc.getLineLength(currow)-1;
+	}
+	// Store the calculated values
+	cursorLine = currow;
+	cursorColumn = curcol;
+}
+// These functions are self-explanatory again
+function getCursor() {
+	return [cursorLine,cursorColumn];
+}
+function getCursorLine() {
+	return cursorLine;
+}
+function getCursorColumn() {
+	return cursorColumn;
+}
+
+
+
+/**********************************************/
+/******** SELECTION RELATED FUNCTIONS *********/
+
+// These functions returns the position of the selection anchor
+function getSelectionAnchor() {
+	return [selectionAnchorLine, selectionAnchorColumn];
+}
+function getSelectionAnchorLine() {
+	return selectionAnchorLine;
+}
+function getSelectionAnchorColumn() {
+	return selectionAnchorColumn;
+}
+// This function sets selection mode 'on', and furthermore sets the 
+// selectionAnchor position to the current cursor position
+function setSelection() {
+	selectionAnchorLine = cursorLine;
+	selectionAnchorColumn = cursorColumn;
+	isSelection = true;
+}
+// This function sets selection mode 'off'.
+function resetSelection() {
+	isSelection = false;
+}
+
+
+
+/**********************************************/
+/******** USER INPUT RELATED FUNCTIONS ********/
+
+// This function is responsible for recalculating the cursor position
+// after a command to move the cursor has been issued. It takes as a 
+// parameter a DIRECTION, of which valid values are defined above in
+// the global variable declarations
+function typeSpecial(paramKEYCODE) {
+
+	switch ( paramKEYCODE ) {
+	
+		case LEFTARROWKEY: 
+			// If we are at the first char of the first line do nothing
+			// If we are at the first char of any other line, wrap to the last char of the previous line
+			// Otherwise, simply move left
+			if ( cursorColumn == 0 && cursorLine == 0 ) break;
+			if ( cursorColumn == 0 ) {
+				cursorLine--;
+				cursorColumn = XPODoc.getLineLength(cursorLine)-1;
+			}
+			else cursorColumn--;			
+			break;
+			
+		case RIGHTARROWKEY:
+			// If we are at the last char of the last line, do nothing
+			// If we are at the last char of any other line, wrap to the first char of the next line
+			// Otherwise, simply move right
+			if ( cursorColumn == XPODoc.getLineLength(cursorLine)-1 && cursorLine == XPODoc.getDocumentLength()-1 ) break;
+			if ( cursorColumn == XPODoc.getLineLength(cursorLine)-1 ) {
+				cursorLine++;
+				cursorColumn = 0;
+			}
+			else cursorColumn++;
+			break;
+			
+		case UPARROWKEY:
+			// If we are on the first line, move to first char of line.
+			// Otherwise, move up. If we end up out of range of the line, move to the last char of the line
+			if ( cursorLine == 0 ) cursorColumn = 0;
+			else if ( cursorColumn > XPODoc.getLineLength(--cursorLine) ) cursorColumn = XPODoc.getLineLength(cursorLine)-1;
+			break;
+			
+		case DOWNARROWKEY:
+			// If we are on the last line, move to last char of line.
+			// Otherwise, move down. If we end up out of range of the line, move to the last char of the line
+			if ( cursorLine == XPODoc.getDocumentLength()-1 ) cursorColumn = XPODoc.getLineLength(cursorLine)-1;
+			else if ( cursorColumn > XPODoc.getLineLength(++cursorLine) ) cursorColumn = XPODoc.getLineLength(cursorLine)-1;
+			break;
+			
+		case ENDKEY:
+			// Move to the last char of the current line
+			cursorColumn = XPODoc.getLineLength(cursorLine)-1;
+			break;
+			
+		case HOMEKEY:
+			// Move to the first char of the current line
+			cursorColumn = 0;
+			
+		case PAGEUPKEY:
+			// Move the cursor up a number of time relative to the current editing window's height
+			// TODO: IMPLEMENT THIS
+			break;
+					
+		case PAGEDOWNKEY:
+			// Move the cursor down a number of times relative to the current editing window's height
+			// TODO: IMPLEMENT THIS
+			break;
+			
+		case BACKSPACEKEY:
+			// If we are on the first char of the first line, do nothing.
+			// If we are on the first char of any other line, backspace removes the "newline character"
+			// -- which doesn't exist in our implementation.  We simulate this removal by merging lines.
+			// Otherwise, we simply remove the previous char in the current line
+			if ( cursorLine == 0 && cursorColumn == 0 ) break;
+			if ( cursorColumn == 0 ) {
+				// Merge the two lines, and remove the original line
+				cursorColumn = XPODoc.getLineLength( cursorLine-1 );	// Place cursor at end of prior line
+				// Perform text merge into prior line
+				XPODoc.setLineText( cursorLine-1, XPODoc.getLineText( cursorLine-1 ) + XPODoc.getLineText( cursorLine ) );
+				
+				// FIXME: HACK:  BAD FORM!  The following lines promote tight coupling between GUI and backend!  ARRRGGGGHHHHH! 
+				var removeMe = myIFrame.contentWindow.document.getElementById(XPODoc.getLineId( cursorLine ));
+				removeMe.parentNode.removeChild(removeMe);
+				
+				// Remove the line from our data structure
+				XPODoc.removeLine( cursorLine );
+				// Decrement cursorLine
+				cursorLine--;
+			} else {
+				// "Remove" the character prior to cursorColumn, and decrement cursorColumn
+				var tempText = XPODoc.getLineText( cursorLine );
+				XPODoc.setLineText( cursorLine, tempText.substring(0,cursorColumn-1) + tempText.substring(cursorColumn--) );
+			}
+			break;
+			
+		case DELETEKEY:
+			// If we are at the last char of the last line, do nothing
+			// If we are at the last char of any other line, we remove the 'newline character', thus merging the current line with the next line
+			// Otherwise, we simply remove the char at the cursor position
+			if ( cursorColumn == XPODoc.getLineLength( XPODoc.getDocumentLength()-1 )-1 && cursorLine == XPODoc.getDocumentLength()-1 ) break;
+			if ( cursorColumn == XPODoc.getLineLength( cursorLine )-1 ) {
+				// Merge the next line into the current line
+				XPODoc.setLineText( cursorLine, XPODoc.getLineText(cursorLine) + XPODoc.getLineText(cursorLine+1) );
+				
+				// FIXME: HACK:  BAD FORM!  The following lines promote tight coupling between GUI and backend!  ARRRGGGGHHHHH! 
+				var removeMe = myIFrame.contentWindow.document.getElementById(XPODoc.getLineId( cursorLine+1 ));
+				removeMe.parentNode.removeChild(removeMe);
+				
+				// Remove the line in question from our data structure
+				XPODoc.removeLine( cursorLine+1 );
+			} else {
+				// "Remove" the character at the cursorColumn position
+				var tempText = XPODoc.getLineText( cursorLine );
+				XPODoc.setLineText( cursorLine, tempText.substring(0,cursorColumn) + tempText.substring(cursorColumn+1) );
+			}
+			break;
+			
+		case ENTERKEY:
+			// FIXME:  BROKEN!
+			// When we press the enter key, we need to insert a new line into the document
+			// We need to insert a new line following the current line, which contains the current line's text starting from the cursor
+			XPODoc.insertLine( cursorLine+1, XPODoc.getLineText( cursorLine ).substring( cursorColumn ) );
+			XPODoc.setLineText( cursorLine, XPODoc.getLineText( cursorLine ).substring( 0, cursorColumn ) );
+
+			// TODO: FIXME: HACK:  Need to make the above change visible in the GUI
+			clearFormatting( cursorLine );
+			var myDoc = myIFrame.contentWindow.document;
+			var addMe = myDoc.createElement('div');
+			addMe.setAttribute('id', XPODoc.getLineId( cursorLine+1 ) );
+			addMe.setAttribute('class', "line");
+			myDoc.getElementById("entireDocument").insertBefore( addMe, myDoc.getElementById( XPODoc.getLineId( cursorLine+2 ) ) );
+				
+			cursorLine++;
+			cursorColumn = 0;
+			break;
+	}
+} // END typeSpecial(paramKEY)
+
+// This function toggles the InsertMode flag (representing Insert or Overwrite)
+function toggleInputMode() {
+	if ( isInsertMode ) isInsertMode = false;
+	else isInsertMode = true;
+}
+// This explicitly sets whether Insert Mode or Overwrite Mode is active
+function setInputMode( paramMODE ) {
+	isInsertMode = paramMODE;
+}
+// This function is responsible for analyzing a keyPressEvent and subsequently
+// executing the appropriate function, based on the charCode
+function type( paramEvent ) {
+	if ( paramEvent.charCode != 0 ) typeCharacter( paramEvent.charCode );
+	else typeSpecial( paramEvent.keyCode );	
+}
+
+// This function is responsible for text input
+function typeCharacter( paramCharCode ) {
+	var tempCurrentLine = new Array();
+	tempCurrentLine.push(XPODoc.getLineText(cursorLine).substring(0,cursorColumn));
+	tempCurrentLine.push(XPODoc.getLineText(cursorLine).substr(cursorColumn, 1));
+	tempCurrentLine.push(XPODoc.getLineText(cursorLine).substring(cursorColumn+1));
+	
+	// Insert character
+	tempCurrentLine[1]=String.fromCharCode(paramCharCode) + tempCurrentLine[1];
+	
+	// Update cursor
+	cursorColumn++;
+	
+	// Commit changes
+	XPODoc.setLineText( cursorLine, tempCurrentLine.join("") );
+}
+
+
+
+/*************************************************/
+/**** LINE MANAGEMENT / DOCUMENT ORGANIZATION ****/
+
+
+
+/**********************************************/
+/**** GUI RELATED / GUI SPECIFIC FUNCTIONS ****/
+
+// This function diplays the mouse position in the GUI
+function displayMousePos() {
+	mouse_x_box.value = mouseX;
+	mouse_y_box.value = mouseY;
+}
+// This function displays the cursor position in the GUI
+function displayCursorPos() {
+	cursor_line_box.value = cursorLine;
+	cursor_column_box.value = cursorColumn;
+}
+// This function clears the formatting of the line specified by paramLineNumber
+function clearFormatting ( paramLineNum ) {
+	myIFrame.contentWindow.document.getElementById( XPODoc.getLineId(paramLineNum) ).innerHTML = XPODoc.getLineText(paramLineNum);
+}
+// This function renders the cursor in the document. 
+function renderCursor() {
+	// Slice 'n dice the line to isolate the cursor
+	var tempCurrentLine = new Array();
+	tempCurrentLine.push(XPODoc.getLineText(cursorLine).substring(0,cursorColumn));
+	tempCurrentLine.push(XPODoc.getLineText(cursorLine).substr(cursorColumn, 1));
+	tempCurrentLine.push(XPODoc.getLineText(cursorLine).substring(cursorColumn+1));
+	// Apply formatting
+//	if ( tempCurrentLine[1].length == 0 ) tempCurrentLine[1]=" ";  // <--- FIX#2
+	tempCurrentLine[1] = "<font style='BACKGROUND-COLOR: red'>" + tempCurrentLine[1] + "</font>";
+	// display new formatting
+	try {
+		myIFrame.contentWindow.document.getElementById( XPODoc.getLineId(cursorLine) ).innerHTML = tempCurrentLine.join("");
+	}
+	catch (e) { alert("line not found!"); }
+}
+// This function re-renders the entire document
+function refreshDocument() {
+	var myDoc = myIFrame.contentWindow.document.getElementById("entireDocument");
+	while ( myDoc.firstChild ) {
+		myDoc.removeChild( myDoc.firstChild );
+	}
+	for (l in XPODoc.document) {
+		var newLine = myIFrame.contentWindow.document.createElement('div');
+		newLine.setAttribute('id', XPODoc.getLineId(l) );
+		newLine.setAttribute('class', "line");		// RELATED TO FIX OF ISSUE #1
+		myDoc.appendChild( newLine );
+		if ( l == cursorLine ) {renderCursor();}
+		else clearFormatting( l );
+	}
+}
+
+
+
+/********************************************/
+/********** INITIALIZATION FUNCTION *********/
+// FIXME:  I SUCK
+function init() {
+	myIFrame = document.getElementById("myI");
+	mainDoc = document;
+
+	mouse_x_box = document.getElementById("mX");
+	mouse_y_box = document.getElementById("mY");
+	cursor_line_box = document.getElementById("cL");
+	cursor_column_box = document.getElementById("cC");
+	
+	
+	cursorLine = 0;
+	cursorColumn = 0;
+
+	myIFrame.contentWindow.document.addEventListener("click",function(e){clearFormatting(cursorLine);captureMousePos(e);deriveCursor();renderCursor();}, true);
+	myIFrame.contentWindow.document.addEventListener("keypress",function(e){clearFormatting(cursorLine);type(e);renderCursor();}, true);
+
+	//*****Populate our data structure***********
+	var curline = "";
+	var curlineName = "";
+	var nextline = 0;
+	
+	var rawRead = myIFrame.contentWindow.document.getElementById("entireDocument").getElementsByTagName("div");
+	var count = 0;			// This is sortof a hack...
+	for (i in rawRead) {
+		if (i != count) break;	// This is part II of the hack.  There are a few non-div items which 
+		count++;				// are given by getElementsByTagName, but i changes to non-numeric values 
+								// for those elements.  Anyway, this works in Firefox at least..
+		XPODoc.appendLine( rawRead[i].innerHTML );
+	}
+	//********** Done populating data structure **********
+	refreshDocument();
+}
+// FIXME:  ^^^ REALLY THIS SUCKS
+
+</script>
+</head>
+<body onload="init()" >
+<iframe id="myI" src="editableContent.html" width="100%"></iframe><br />
+</body>
+</html>
