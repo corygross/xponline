@@ -1,4 +1,5 @@
 <table style="margin-left:0px; margin-right:auto;">
+
 <tr>
 <td class="menu_item" onmouseover="showmenu('file_menu')" onmouseout="hidemenu('file_menu')">File&nbsp;<img src="images/arrow.gif"/><br />
    <table class="menu" id="file_menu" width="160px">

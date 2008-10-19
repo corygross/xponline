@@ -1,8 +1,10 @@
 <?php
 session_start();
 require_once "../dbConnect.php";
+$uID = "";
 
-$uID = $_SESSION['uID'];
+if(isset($_SESSION['uID'])) { $uID = $_SESSION['uID']; }
+//$uID = $_SESSION['uID'];
 
 if($uID == ""){
 	echo "Please log in.";

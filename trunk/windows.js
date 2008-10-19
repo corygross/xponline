@@ -50,6 +50,10 @@ function openPopup(id, title, type){
 		}
 		curOpenWindow = id;
 	}
+	if(type == "upload")
+	{
+		
+	}
 	if(document.getElementById(id) == null){
 		makeNewPopup(id, title, type);
 	}
@@ -61,70 +65,94 @@ function openPopup(id, title, type){
 var windowCount = 0;
 var lastNewTop = 0;
 var lastNewLeft = 100;
-function makeNewPopup(id, title, type){
-//var popupID = "mypopup" + windowCount;
-var popupID = id;
-windowCount++;
+function makeNewPopup(id, title, type)
+{
+	//var popupID = "mypopup" + windowCount;
+	var popupID = id;
+	windowCount++;
 
-if(lastNewTop == 0 || lastNewTop > 250){
-	lastNewTop = 100;
-}
-else{
-	lastNewTop += 15;	
-}
-lastNewLeft += 15;
+	if(lastNewTop == 0 || lastNewTop > 250)
+	{
+		lastNewTop = 100;
+	}
+	else
+	{
+		lastNewTop += 15;	
+	}
+	lastNewLeft += 15;
 
-var newElm = document.createElement("div");
-newElm.setAttribute('id',popupID);
-newElm.setAttribute('name',popupID);
-newElm.setAttribute("style","position: absolute; width: 300px; display: none; top:"+lastNewTop+"px;left:"+lastNewLeft+"px;");
-newElm.setAttribute("class","window");
+	var newElm = document.createElement("div");
+	newElm.setAttribute('id',popupID);
+	newElm.setAttribute('name',popupID);
+	newElm.setAttribute("style","position: absolute; width: 300px; display: none; top:"+lastNewTop+"px;left:"+lastNewLeft+"px;");
+	newElm.setAttribute("class","window");
 
-newElm.onmousedown = moveToFront;
+	newElm.onmousedown = moveToFront;
 
-//an IE fix
-var ua = navigator.userAgent.toLowerCase();
-if((ua.indexOf("msie") != -1)){
-newElm.style.setAttribute("cssText","position: absolute; width: 300px; display: none; top:"+lastNewTop+"px;left:"+lastNewLeft+"px;",0);
-newElm.className = "window";
-}
+	//an IE fix
+	var ua = navigator.userAgent.toLowerCase();
+	if((ua.indexOf("msie") != -1)){
+		newElm.style.setAttribute("cssText","position: absolute; width: 300px; display: none; top:"+lastNewTop+"px;left:"+lastNewLeft+"px;",0);
+		newElm.className = "window";
+	}
 
-var newHTML = "";
-newHTML += "<div class='window_head' onmousedown=\"grab('" + popupID + "', event);\">";
-newHTML += "<table style='width:100%;'><tr style='width:100%;'><td style='width:10%;'></td><td style='width:80%;'>"+title+"</td><td class='window_min' onClick=\"hidePopup('"+popupID+"')\">&#8211;</td></tr></table></div>";
+	var newHTML = "";
+	newHTML += "<div class='window_head' onmousedown=\"grab('" + popupID + "', event);\">";
+	newHTML += "<table style='width:100%;'><tr style='width:100%;'><td style='width:10%;'></td><td style='width:80%;'>"+title+"</td><td class='window_min' onClick=\"hidePopup('"+popupID+"')\">&#8211;</td></tr></table></div>";
 
-if(type == 'chat'){
-newHTML += "<textarea id='rec"+popupID+"' name='rec"+popupID+"' style='width: 98%;' rows='12' readonly='readonly'></textarea>";
-newHTML += "<br/>";
-newHTML += "<textarea id='send"+popupID+"' name='send"+popupID+"' style='width:98%;' rows='4' onkeyup=\"checkEnter(event,'"+popupID+"');\"></textarea>";
-}
-else if(type == 'addBM'){
-newHTML += "<form name='addBMForm'><table style='width:100%;'><tr><td style='width:10%;'></td><td style='width:80%;'>Select a bookmark type:</td><td style='width:10%;'></td></tr>";
-newHTML += "<tr><td></td><td><input type='radio' name='bmType' value='TODO' checked='checked'/>TODO</td><td></td></tr>";
-newHTML += "<tr><td></td><td><input type='radio' name='bmType' value='FIXME'/>FIXME</td><td></td></tr>";
-newHTML += "<tr><td></td><td><input type='radio' name='bmType' value='HACK'/>HACK</td><td></td></tr>";
-newHTML += "<tr><td>&nbsp;</td><td></td><td></td></tr>";
-newHTML += "<tr><td>&nbsp;</td><td>Write a comment:</td><td></td></tr>";
-newHTML += "<tr><td>&nbsp;</td><td><textarea id='bmText' style='width:98%;' rows='4'></textarea></td><td></td></tr>";
-newHTML += "<tr><td></td><td align='right'><input type='button' value='Cancel' onClick=\"hidePopup('"+popupID+"')\"/><input type='button' value='Ok' onClick=\"addBM('"+popupID+"')\"/></td><td></td></tr>";
-newHTML += "</table><br /></form>";
-}
-else if(type == 'findBM'){
-var bmHash = {"10":"TODO: Write some code here","23":"TODO: Fix this","42":"TODO: Make more efficient"};
+	if(type == 'chat')
+	{
+		newHTML += "<textarea id='rec"+popupID+"' name='rec"+popupID+"' style='width: 98%;' rows='12' readonly='readonly'></textarea>";
+		newHTML += "<br/>";
+		newHTML += "<textarea id='send"+popupID+"' name='send"+popupID+"' style='width:98%;' rows='4' onkeyup=\"checkEnter(event,'"+popupID+"');\"></textarea>";
+	}
+	else
+	if(type = 'upload')
+	{
+		//Create the form that will allow file selection
+		newHTML +="<iframe id='foo' name='foo' style='display:none'></iframe>";
+		newHTML +="<div id ='filechooser'>";
+		newHTML += "<form id='fileForm' name='fileForm' method='post' action='files.php' enctype='multipart/form-data' target='foo'>";
+		newHTML += "<input type='hidden' name='MAX_FILE_SIZE' value='5000000' />";
+		newHTML += "<input type='file' id='filename' name='filename' value='' size='40' /><br/>";
+		newHTML +="<input type='submit' value='upload' />";
+		newHTML +="</form>";
+		newHTML +="</div>";
+	}
+	else 
+	if(type == 'addBM')
+	{
+		newHTML += "<form name='addBMForm'><table style='width:100%;'><tr><td style='width:10%;'></td><td style='width:80%;'>Select a bookmark type:</td><td style='width:10%;'></td></tr>";
+		newHTML += "<tr><td></td><td><input type='radio' name='bmType' value='TODO' checked='checked'/>TODO</td><td></td></tr>";
+		newHTML += "<tr><td></td><td><input type='radio' name='bmType' value='FIXME'/>FIXME</td><td></td></tr>";
+		newHTML += "<tr><td></td><td><input type='radio' name='bmType' value='HACK'/>HACK</td><td></td></tr>";
+		newHTML += "<tr><td>&nbsp;</td><td></td><td></td></tr>";
+		newHTML += "<tr><td>&nbsp;</td><td>Write a comment:</td><td></td></tr>";
+		newHTML += "<tr><td>&nbsp;</td><td><textarea id='bmText' style='width:98%;' rows='4'></textarea></td><td></td></tr>";
+		newHTML += "<tr><td></td><td align='right'><input type='button' value='Cancel' onClick=\"hidePopup('"+popupID+"')\"/><input type='button' value='Ok' onClick=\"addBM('"+popupID+"')\"/></td><td></td></tr>";
+		newHTML += "</table><br /></form>";
+	}
+	else 
+		if(type == 'findBM')
+		{
+			var bmHash = {"10":"TODO: Write some code here","23":"TODO: Fix this","42":"TODO: Make more efficient"};
 
-newHTML += "<table style='width:100%;'><tr><td style='width:10%;'></td><td style='width:80%;'>Current bookmarks:</td><td style='width:10%;'></td></tr>";
-newHTML += "<tr><td>&nbsp;</td><td>";
-newHTML += "<div style='overflow:auto;background-color:white;margin-left:5px;margin-right:5px;height:250px;'>";
-newHTML += "<ul class='bms'>";
-for (key in bmHash) {
-	newHTML += "<li class='bm' onClick=\"selectBM(this,'"+key+"');\">"+bmHash[key]+"</li>";
-}
-newHTML += "</ul></div>";
-newHTML += "</td><td></td></tr>";
-newHTML += "<tr><td>&nbsp;</td><td></td><td></td></tr>";
-newHTML += "<tr><td></td><td align='right'><input type='button' value='Cancel' onClick=\"hidePopup('"+popupID+"')\"/><input type='button' value='Ok' onClick=\"goToBM('"+popupID+"');\"/></td><td></td></tr>";
-newHTML += "</table><br />";
-}
+			newHTML += "<table style='width:100%;'><tr><td style='width:10%;'></td><td style='width:80%;'>Current bookmarks:</td><td style='width:10%;'></td></tr>";
+			newHTML += "<tr><td>&nbsp;</td><td>";
+			newHTML += "<div style='overflow:auto;background-color:white;margin-left:5px;margin-right:5px;height:250px;'>";
+			newHTML += "<ul class='bms'>";
+			
+			for (key in bmHash) 
+			{
+				newHTML += "<li class='bm' onClick=\"selectBM(this,'"+key+"');\">"+bmHash[key]+"</li>";
+			}
+			
+			newHTML += "</ul></div>";
+			newHTML += "</td><td></td></tr>";
+			newHTML += "<tr><td>&nbsp;</td><td></td><td></td></tr>";
+			newHTML += "<tr><td></td><td align='right'><input type='button' value='Cancel' onClick=\"hidePopup('"+popupID+"')\"/><input type='button' value='Ok' onClick=\"goToBM('"+popupID+"');\"/></td><td></td></tr>";
+			newHTML += "</table><br />";
+		}
 else if(type == 'color'){
 newHTML += "<form><table style='width:100%;'><tr><td style='width:10%;'></td><td style='width:80%;'>Select a color scheme:</td><td style='width:10%;'></td></tr>";
 newHTML += "<tr><td></td><td><input type='radio' name='color' value='black'/>Black</td><td></td></tr>";

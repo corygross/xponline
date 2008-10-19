@@ -81,7 +81,7 @@ function addContact(){
 		alert("Contact '" + document.getElementById('search-q').value + "' not found.  Please try again.");
 		return;
 	}
-	
+	 
 	new Ajax.Request('./handlers/addContact.php?userToAdd=' + contactID, {
 		method:'get',
 		onSuccess: function(transport) {			
@@ -202,15 +202,20 @@ function showBlinkerIfNew(){
 	}
 }
 
-function openChat(id, name){
+function openChat(id, name)
+{
 	openPopup('chat'+id, 'Chat with '+name, 'chat');
-	if(document.getElementById('contactItem'+id).className == "contact_new_msg"){
+	if(document.getElementById('contactItem'+id).className == "contact_new_msg")
+	{
 		hiliteContact(id,"viewed");
 	}
+	
 	showBlinkerIfNew();
+	
 	//scroll to the bottom of the received messages box
 	var recBox = document.getElementById('recchat'+id);	
 	recBox.scrollTop = recBox.scrollHeight;
+	
 	//put the cursor in the send box
 	document.getElementById('sendchat'+id).focus();
 }

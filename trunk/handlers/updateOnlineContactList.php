@@ -2,7 +2,9 @@
 session_start();
 require_once "../dbConnect.php";
 
-$currentUserID = $_SESSION['uID'];
+$currentUserID = "";
+
+if(isset($_SESSION['uID'])) { $currentUserID = $_SESSION['uID']; }
 
 if($currentUserID == ""){
 	echo "fail";
