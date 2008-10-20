@@ -7,7 +7,7 @@ $uID = $_SESSION['uID'];
 
 <table style='width:100%;'><tr><td style='width:10%;'></td><td style='width:80%;'>Select a file to open:</td><td style='width:10%;'></td></tr>
 <tr><td>&nbsp;</td><td>
-<select id='openList' name='openList' style='width:100%;' size='10'>
+<select id='openList' name='openList' style='width:100%;' size='10' ondblclick="selectDocument('openList','open_doc');">
 <?php
 
 $docsSQL = "SELECT documents.* FROM access,documents WHERE access.uID='$uID' AND access.dID=documents.dID ORDER BY documents.dName ASC;";
