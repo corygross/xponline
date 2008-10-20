@@ -120,7 +120,6 @@ function grantAccess(){
 		return;
 	}
 
-	//this is ridiculously unsecure.  Find another way?
 	new Ajax.Request('./handlers/giveAccess.php?user='+userID+'&docID='+docID+'&aLvl='+aLvl, {
 		method:'get',
 		onSuccess: function(transport) {
@@ -135,4 +134,27 @@ function grantAccess(){
 	});
 	
 	destroyPopup('grantAccess');
+}
+
+function submitUpload(){
+	setTimeout('checkUploadComplete(20)',1000)
+	hidePopup('upload');
+}
+
+function checkUploadComplete(triesLeft){
+	var myIFrame = document.getElementById("uploadIframe");
+	if(myIFrame.contentWindow.document.body.innerHTML == "" && triesLeft > 0){
+		setTimeout('checkUploadComplete('+(triesLeft-1)+')',1000)
+	}
+	else{
+		var docArr = myIFrame.contentWindow.document.body.innerHTML.split("^5&amp;");
+		if(docArr[0] != "success"){
+			alert("There may have been a problem uploading your document.");
+			myIFrame.contentWindow.document.body.innerHTML = "";
+		}
+		else{
+			openDocument(docArr[1], docArr[2]);
+			myIFrame.contentWindow.document.body.innerHTML = "";
+		}
+	}	
 }

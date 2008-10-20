@@ -110,14 +110,14 @@ function makeNewPopup(id, title, type)
 	if(type == 'upload')
 	{
 		//Create the form that will allow file selection
-		newHTML +="<iframe id='foo' name='foo' style='display:none'></iframe>";
-		newHTML +="<div id ='filechooser'>";
-		newHTML += "<form id='fileForm' name='fileForm' method='post' action='files.php' enctype='multipart/form-data' target='foo'>";
+		newHTML += "<iframe id='uploadIframe' name='uploadIframe' style='display:none'></iframe>";
+		newHTML += "<div id ='filechooser'><br />";
+		newHTML += "<form id='fileForm' name='fileForm' method='post' action='uploadFile.php' enctype='multipart/form-data' target='uploadIframe'>";
 		newHTML += "<input type='hidden' name='MAX_FILE_SIZE' value='5000000' />";
-		newHTML += "<input type='file' id='filename' name='filename' value='' size='40' /><br/>";
-		newHTML +="<input type='submit' value='upload' />";
-		newHTML +="</form>";
-		newHTML +="</div>";
+		newHTML += "&nbsp;<input type='file' id='filename' name='filename' value='' size='30' /><br/>";
+		newHTML += "&nbsp;<input type='submit' value='upload' onClick='submitUpload();'/>";
+		newHTML += "</form><br />";
+		newHTML += "</div>";
 	}
 	else 
 	if(type == 'addBM')
