@@ -480,8 +480,9 @@ function displayMousePos() {
 }
 // This function displays the cursor position in the GUI
 function displayCursorPos() {
-	cursor_line_box.value = cursorLine;
-	cursor_column_box.value = cursorColumn;
+	updateLineCol(cursorLine, cursorColumn);
+	//cursor_line_box.value = cursorLine;
+	//cursor_column_box.value = cursorColumn;
 }
 // This function clears the formatting of the line specified by paramLineNumber
 function clearFormatting ( paramLineNum ) {
@@ -502,6 +503,9 @@ function renderCursor() {
 		myIFrame.contentWindow.document.getElementById( XPODoc.getLineId(cursorLine) ).innerHTML = tempCurrentLine.join("");
 	}
 	catch (e) { alert("line not found!"); }
+	
+	// Update the GUI with the correct line and col
+	displayCursorPos();
 }
 // This function re-renders the entire document
 function refreshDocument() {
