@@ -2,14 +2,14 @@
 
 /////////////////////////////////////////////////////
 ////////// KNOWN ISSUES SO FAR ///////////////////
-//  - 
-//  - 
 //  - Using the UP/DOWN arrow keys to move the cursor 'thru' lines with varying lengths does not behave as a user would expect
-//  - 
+//  - HTML-like text does not render correctly: it changes how the line is rendered
+// 
 //  - NOT YET IMPLEMENTED:
 //	--> CTL-END, CTL-HOME, PAGEUP, PAGEDWN
 //	--> Handling selection of text (with mouse OR keyboard)
 //	--> Auto-scrolling to follow cursor
+//
 //////////////////////////////////////////////////
 
 ////////////////////////////////////////////////////
@@ -30,6 +30,7 @@
 //  ISSUE :  The content window scrolls at a different rate than the cursor, so often the cursor disappears from the screen in a long document
 //  SOLUTION : Adjusted the <body> tag in editableContent.html to read <body onkeypress="return false;"> in order to prevent the event from bubbling past the doc
 //			Miraculously, it doesn't break text insertion!  Lucky break!
+//
 ///////////////////////////////////////////////////
 
 /**********************************************/
@@ -524,7 +525,6 @@ function init() {
 	cursor_line_box = document.getElementById("cL");
 	cursor_column_box = document.getElementById("cC");
 	
-	
 	cursorLine = 0;
 	cursorColumn = 0;
 
@@ -538,7 +538,7 @@ function init() {
 }
 // FIXME:  ^^^ REALLY THIS SUCKS
 
-function loadNewDoc(docText){
+function loadNewDoc(docText) {
 	XPODoc.blankDocument();
 	var textArr = docText.split(/\r\n|\r|\n/);
 	for(var i=0; i < textArr.length; i++ ){
