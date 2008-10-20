@@ -1,11 +1,63 @@
-function showmenu(elmnt)
+function accessMenuClick()
 {
-    document.getElementById(elmnt).style.visibility="visible";
+	openPopup('grantAccess','Grant User Access','grantAccess');
+	getWritableDocs();
+}
+
+function addBookmarkMenuClick()
+{
+	openPopup('add_bm','Add Bookmark','addBM');
+}
+
+function changeDocTitle(title)
+{
+	document.getElementById('fileName').innerHTML = title;
+	document.title = "XPonline | " + title;
+}
+
+function colorMenuClick()
+{
+	openPopup('color_pick','Color Scheme','color');
+}
+
+function copyIconClicked()
+{
+	alert("copy");
+}
+
+function cutIconClicked()
+{
+	alert("cut");
+}
+
+function downloadMenuClick()
+{
+	alert("download");
+}
+
+function exitMenuClick()
+{
+	window.location = "logout.php";
+}
+
+function findBookmarkMenuClick()
+{
+	openPopup('find_bm','Find Bookmark','findBM');
+}
+
+function findMenuClick()
+{
+	alert("find");
 }
 
 function hidemenu(elmnt)
 {
     document.getElementById(elmnt).style.visibility="hidden";
+}
+
+function highlighMenuClick()
+{
+	alert("highlight");
 }
 
 function newMenuClick()
@@ -19,33 +71,9 @@ function openMenuClick()
 	getAccessibleDocs();
 }
 
-function uploadMenuClick()
+function pasteIconClicked()
 {
-	//Show the form that will allow for file upload
-	
-	openPopup('upload', 'Upload File ', 'upload');
-//	alert("upload functionality");
-}
-
-function downloadMenuClick()
-{
-	alert("download");
-}
-
-function accessMenuClick()
-{
-	openPopup('grantAccess','Grant User Access','grantAccess');
-	getWritableDocs();
-}
-
-function exitMenuClick()
-{
-	window.location = "logout.php";
-}
-
-function findMenuClick()
-{
-	alert("find");
+	alert("paste");
 }
 
 function replaceMenuClick()
@@ -58,45 +86,9 @@ function selectAllMenuClick()
 	alert("select all");
 }
 
-function colorMenuClick()
+function showmenu(elmnt)
 {
-	openPopup('color_pick','Color Scheme','color');
-}
-
-function highlighMenuClick()
-{
-	alert("highlight");
-}
-
-function addBookmarkMenuClick()
-{
-	openPopup('add_bm','Add Bookmark','addBM');
-}
-
-function findBookmarkMenuClick()
-{
-	openPopup('find_bm','Find Bookmark','findBM');
-}
-
-function cutIconClicked()
-{
-	alert("cut");
-}
-
-function copyIconClicked()
-{
-	alert("copy");
-}
-
-function pasteIconClicked()
-{
-	alert("paste");
-}
-
-function changeDocTitle(title)
-{
-	document.getElementById('fileName').innerHTML = title;
-	document.title = "XPonline | " + title;
+    document.getElementById(elmnt).style.visibility="visible";
 }
 
 var lineCol;
@@ -106,4 +98,10 @@ function updateLineCol(line, col)
 		lineCol = document.getElementById('curLineCol');
 	}
 	lineCol.innerHTML = "Ln:" + line + " Col:" + col;
+}
+
+function uploadMenuClick()
+{
+	//Show the form that will allow for file upload
+	openPopup('upload', 'Upload File ', 'upload');
 }
