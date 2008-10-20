@@ -21,7 +21,12 @@ if(mysql_num_rows($response) < 1){
 $row = mysql_fetch_array($response);
 $myFile = "../".$row['dLocation']."/doc".$row['dID'];
 $fh = fopen($myFile, 'r');
-$theData = fread($fh, filesize($myFile));
+if(filesize($myFile) == 0){
+	$theData = fgets($fh);
+}
+else{
+	$theData = fread($fh, filesize($myFile));
+}
 fclose($fh);
 echo $theData;
 ?>
