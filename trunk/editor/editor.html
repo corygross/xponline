@@ -33,6 +33,12 @@
 //
 ///////////////////////////////////////////////////
 
+///////////////////////////////////////////////////
+////////////// IT'S ALL IN THE DETAILS /////////////
+//  TODO:  Keep track of "tab stops" in the document so that a tab only inserts enough spaces to go to the next multiple of 4 characters across
+//
+///////////////////////////////////////////////////
+
 /**********************************************/
 /************ CUSTOM DATA TYPES ****************/
 
@@ -326,12 +332,24 @@ function typeSpecial(paramKEYCODE) {
 			
 		case PAGEUPKEY:
 			// Move the cursor up a number of time relative to the current editing window's height
-			// TODO: IMPLEMENT THIS
+			cursorLine -= Math.floor(myIFrame.contentWindow.innerHeight / FONT_HEIGHT);
+			// Do out-of-bounds checks
+			if ( cursorLine < 0 ) {
+				cursorLine = 0;
+				cursorColumn = 0;
+			} else if ( cursorColumn >= XPODoc.getLineLength( cursorLine ) ) cursorColumn = XPODoc.getLineLength(cursorLine)-1;
+			myIFrame.contentWindow.scrollBy(0,-myIFrame.contentWindow.innerHeight+PADDING_TOP);
 			break;
 					
 		case PAGEDOWNKEY:
 			// Move the cursor down a number of times relative to the current editing window's height
-			// TODO: IMPLEMENT THIS
+			cursorLine += Math.floor(myIFrame.contentWindow.innerHeight / FONT_HEIGHT);
+			// Do out-of-bounds checks
+			if ( cursorLine > XPODoc.getDocumentLength()-1 ) {
+				cursorLine = XPODoc.getDocumentLength()-1;
+				cursorColumn = XPODoc.getLineLength( cursorLine )-1;
+			} else if ( cursorColumn >= XPODoc.getLineLength( cursorLine ) ) cursorColumn = XPODoc.getLineLength(cursorLine)-1;
+			myIFrame.contentWindow.scrollBy(0,myIFrame.contentWindow.innerHeight-PADDING_TOP);
 			break;
 			
 		case BACKSPACEKEY:
@@ -384,7 +402,6 @@ function typeSpecial(paramKEYCODE) {
 			break;
 			
 		case ENTERKEY:
-			// FIXME:  BROKEN!
 			// When we press the enter key, we need to insert a new line into the document
 			// We need to insert a new line following the current line, which contains the current line's text starting from the cursor
 			XPODoc.insertLine( cursorLine+1, XPODoc.getLineText( cursorLine ).substring( cursorColumn ) );
@@ -400,6 +417,16 @@ function typeSpecial(paramKEYCODE) {
 				
 			cursorLine++;
 			cursorColumn = 0;
+			break;
+			
+		case TABKEY:
+			// Insert 4 spaces at current cursor position
+			//  SUPER HACK:  Need to redesign functions a bit to eliminate redundancy and make it cleaner and more readable.  
+			// We eventually want this to call an "insertText()" function, but for now....
+			typeCharacter(" ".charCodeAt(0) );
+			typeCharacter(" ".charCodeAt(0) );
+			typeCharacter(" ".charCodeAt(0) );
+			typeCharacter(" ".charCodeAt(0) );
 			break;
 	}
 } // END typeSpecial(paramKEY)
@@ -499,8 +526,8 @@ function adjustScroll() {
 	var frameHeight = myIFrame.contentWindow.innerHeight;
 	var cursorDocOffsetX = (cursorColumn*FONT_WIDTH) + PADDING_LEFT;
 	var cursorDocOffsetY = (cursorLine*FONT_HEIGHT) + PADDING_TOP;
-	var visibleEdgeX = getScrollOffsetX()+frameWidth;
-	var visibleEdgeY = getScrollOffsetY()+frameHeight;
+	var visibleEdgeX = getScrollOffsetX()+frameWidth-FONT_WIDTH;
+	var visibleEdgeY = getScrollOffsetY()+frameHeight-FONT_HEIGHT;
 	var scrollAmountX=0;
 	var scrollAmountY=0;
 	
