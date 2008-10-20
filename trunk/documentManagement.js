@@ -1,3 +1,93 @@
+var uploadFrame = null;
+function checkUploadComplete(triesLeft){
+	if(uploadFrame == null){
+		uploadFrame = document.getElementById("uploadIframe");
+	}
+
+	if(uploadFrame.contentWindow.document.body.innerHTML == "" && triesLeft > 0){
+		setTimeout('checkUploadComplete('+(triesLeft-1)+')',1000)
+	}
+	else{
+		var docArr = uploadFrame.contentWindow.document.body.innerHTML.split("^5&amp;");
+		if(docArr[0] != "success"){
+			alert("There may have been a problem uploading your document.");
+			uploadFrame.contentWindow.document.body.innerHTML = "";
+		}
+		else{
+			openDocument(docArr[1], docArr[2]);
+			uploadFrame.contentWindow.document.body.innerHTML = "";
+		}
+	}	
+}
+
+function getAccessibleDocs(){
+	new Ajax.Request('./handlers/accessibleDocs.php?', {
+		method:'get',
+		onSuccess: function(transport) {	
+			$('openDocContainer').innerHTML = transport.responseText;
+		},		
+		onFailure: function()
+		{
+			alert("There was a problem getting your accessible documents.");
+		}		
+	});
+}
+
+function getWritableDocs(){
+	new Ajax.Request('./handlers/writableDocs.php?', {
+		method:'get',
+		onSuccess: function(transport) {	
+			$('accessDocContainer').innerHTML = transport.responseText;
+		},		
+		onFailure: function()
+		{
+			alert("There was a problem getting the document list.");
+		}		
+	});
+}
+
+function grantAccess(){
+	if(userID == ""){
+		alert("Please select a user.");
+		return;
+	}
+	var list = document.getElementById('writableList');
+	var docID = list.value;	
+	if(docID == ""){
+		alert("Please select a document to grant access to.");
+		return;
+	}
+	var aLvl = "";
+	if(document.grantForm.aLevel[0].checked){
+		aLvl = document.grantForm.aLevel[0].value;
+	}
+	else if(document.grantForm.aLevel[1].checked){
+		aLvl = document.grantForm.aLevel[1].value;
+	}
+	else if(document.grantForm.aLevel[2].checked){
+		aLvl = document.grantForm.aLevel[2].value;
+	}
+	else{
+		alert("Please select an access level.");
+		return;
+	}
+
+	new Ajax.Request('./handlers/giveAccess.php?user='+userID+'&docID='+docID+'&aLvl='+aLvl, {
+		method:'get',
+		onSuccess: function(transport) {
+			if(transport.responseText != "success"){
+				alert(transport.responseText);
+			}
+		},		
+		onFailure: function()
+		{
+			alert("There was a problem granting access.  Please try again.");
+		}		
+	});
+	
+	destroyPopup('grantAccess');
+}
+
 function newBlankDocument()
 {
 	var dName = document.getElementById('newDocName').value;
@@ -61,32 +151,6 @@ function selectDocument(id, window)
 	openDocument(docID, docName);
 }
 
-function getAccessibleDocs(){
-	new Ajax.Request('./handlers/accessibleDocs.php?', {
-		method:'get',
-		onSuccess: function(transport) {	
-			$('openDocContainer').innerHTML = transport.responseText;
-		},		
-		onFailure: function()
-		{
-			alert("There was a problem getting your accessible documents.");
-		}		
-	});
-}
-
-function getWritableDocs(){
-	new Ajax.Request('./handlers/writableDocs.php?', {
-		method:'get',
-		onSuccess: function(transport) {	
-			$('accessDocContainer').innerHTML = transport.responseText;
-		},		
-		onFailure: function()
-		{
-			alert("There was a problem getting the document list.");
-		}		
-	});
-}
-
 var userID = "";
 var userName = "";
 function selectUser(id, name){
@@ -94,67 +158,7 @@ function selectUser(id, name){
 	userName = name;
 }
 
-function grantAccess(){
-	if(userID == ""){
-		alert("Please select a user.");
-		return;
-	}
-	var list = document.getElementById('writableList');
-	var docID = list.value;	
-	if(docID == ""){
-		alert("Please select a document to grant access to.");
-		return;
-	}
-	var aLvl = "";
-	if(document.grantForm.aLevel[0].checked){
-		aLvl = document.grantForm.aLevel[0].value;
-	}
-	else if(document.grantForm.aLevel[1].checked){
-		aLvl = document.grantForm.aLevel[1].value;
-	}
-	else if(document.grantForm.aLevel[2].checked){
-		aLvl = document.grantForm.aLevel[2].value;
-	}
-	else{
-		alert("Please select an access level.");
-		return;
-	}
-
-	new Ajax.Request('./handlers/giveAccess.php?user='+userID+'&docID='+docID+'&aLvl='+aLvl, {
-		method:'get',
-		onSuccess: function(transport) {
-			if(transport.responseText != "success"){
-				alert(transport.responseText);
-			}
-		},		
-		onFailure: function()
-		{
-			alert("There was a problem granting access.  Please try again.");
-		}		
-	});
-	
-	destroyPopup('grantAccess');
-}
-
 function submitUpload(){
 	setTimeout('checkUploadComplete(20)',1000)
 	hidePopup('upload');
-}
-
-function checkUploadComplete(triesLeft){
-	var myIFrame = document.getElementById("uploadIframe");
-	if(myIFrame.contentWindow.document.body.innerHTML == "" && triesLeft > 0){
-		setTimeout('checkUploadComplete('+(triesLeft-1)+')',1000)
-	}
-	else{
-		var docArr = myIFrame.contentWindow.document.body.innerHTML.split("^5&amp;");
-		if(docArr[0] != "success"){
-			alert("There may have been a problem uploading your document.");
-			myIFrame.contentWindow.document.body.innerHTML = "";
-		}
-		else{
-			openDocument(docArr[1], docArr[2]);
-			myIFrame.contentWindow.document.body.innerHTML = "";
-		}
-	}	
 }
