@@ -3,6 +3,11 @@ require_once 'dbConnect.php';
 
 $uID = $_SESSION['uID'];
 
+if($uID == ""){
+	echo "fail";
+	return;
+}
+
 //Where on the server are we going to store these files?
 $filePath = "documents";
 
