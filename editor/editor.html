@@ -476,7 +476,7 @@ function refreshDocument() {
 		myDoc.removeChild( myDoc.firstChild );
 	}
 	
-	for (l in XPODoc.document) {
+	for(var l=0; l < XPODoc.document.length; l++ ){
 		var newLine = myIFrame.contentWindow.document.createElement('div');
 		newLine.setAttribute('id', XPODoc.getLineId(l) );
 		newLine.setAttribute('class', "line");		// RELATED TO FIX OF ISSUE #1
