@@ -1,29 +1,41 @@
 <?php
-	require_once 'dbConnect.php';
-	
-	//Where on the server are we going to store these files?
-	$filePath = "uploads/";
-	$filePath = $filePath.basename($_FILES['filename']['name']);
+require_once 'dbConnect.php';
 
-	//How will this be set? Presumably this could be counter variable
-	//that is incremented as each file is uploaded
-	$fileID = 09;
-	$filename = $_FILES['filename']['name'];
-	
-	//Grab the selected file 
-	//Uncomment this if we want to see what file we are uploading
-	//$filename = $_FILES['filename']['name'];
+$uID = $_SESSION['uID'];
 
-	if(($validCheck = securityCheck($filename)))
-	{
-		//move the uploaded file to the directory of choice
-		move_uploaded_file($_FILES['filename']['tmp_name'], $filePath);
+//Where on the server are we going to store these files?
+$filePath = "documents";
 
-		//Insert relevant information in the database
-		$insertStmt = "INSERT INTO `xponline`.`documents` (`dID`, `dName`, `dLocation`) VALUES ('$fileID', '$filename', '$filePath');";
-		$con = runquery($insertStmt);
-	}
-	
+$filename = $_FILES['filename']['name'];
+
+//Grab the selected file 
+//Uncomment this if we want to see what file we are uploading
+//$filename = $_FILES['filename']['name'];
+
+if((securityCheck($filename) == false))
+{
+	return;
+}
+
+//Insert relevant information in the database
+$insertStmt = "INSERT INTO `xponline`.`documents` (`dID`, `dName`, `dLocation`) VALUES (null, '$filename', '$filePath');";
+$con = runQuery($insertStmt);
+
+//The newly created document ID
+$newID = mysql_insert_id();
+
+//give the creating user write access
+$sql = "INSERT INTO access VALUES('$newID', '$uID', 'w')";
+$response = runQuery($sql);
+
+//make a blank, empty document on the filesystem
+$docNameOnFileSystem = "$filePath/doc" . $newID;
+
+//move the uploaded file to the directory of choice
+move_uploaded_file($_FILES['filename']['tmp_name'], $docNameOnFileSystem);
+
+echo "success^5&".$newID."^5&".$filename."^5&";	
+
 
 /*
  *  Function: securityCheck
