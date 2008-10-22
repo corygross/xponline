@@ -117,9 +117,7 @@ function newBlankDocument()
 }
 
 function openDocument(dID, dName)
-{
-	changeDocTitle(dName);
-	
+{	
 	//get the document from the server and display it!!!
 	new Ajax.Request('./handlers/getDocumentContents.php?dID=' + dID, {
 		method:'get',
@@ -129,6 +127,8 @@ function openDocument(dID, dName)
 			}
 			else{
 				var docInfoArr = transport.responseText.split("&^*");
+				if(docInfoArr[0] == "r") dName = dName + " (Readonly)";
+				changeDocTitle(dName);
 				loadNewDoc(docInfoArr[1], docInfoArr[0]);
 			}
 		},		
