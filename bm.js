@@ -1,6 +1,7 @@
 function addBM(windowID){
 	var text = document.getElementById('bmText').value;
 	var newBM = get_bm_value() + ": " + text;
+	//XPODoc.insertLine(getCursorLine(), newBM);	
 	alert(newBM);
 	hidePopup(windowID);
 }
