@@ -11,7 +11,7 @@ if($uID == "" || $dID == ""){
 }
 
 //This checks permissions at the same time as it gets the document id and location.
-$docSQL = "SELECT documents.* FROM documents,access WHERE documents.dID='$dID' AND documents.dID=access.dID AND access.uID='$uID';";
+$docSQL = "SELECT documents.*,access.accessLvl FROM documents,access WHERE documents.dID='$dID' AND documents.dID=access.dID AND access.uID='$uID';";
 $response = runQuery($docSQL);
 if(mysql_num_rows($response) < 1){
 	echo "fail";
@@ -28,5 +28,5 @@ else{
 	$theData = fread($fh, filesize($myFile));
 }
 fclose($fh);
-echo $theData;
+echo $row['accessLvl']."&^*".$theData;
 ?>

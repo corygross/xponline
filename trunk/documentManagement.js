@@ -128,7 +128,8 @@ function openDocument(dID, dName)
 				alert('There was a problem opening the document.  Please try again.');
 			}
 			else{
-				loadNewDoc(transport.responseText);
+				var docInfoArr = transport.responseText.split("&^*");
+				loadNewDoc(docInfoArr[1], docInfoArr[0]);
 			}
 		},		
 		onFailure: function()
