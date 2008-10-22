@@ -79,11 +79,12 @@ function textDocument()
 	}
 	// Returns the id of the specified line
 	this.getLineId = function( paramLineNum ) {
-		if ( paramLineNum < this.document.length ) return this.document[paramLineNum].id;
+		if ( paramLineNum < this.document.length && paramLineNum != -1 ) return this.document[paramLineNum].id;
+		else return false;
 	}
 	// Returns the text of the specified line
 	this.getLineText = function( paramLineNum ) {
-		if ( paramLineNum < this.getDocumentLength() ) {
+		if ( paramLineNum < this.getDocumentLength() && this.document[paramLineNum] != undefined ) {
 			return this.document[paramLineNum].text;
 		}
 		else return false;
@@ -134,6 +135,12 @@ function textDocument()
 var myIFrame;
 var mainDoc;
 
+// Browser specific
+var isFF;
+var isIE;
+var isChrome;
+var isSafari;
+
 // CSS related constants
 var FONT_WIDTH = 8;
 var FONT_HEIGHT = 17;
@@ -175,6 +182,7 @@ var UPARROWKEY = 38;
 var RIGHTARROWKEY = 39;
 var DOWNARROWKEY = 40;
 var INSERTKEY = 45;
+var SHIFTKEY = 16;
 
 // Input modes
 var INSERT = 0;
@@ -186,13 +194,32 @@ var cursor_column_box;
 var mouse_x_box;
 var mouse_y_box;
 
+var readOnly;
+
+function getDoc(){
+	if(isIE == true){
+		return myIFrame.document;
+	}
+	else{
+		return myIFrame.contentWindow.document;
+	}
+}
+
 /**********************************************/
 /**** MOUSE AND CURSOR ACCESSOR FUNCTIONS *****/
 
 // These functions are self-explanatory
 function captureMousePos(e) {
-	mouseX = e.pageX;
-	mouseY = e.pageY;
+	if(isIE == true){
+		//this is cory's attempt... its not perfect, but it shows how you can do it
+		e = myIFrame.window.event;
+		mouseX = e.clientX + getDoc().body.scrollLeft - 3;
+        mouseY = e.clientY + getDoc().body.scrollTop - 3;
+	}
+	else{
+		mouseX = e.pageX;
+		mouseY = e.pageY;
+	}
 }
 function getMouseCoords() {
 	return [mouseX, mouseY];
@@ -207,6 +234,7 @@ function getMouseY() {
 // This function calculates the position of the cursor 
 // based on the given parameters representing mouseX,Y
 function deriveCursor(paramMouseX, paramMouseY) {
+
 	// Calculate line and column number based on mouse position
 	var currow = Math.floor((mouseY - PADDING_TOP)/FONT_HEIGHT);
 	var curcol = Math.floor((mouseX - PADDING_LEFT)/FONT_WIDTH);
@@ -218,7 +246,7 @@ function deriveCursor(paramMouseX, paramMouseY) {
 	}
 	// If the calculated cursor is beyond the first or last character in a line, 
 	// then set the cursor to the first or last character, respectively
-	else {
+	else {		
 		if ( curcol < 0 ) curcol = 0;
 		if ( curcol >= XPODoc.getLineLength(currow) ) curcol = XPODoc.getLineLength(currow)-1;
 	}
@@ -237,10 +265,20 @@ function getCursorColumn() {
 	return cursorColumn;
 }
 function getScrollOffsetX() {
-	return myIFrame.contentWindow.pageXOffset;
+	if(isIE == true){
+		return getDoc().body.scrollLeft;
+	}
+	else{
+		return myIFrame.contentWindow.pageXOffset;
+	}
 }
 function getScrollOffsetY() {
-	return myIFrame.contentWindow.pageYOffset;
+	if(isIE == true){
+		return getDoc().body.scrollTop;
+	}
+	else{
+		return myIFrame.contentWindow.pageYOffset;
+	}
 }
 
 
@@ -331,25 +369,45 @@ function typeSpecial(paramKEYCODE) {
 			cursorColumn = 0;
 			
 		case PAGEUPKEY:
-			// Move the cursor up a number of time relative to the current editing window's height
-			cursorLine -= Math.floor(myIFrame.contentWindow.innerHeight / FONT_HEIGHT);
+			// Move the cursor up a number of time relative to the current editing window's height			
+			if(isIE == true){
+				cursorLine -= Math.floor(getDoc().body.clientHeight / FONT_HEIGHT);
+			}
+			else{
+				cursorLine -= Math.floor(myIFrame.contentWindow.innerHeight / FONT_HEIGHT);
+			}
 			// Do out-of-bounds checks
 			if ( cursorLine < 0 ) {
 				cursorLine = 0;
 				cursorColumn = 0;
 			} else if ( cursorColumn >= XPODoc.getLineLength( cursorLine ) ) cursorColumn = XPODoc.getLineLength(cursorLine)-1;
-			myIFrame.contentWindow.scrollBy(0,-myIFrame.contentWindow.innerHeight+PADDING_TOP);
+			if(isIE == true){
+				myIFrame.scrollBy(0,-getDoc().body.clientHeight+PADDING_TOP);
+			}
+			else{
+				myIFrame.contentWindow.scrollBy(0,-myIFrame.contentWindow.innerHeight+PADDING_TOP);
+			}
 			break;
 					
 		case PAGEDOWNKEY:
 			// Move the cursor down a number of times relative to the current editing window's height
-			cursorLine += Math.floor(myIFrame.contentWindow.innerHeight / FONT_HEIGHT);
+			if(isIE == true){
+				cursorLine += Math.floor(getDoc().body.clientHeight / FONT_HEIGHT);
+			}
+			else{
+				cursorLine += Math.floor(myIFrame.contentWindow.innerHeight / FONT_HEIGHT);
+			}
 			// Do out-of-bounds checks
 			if ( cursorLine > XPODoc.getDocumentLength()-1 ) {
 				cursorLine = XPODoc.getDocumentLength()-1;
 				cursorColumn = XPODoc.getLineLength( cursorLine )-1;
 			} else if ( cursorColumn >= XPODoc.getLineLength( cursorLine ) ) cursorColumn = XPODoc.getLineLength(cursorLine)-1;
-			myIFrame.contentWindow.scrollBy(0,myIFrame.contentWindow.innerHeight-PADDING_TOP);
+			if(isIE == true){
+				myIFrame.scrollBy(0,getDoc().body.clientHeight-PADDING_TOP);
+			}
+			else{
+				myIFrame.contentWindow.scrollBy(0,myIFrame.contentWindow.innerHeight-PADDING_TOP);
+			}
 			break;
 			
 		case BACKSPACEKEY:
@@ -365,7 +423,7 @@ function typeSpecial(paramKEYCODE) {
 				XPODoc.setLineText( cursorLine-1, XPODoc.getLineText( cursorLine-1 ) + XPODoc.getLineText( cursorLine ) );
 				
 				// FIXME: HACK:  BAD FORM!  The following lines promote tight coupling between GUI and backend!  ARRRGGGGHHHHH! 
-				var removeMe = myIFrame.contentWindow.document.getElementById(XPODoc.getLineId( cursorLine ));
+				var removeMe = getDoc().getElementById(XPODoc.getLineId( cursorLine ));
 				removeMe.parentNode.removeChild(removeMe);
 				
 				// Remove the line from our data structure
@@ -389,7 +447,7 @@ function typeSpecial(paramKEYCODE) {
 				XPODoc.setLineText( cursorLine, XPODoc.getLineText(cursorLine) + XPODoc.getLineText(cursorLine+1) );
 				
 				// FIXME: HACK:  BAD FORM!  The following lines promote tight coupling between GUI and backend!  ARRRGGGGHHHHH! 
-				var removeMe = myIFrame.contentWindow.document.getElementById(XPODoc.getLineId( cursorLine+1 ));
+				var removeMe = getDoc().getElementById(XPODoc.getLineId( cursorLine+1 ));
 				removeMe.parentNode.removeChild(removeMe);
 				
 				// Remove the line in question from our data structure
@@ -409,7 +467,7 @@ function typeSpecial(paramKEYCODE) {
 
 			// TODO: FIXME: HACK:  Need to make the above change visible in the GUI
 			clearFormatting( cursorLine );
-			var myDoc = myIFrame.contentWindow.document;
+			var myDoc = getDoc();
 			var addMe = myDoc.createElement('div');
 			addMe.setAttribute('id', XPODoc.getLineId( cursorLine+1 ) );
 			addMe.setAttribute('class', "line");
@@ -428,7 +486,19 @@ function typeSpecial(paramKEYCODE) {
 			typeCharacter(" ".charCodeAt(0) );
 			typeCharacter(" ".charCodeAt(0) );
 			break;
+		case SHIFTKEY:
+		
+			break;
+		case CAPSLOCKKEY:
+			
+			break;
+		case SPACEKEY:
+			typeCharacter(" ".charCodeAt(0) );
+			break;
+		default:
+			return false;
 	}
+	return true;
 } // END typeSpecial(paramKEY)
 
 // This function toggles the InsertMode flag (representing Insert or Overwrite)
@@ -443,16 +513,126 @@ function setInputMode( paramMODE ) {
 // This function is responsible for analyzing a keyPressEvent and subsequently
 // executing the appropriate function, based on the charCode
 function type( paramEvent ) {
-	if ( paramEvent.charCode != 0 ) typeCharacter( paramEvent.charCode );
-	else typeSpecial( paramEvent.keyCode );	
+	// If we can't find the current line, just bail out
+	if( XPODoc.getLineText(cursorLine) == false ) return;
+	
+	// This needs a lot of cleanup...
+	var evt;
+	if(isFF == true){
+		if ( paramEvent.charCode != 0 ) typeCharacter( paramEvent.charCode );
+		else typeSpecial( paramEvent.keyCode );
+		return;
+	}
+	else if(isIE == true){
+		evt = myIFrame.window.event;
+	}
+	else if(isChrome == true || isSafari == true){
+		evt = paramEvent;
+	}
+	else{
+		alert('an unknown browser... editing may not work.');
+	}
+	
+	// No browses besides FF are kind enough to have a charCode property...  We have to find out ourselves which character to display
+	var key = evt.keyCode;
+	if((key >= 48 && key <= 126) || (key >= 186 && key <= 192) || (key >= 219 && key <= 222)){
+		var charCode = getCharCode(key, evt.shiftKey);		
+		if(charCode != null) typeCharacter(charCode);
+	}
+	else{
+		typeSpecial( key );
+	}
+
+	//if ( key != 0 ) typeCharacter( key );
+	//else typeSpecial( key );	
 }
+
+function getCharCode( paramKey, paramShiftPressed ){
+
+	if(paramShiftPressed){
+		if(paramKey >= 65 && paramKey <= 90) //A-Z a-z
+			return paramKey;
+		else if(paramKey == 49) // 1 !
+			return 33;
+		else if(paramKey == 50) // 2 @
+			return 64;
+		else if(paramKey == 51) // 3#
+			return 35;
+		else if(paramKey == 52) // 4$
+			return 36;
+		else if(paramKey == 53) // 5%
+			return 37;
+		else if(paramKey == 54) // 6^
+			return 94;
+		else if(paramKey == 55) // 7&
+			return 38;
+		else if(paramKey == 56) // 8*
+			return 42;
+		else if(paramKey == 57) // 9(
+			return 40;
+		else if(paramKey == 48) // 0)
+			return 41;
+		else if(paramKey == 186) // :
+			return 58;
+		else if(paramKey == 187) // +
+			return 43;
+		else if(paramKey == 188) // <
+			return 60;
+		else if(paramKey == 189) // _
+			return 95;
+		else if(paramKey == 190) // >
+			return 62;
+		else if(paramKey == 191) // ?
+			return 63;
+		else if(paramKey == 192) // ~
+			return 126;
+		else if(paramKey == 219) // {
+			return 123;
+		else if(paramKey == 220) // |
+			return 124;
+		else if(paramKey == 221) // }
+			return 125;
+		else if(paramKey == 222) // "
+			return 34;
+	}
+	else{
+		if(paramKey >= 65 && paramKey <= 90) //a-z
+			return paramKey + 32;
+		else if(paramKey >= 48 && paramKey <= 57) //0-9
+			return paramKey;
+		else if(paramKey == 186) // ;
+			return 59;
+		else if(paramKey == 187) // =
+			return 61;
+		else if(paramKey == 188) // ,
+			return 44;
+		else if(paramKey == 189) // -
+			return 45;
+		else if(paramKey == 190) // .
+			return 46;
+		else if(paramKey == 191) // /
+			return 47;
+		else if(paramKey == 192) // `
+			return 96;
+		else if(paramKey == 219) // [
+			return 91;
+		else if(paramKey == 220) // \
+			return 92;
+		else if(paramKey == 221) // ]
+			return 93;
+		else if(paramKey == 222) // '
+			return 39;		
+	}
+	return null;
+}
+
 // This function is responsible for text input
-function typeCharacter( paramCharCode ) {
+function typeCharacter( paramCharCode ) {	
 	var tempCurrentLine = new Array();
 	tempCurrentLine.push(XPODoc.getLineText(cursorLine).substring(0,cursorColumn));
 	tempCurrentLine.push(XPODoc.getLineText(cursorLine).substr(cursorColumn, 1));
 	tempCurrentLine.push(XPODoc.getLineText(cursorLine).substring(cursorColumn+1));
-	
+
 	// Insert character
 	tempCurrentLine[1]=String.fromCharCode(paramCharCode) + tempCurrentLine[1];
 	
@@ -486,10 +666,13 @@ function displayCursorPos() {
 }
 // This function clears the formatting of the line specified by paramLineNumber
 function clearFormatting ( paramLineNum ) {
-	myIFrame.contentWindow.document.getElementById( XPODoc.getLineId(paramLineNum) ).innerHTML = XPODoc.getLineText(paramLineNum);
+	if(getDoc().getElementById( XPODoc.getLineId(paramLineNum) ) != null){
+		getDoc().getElementById( XPODoc.getLineId(paramLineNum) ).innerHTML = XPODoc.getLineText(paramLineNum);
+	}
 }
 // This function renders the cursor in the document. 
 function renderCursor() {
+	if(XPODoc.getLineText(cursorLine) == false) return;
 	// Slice 'n dice the line to isolate the cursor
 	var tempCurrentLine = new Array();
 	tempCurrentLine.push(XPODoc.getLineText(cursorLine).substring(0,cursorColumn));
@@ -500,7 +683,7 @@ function renderCursor() {
 	tempCurrentLine[1] = "<font style='BACKGROUND-COLOR: red'>" + tempCurrentLine[1] + "</font>";
 	// display new formatting
 	try {
-		myIFrame.contentWindow.document.getElementById( XPODoc.getLineId(cursorLine) ).innerHTML = tempCurrentLine.join("");
+		getDoc().getElementById( XPODoc.getLineId(cursorLine) ).innerHTML = tempCurrentLine.join("");
 	}
 	catch (e) { alert("line not found!"); }
 	
@@ -509,13 +692,13 @@ function renderCursor() {
 }
 // This function re-renders the entire document
 function refreshDocument() {
-	var myDoc = myIFrame.contentWindow.document.getElementById("entireDocument");
+	var myDoc = getDoc().getElementById("entireDocument");
 	while ( myDoc.firstChild ) {
 		myDoc.removeChild( myDoc.firstChild );
 	}
 	
 	for(var l=0; l < XPODoc.document.length; l++ ){
-		var newLine = myIFrame.contentWindow.document.createElement('div');
+		var newLine = getDoc().createElement('div');
 		newLine.setAttribute('id', XPODoc.getLineId(l) );
 		newLine.setAttribute('class', "line");		// RELATED TO FIX OF ISSUE #1
 		myDoc.appendChild( newLine );				
@@ -526,8 +709,19 @@ function refreshDocument() {
 // This function will perform auto-scrolling of the IFrame to keep the cursor in view at all times
 function adjustScroll() {
 	// TODO: COMMENT THIS FUNCTION
-	var frameWidth = myIFrame.contentWindow.innerWidth;
-	var frameHeight = myIFrame.contentWindow.innerHeight;
+	var frameWidth;
+	var frameHeight;
+	if(isIE == true){
+		frameWidth = getDoc().body.clientWidth;
+		frameHeight = getDoc().body.clientHeight;
+	}
+	else{
+		frameWidth = myIFrame.contentWindow.innerWidth;
+		frameHeight = myIFrame.contentWindow.innerHeight;
+	}
+
+	//var frameWidth = myIFrame.contentWindow.innerWidth;
+	//var frameHeight = myIFrame.contentWindow.innerHeight;
 	var cursorDocOffsetX = (cursorColumn*FONT_WIDTH) + PADDING_LEFT;
 	var cursorDocOffsetY = (cursorLine*FONT_HEIGHT) + PADDING_TOP;
 	var visibleEdgeX = getScrollOffsetX()+frameWidth-FONT_WIDTH;
@@ -539,7 +733,13 @@ function adjustScroll() {
 	else if (cursorDocOffsetX<getScrollOffsetX()) scrollAmountX=cursorDocOffsetX-getScrollOffsetX()-100;
 	if (cursorDocOffsetY>visibleEdgeY) scrollAmountY=cursorDocOffsetY-visibleEdgeY+100;
 	else if (cursorDocOffsetY<getScrollOffsetY()) scrollAmountY=cursorDocOffsetY-getScrollOffsetY()-100;
-	myIFrame.contentWindow.scrollBy(scrollAmountX, scrollAmountY);
+	
+	if(isIE == true){
+		myIFrame.scrollBy(scrollAmountX, scrollAmountY);
+	}
+	else{
+		myIFrame.contentWindow.scrollBy(scrollAmountX, scrollAmountY);
+	}
 }
 
 
@@ -548,19 +748,27 @@ function adjustScroll() {
 /********** INITIALIZATION FUNCTION *********/
 // FIXME:  I SUCK
 function init() {
-	myIFrame = document.getElementById("myI");
+	var ua = navigator.userAgent.toLowerCase();	
+	isFF = (ua.indexOf("firefox") != -1);
+	isIE = (ua.indexOf("msie") != -1);
+	isChrome = (ua.indexOf("chrome") != -1);
+	isSafari = (ua.indexOf("safari") != -1) && (ua.indexOf("chrome") == -1);
+	
+	if(isIE == false){
+		myIFrame = document.getElementById("myI");
+	}
+	else{
+		myIFrame = frames["myI"];
+	}
 	mainDoc = document;
 
 	mouse_x_box = document.getElementById("mX");
 	mouse_y_box = document.getElementById("mY");
 	cursor_line_box = document.getElementById("cL");
 	cursor_column_box = document.getElementById("cC");
-	
+
 	cursorLine = 0;
 	cursorColumn = 0;
-
-	myIFrame.contentWindow.document.addEventListener("click",function(e){clearFormatting(cursorLine);captureMousePos(e);deriveCursor();renderCursor();}, true);
-	myIFrame.contentWindow.document.addEventListener("keypress",function(e){clearFormatting(cursorLine);type(e);renderCursor();adjustScroll();}, true);
 
 	//*****Populate our data structure***********
 	var curline = "";
@@ -569,7 +777,7 @@ function init() {
 }
 // FIXME:  ^^^ REALLY THIS SUCKS
 
-function loadNewDoc(docText) {
+function loadNewDoc(docText, accessMode) {
 	XPODoc.blankDocument();
 	var textArr = docText.split(/\r\n|\r|\n/);
 	for(var i=0; i < textArr.length; i++ ){
@@ -577,11 +785,36 @@ function loadNewDoc(docText) {
 	}
 	//********** Done populating data structure **********
 	
+	readOnly = (accessMode == "r");
+	
 	// Render the entire document's HTML
 	refreshDocument();
-	// Enable immediate editing
-	myIFrame.contentWindow.focus();
+	
+	// Only enable listeners in write mode
+	if(readOnly == false){
+		if(isIE == true || isChrome == true || isSafari == true){
+			getDoc().onclick = function(event){clearFormatting(cursorLine);captureMousePos(event);deriveCursor();renderCursor();};
+			getDoc().onkeydown = function(event){clearFormatting(cursorLine);type(event);renderCursor();adjustScroll();return false;};
+		}
+		else{
+			getDoc().addEventListener("click",function(e){clearFormatting(cursorLine);captureMousePos(e);deriveCursor();renderCursor();}, true);
+			getDoc().addEventListener("keypress",function(e){clearFormatting(cursorLine);type(e);renderCursor();adjustScroll();}, true);
+		}
+		
+		// Enable immediate editing
+		if(isIE == true) myIFrame.focus();
+		else myIFrame.contentWindow.focus();
+	}
+	else{
+		if(isIE == true || isChrome == true || isSafari == true){
+			getDoc().onclick = null;
+			getDoc().onkeydown = null;
+		}
+		else{
+			// Remove event listener for FF here...
+		}
+	}
 }
 
 </script>
-<iframe id="myI" src="./editor/editableContent.html" style="width:100%;height:100%;"></iframe><br />
+<iframe id="myI" name="myI" src="./editor/editableContent.html" style="width:100%;height:100%;"></iframe><br />
