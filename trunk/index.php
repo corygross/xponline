@@ -12,6 +12,7 @@ if(isset($_SESSION['uID']) == false || $_SESSION['uID'] == ""){
 <link rel="stylesheet" href="black.css" type="text/css" />
 <script language="javascript" src="prototype.js"></script>
 <script language="javascript" src="documentManagement.js"></script>
+<script language="javascript" src="editMenu.js"></script>
 <script language="javascript" src="menu.js"></script>
 <script language="javascript" src="windows.js"></script>
 <script language="javascript" src="bm.js"></script>

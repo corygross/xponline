@@ -40,14 +40,16 @@ function exitMenuClick()
 	window.location = "logout.php";
 }
 
+var bookmarkArray;
 function findBookmarkMenuClick()
 {
+	bookmarkArray = XPODoc.document.findAllBookmarks();
 	openPopup('find_bm','Find Bookmark','findBM');
 }
 
 function findMenuClick()
 {
-	alert("find");
+	openPopup('find_text','Find','find_text');
 }
 
 function hidemenu(elmnt)
