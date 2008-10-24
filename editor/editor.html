@@ -665,10 +665,26 @@ function displayCursorPos() {
 	//cursor_column_box.value = cursorColumn;
 }
 // This function clears the formatting of the line specified by paramLineNumber
-function clearFormatting ( paramLineNum ) {
+function clearFormatting( paramLineNum ) {
 	if(getDoc().getElementById( XPODoc.getLineId(paramLineNum) ) != null){
 		getDoc().getElementById( XPODoc.getLineId(paramLineNum) ).innerHTML = XPODoc.getLineText(paramLineNum);
 	}
+}
+// This function clears the old cursor and moves to the line specified by paramLineNumber
+function gotoLine( paramLineNum ) {
+	clearFormatting(cursorLine);
+	cursorLine = paramLineNum;
+	cursorColumn = 0;
+	renderCursor();
+	adjustScroll();
+}
+// This function clears the old cursor and moves to the line specified by paramLineNumber
+function gotoPosition( paramLineNum, paramColNum ) {
+	clearFormatting(cursorLine);
+	cursorLine = paramLineNum;
+	cursorColumn = paramColNum;
+	renderCursor();
+	adjustScroll();
 }
 // This function renders the cursor in the document. 
 function renderCursor() {
