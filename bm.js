@@ -6,6 +6,35 @@ function addBM(windowID){
 	hidePopup(windowID);
 }
 
+Array.prototype.findAllBookmarks = function() {
+	var returnArray = new Array();
+	
+	var regEx1 = new RegExp("TODO:", "gi");
+	var regEx2 = new RegExp("HACK:", "gi");
+	var regEx3 = new RegExp("FIXME:", "gi");
+	
+	for (i=0; i<this.length; i++) {
+		if(regEx1.test(this[i].text)){
+			returnArray.push(new bookmarkResult(i, this[i].text));
+		}
+		if(regEx2.test(this[i].text)){
+			returnArray.push(new bookmarkResult(i, this[i].text));
+		}
+		if(regEx3.test(this[i].text)){
+			returnArray.push(new bookmarkResult(i, this[i].text));
+		}
+    }
+	return returnArray;
+}
+
+/////////////////////////////////////////////////////
+///////////////// bookmarkResult object ////////////////
+function bookmarkResult(paramLineID, paramLineText)
+{
+	this.lineID = paramLineID;
+	this.lineText = paramLineText;
+}
+
 function get_bm_value()
 {
 	for (var i=0; i < document.addBMForm.bmType.length; i++)
@@ -18,9 +47,9 @@ function get_bm_value()
 }
 
 function goToBM(windowID){
-	if( gotoLine != -1){
-		alert('goto line: ' + gotoLine);
-		hidePopup(windowID);
+	if( gotoLineNum != -1){
+		gotoLine(gotoLineNum);
+		destroyPopup(windowID);
 	}
 	else{
 		alert('Please select a bookmark!');
@@ -28,12 +57,12 @@ function goToBM(windowID){
 }
 
 var selectedBM = null;
-var gotoLine = -1;
+var gotoLineNum = -1;
 function selectBM(obj, line){
 	if(selectedBM != null){
 		selectedBM.className = "bm";
 	}
 	obj.className = "bm_selected";	
 	selectedBM = obj;
-	gotoLine = line;
+	gotoLineNum = line;
 }
