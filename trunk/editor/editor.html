@@ -513,9 +513,6 @@ function setInputMode( paramMODE ) {
 // This function is responsible for analyzing a keyPressEvent and subsequently
 // executing the appropriate function, based on the charCode
 function type( paramEvent ) {
-	// If we can't find the current line, just bail out
-	if( XPODoc.getLineText(cursorLine) == false ) return;
-	
 	// This needs a lot of cleanup...
 	var evt;
 	if(isFF == true){
@@ -688,7 +685,6 @@ function gotoPosition( paramLineNum, paramColNum ) {
 }
 // This function renders the cursor in the document. 
 function renderCursor() {
-	if(XPODoc.getLineText(cursorLine) == false) return;
 	// Slice 'n dice the line to isolate the cursor
 	var tempCurrentLine = new Array();
 	tempCurrentLine.push(XPODoc.getLineText(cursorLine).substring(0,cursorColumn));
