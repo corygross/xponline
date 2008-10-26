@@ -17,6 +17,7 @@ if(isset($_SESSION['uID']) == false || $_SESSION['uID'] == ""){
 <script language="javascript" src="windows.js"></script>
 <script language="javascript" src="bm.js"></script>
 <script language="javascript" src="controls/contact_search/suggest_script.js"></script>
+<script	type="text/javascript" src="editor/toggleSH.js"></script>
 </head>
 
 <body style="margin:0px;padding:0px;" onload="init()">
