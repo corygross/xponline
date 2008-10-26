@@ -17,6 +17,7 @@
    <tr><td class="menu" onclick="findMenuClick();">Find</td></tr>
    <tr><td class="menu" onclick="replaceMenuClick();">Replace</td></tr>
    <tr><td class="menu" onclick="selectAllMenuClick();">Select All</td></tr>
+   <tr><td class="menu" onclick="syntaxHighlightingToggle();">Toggle Syntax Highlighting</td></tr>
    </table>
 </td>
 

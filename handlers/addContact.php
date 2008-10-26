@@ -6,7 +6,7 @@ $uID = $_SESSION['uID'];
 $userToAdd = $_GET['userToAdd'];
 
 if($uID == "" || $userToAdd == ""){
-	echo "fail";
+	echo "fail - no user data";
 	return;
 }
 
@@ -14,7 +14,7 @@ $addSQL = "INSERT INTO contacts VALUES ('$uID','$userToAdd','1','0')";
 $response = runQuery($addSQL);
 
 if(!response){
-	echo "fail";
+	echo "fail - insert query failed";
 	return;
 }
 
