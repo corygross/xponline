@@ -3,7 +3,7 @@ session_start();
 
 $host = "localhost";
 $username = "root";
-$password = "";
+$password = "root";
 $db = "xponline";
 
 mysql_connect($host,$username,$password);

@@ -59,7 +59,38 @@ function textDocument()
 	
 	//////////////////////////////////////////////////
 	////////////// MEMBER FUNCTIONS ///////////////
-	
+	this.indexLineText = function(inputText){
+		var testArr = new Array("public", "static", "void");
+		alert("create words arr");
+		var words = inputText.split(" ");
+		alert("create newLine var");
+		
+		var newLine = " ";
+		alert("enter for loop");
+		for(var count = 0; count < words.length; count++)
+		{	
+			alert("beginning of function");
+			if(testArr.indexOf(words[count]) == -1)
+			{
+				alert("nothing");
+				newLine += words[count] + " ";
+			}
+			else
+			{
+				alert("got one");
+				var temp = words[count];
+				var markedWord = "<div class=" + temp + ">" + temp + "</div>";
+				newLine += markedWord + " ";
+				delete markedWord;
+				delete temp;
+			}
+//			alert(words[count]);
+		}
+		alert(newLine);
+		return newLine;
+		//return words.length;
+		//return "test";
+	}
 	// This function adds a line to the end of the document
 	this.appendLine = function( paramText ) {
 		this.insertLine( this.getDocumentLength(), paramText );
@@ -792,8 +823,13 @@ function init() {
 function loadNewDoc(docText, accessMode) {
 	XPODoc.blankDocument();
 	var textArr = docText.split(/\r\n|\r|\n/);
-	for(var i=0; i < textArr.length; i++ ){
-		XPODoc.appendLine( textArr[i] );
+	for(var i=0; i < textArr.length; i++ )
+	{
+		var temp = "";
+		//Parses the contents of each line for syntax hightlighting.
+		temp = XPODoc.indexLineText(textArr[i]);
+		XPODoc.appendLine( temp );			
+//	XPODoc.appendLine( textArr[i] );
 	}
 	//********** Done populating data structure **********
 	
@@ -830,3 +866,4 @@ function loadNewDoc(docText, accessMode) {
 
 </script>
 <iframe id="myI" name="myI" src="./editor/editableContent.html" style="width:100%;height:100%;"></iframe><br />
+<link rel="stylesheet" scr="style.css" id="ss">

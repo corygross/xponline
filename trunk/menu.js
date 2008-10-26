@@ -35,6 +35,10 @@ function downloadMenuClick()
 	alert("download");
 }
 
+function syntaxHighlightingToggle()
+{
+	alert("Toggle Syntax Highlighting");
+}
 function exitMenuClick()
 {
 	window.location = "logout.php";

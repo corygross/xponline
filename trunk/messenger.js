@@ -276,7 +276,7 @@ function initContactUpdate(){
 new Ajax.PeriodicalUpdater({ success: 'contactList' }, './handlers/updateContactList.php',
   {
     method: 'get',
-    frequency: 30,
+    frequency: 5,
 	onSuccess:function(transport)
 	{
 		//wait for the list to be updated, then fix the highlighting
@@ -306,8 +306,7 @@ var Comet = Class.create();
 Comet.prototype = {
 	url:'./handlers/messagePusher.php',
 	noerror:true,
-	initialize: function(){},
-	
+	initialize: function(){var ffCheck = navigator.userAgent.include('Firefox');},
 	//Define the connection function
 	connect:function()
 		{
@@ -318,28 +317,44 @@ Comet.prototype = {
 					//On a successful response 
 					onSuccess:function(transport)
 					{		
-						if(transport.responseText != ""){
+						if(transport.responseText != "")
+						{
 							//alert(transport.responseText);
 							var response_arr = transport.responseText.split("&^*");
 							var i = 3;
 							while(i<response_arr.length){
-								receiveNewMessage(response_arr[i-3],response_arr[i-2],response_arr[i-1]);
-								ackMessage(response_arr[i]);
-								i = i + 4;
-							}
+									receiveNewMessage(response_arr[i-3],response_arr[i-2],response_arr[i-1]);
+									ackMessage(response_arr[i]);
+									i = i + 4;
+								}
+							transport.responseText = "";
 						}
-						transport.responseText = "";
+					
 					},
 				
 					//When the request is completed
 					onComplete:function()
 					{
 						//Immediately reconnect
-						//alert('disconnect');
 						this.comet.connect();  //Connect immeidietly after disconnect (e.g. long polling!)
 					},
+					//Make sure we are printing messages as they come from the server
 					onInteractive:function(transport)
 					{
+							if(ffCheck == true && transport.responseText != "")
+							{
+								//alert(transport.responseText);
+								var response_arr = transport.responseText.split("&^*");
+								var i = 3;
+								while(i<response_arr.length)
+								{
+									receiveNewMessage(response_arr[i-3],response_arr[i-2],response_arr[i-1]);
+									ackMessage(response_arr[i]);
+									i = i + 4;
+								}
+							transport.responseText = "";
+						}
+						
 						//var elements = Form.getElements('theForm');
 						//elements[0].value = "";
 						//elements[0].value = transport.responseText;
@@ -359,7 +374,6 @@ Comet.prototype = {
 		  //$('content').innerHTML += '<div>' + response['msg'] + '</div>';
 		}
 }
-			
 //create the comet instance and connect
 var comet = new Comet();
 comet.connect();
