@@ -4,49 +4,49 @@
  * CSS for Java reserved words syntax highlighting
  *
  */
-div#public{background-color:blue;}
-div#abstract{background-color:}
-div#continue{background-color:}	
-div#for	{background-color:}
-div#new	{background-color:}
-div#switch{background-color:}
-div#assert***	{background-color:}
-div#default	goto*{background-color:}
-div#package	{background-color:}
-div#synchronized{background-color:}
-div#boolean	{background-color:}
-div#do	{background-color:}
-div#if	{background-color:}
-div#private	{background-color:}
-div#this{background-color:}
-div#break	{background-color:}
-div#double	{background-color:}
-div#implements	{background-color:}
-div#protected	{background-color:}
-div#throw{background-color:}
-div#byte	{background-color:}
-div#else	{background-color:}
-div#import	{background-color:}
-div#public	{background-color:}
-div#throws{background-color:}
-div#case	{background-color:}
-div#enum****	{background-color:}
-div#instanceof	{background-color:}
-div#return	{background-color:}
-div#transient{background-color:}
-div#catch	{background-color:}
-div#extends	{background-color:}
-div#int	{background-color:}
-div#short	{background-color:}
-div#try{background-color:}
-div#char	{background-color:}
-div#final	{background-color:}
-div#interface	{background-color:}
-div#static	{background-color:red}
-div#void{background-color:yellow}
-div#class	{background-color:}
-div#finally	{background-color:}
-div#long	{background-color:}
-div#strictfp**	{background-color:}
-div#volatile{background-color:}
-div#const{background-color:}
+.public{color:blue;};
+.abstract{color:}
+.continue{color:}	
+.for	{color:}
+.new	{color:}
+.switch{color:}
+.assert***	{color:}
+.default	goto*{color:}
+.package	{color:}
+.synchronized{color:}
+.boolean	{color:}
+.do	{color:}
+.if	{color:}
+.private	{color:}
+.this{color:}
+.break	{color:}
+.double	{color:}
+.implements	{color:}
+.protected	{color:}
+.throw{color:}
+.byte	{color:}
+.else	{color:}
+.import	{color:}
+.public	{color:}
+.throws{color:}
+.case	{color:}
+.enum****	{color:}
+.instanceof	{color:}
+.return	{color:}
+.transient{color:}
+.catch	{color:}
+.extends	{color:}
+.int	{color:}
+.short	{color:}
+.try{color:}
+.char	{color:}
+.final	{color:}
+.interface	{color:}
+.static	{color:#FFAABB}
+.void{color:#FFFFAA}
+.class	{color:}
+.finally	{color:}
+.long	{color:}
+.strictfp**	{color:}
+.volatile{color:}
+.const{color:}

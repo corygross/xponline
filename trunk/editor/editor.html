@@ -1,4 +1,13 @@
+
 <script type="text/javascript">
+/*var theIFrame = document.getElementByID('')
+var cssLink = document.createElement("link") 
+cssLink.href = "style.css"; 
+cssLink .rel = "stylesheet"; 
+cssLink .type = "text/css"; 
+frames['myI'].document.body.appendChild(cssLink);
+//(document.getElementByID('myI')).document.body.appendChild(cssLink);
+*/
 
 /////////////////////////////////////////////////////
 ////////// KNOWN ISSUES SO FAR ///////////////////
@@ -61,32 +70,36 @@ function textDocument()
 	////////////// MEMBER FUNCTIONS ///////////////
 	this.indexLineText = function(inputText){
 		var testArr = new Array("public", "static", "void");
-		alert("create words arr");
+		//alert("create words arr");
 		var words = inputText.split(" ");
-		alert("create newLine var");
+//		alert("create newLine var");
+
+		//Change the document css to the applicable language css
+		//HERE!
 		
 		var newLine = " ";
-		alert("enter for loop");
+//		alert("enter for loop");
 		for(var count = 0; count < words.length; count++)
 		{	
-			alert("beginning of function");
+//			alert("beginning of function");
 			if(testArr.indexOf(words[count]) == -1)
 			{
-				alert("nothing");
+//				alert("nothing");
 				newLine += words[count] + " ";
 			}
 			else
 			{
-				alert("got one");
+//				alert("got one");
 				var temp = words[count];
-				var markedWord = "<div class=" + temp + ">" + temp + "</div>";
+//				var markedWord = "<span style='color:#CDAAFF;'" + temp + "'>" + temp + "</span>";
+				var markedWord = "<span class='" + temp + "'>" + temp + "</span>";
 				newLine += markedWord + " ";
 				delete markedWord;
 				delete temp;
 			}
 //			alert(words[count]);
 		}
-		alert(newLine);
+//		alert(newLine);
 		return newLine;
 		//return words.length;
 		//return "test";
@@ -866,4 +879,3 @@ function loadNewDoc(docText, accessMode) {
 
 </script>
 <iframe id="myI" name="myI" src="./editor/editableContent.html" style="width:100%;height:100%;"></iframe><br />
-<link rel="stylesheet" scr="style.css" id="ss">

@@ -37,7 +37,9 @@ function downloadMenuClick()
 
 function syntaxHighlightingToggle()
 {
-	alert("Toggle Syntax Highlighting");
+//	alert("Toggle Syntax Highlighting");
+//	document.getElementById('ss');
+	testFunction();
 }
 function exitMenuClick()
 {
