@@ -1,3 +1,5 @@
+// This function adds a bookmark to the document
+// TODO: add bookmark into the doc
 function addBM(windowID){
 	var text = document.getElementById('bmText').value;
 	var newBM = get_bm_value() + ": " + text;
@@ -6,6 +8,7 @@ function addBM(windowID){
 	hidePopup(windowID);
 }
 
+// This function searches through the document and returns an array with all of the bookmarks in it
 Array.prototype.findAllBookmarks = function() {
 	var returnArray = new Array();
 	
@@ -35,17 +38,19 @@ function bookmarkResult(paramLineID, paramLineText)
 	this.lineText = paramLineText;
 }
 
+// The function gets the selected bookmark type ie TODO, FIXME...
 function get_bm_value()
 {
 	for (var i=0; i < document.addBMForm.bmType.length; i++)
 	{
-	if (document.addBMForm.bmType[i].checked)
+		if (document.addBMForm.bmType[i].checked)
 		{
 			return document.addBMForm.bmType[i].value;
 		}
 	}
 }
 
+// This function goes to the bookmark that was selected
 function goToBM(windowID){
 	if( gotoLineNum != -1){
 		gotoLine(gotoLineNum);
@@ -56,6 +61,7 @@ function goToBM(windowID){
 	}
 }
 
+// This function is called when a user selects a bookmark.
 var selectedBM = null;
 var gotoLineNum = -1;
 function selectBM(obj, line){
