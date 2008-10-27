@@ -1,3 +1,4 @@
+// This function searches the array of lines and returns an array of all matches
 Array.prototype.findAllMatches = function(searchStr, matchCase) {
 	var returnArray = new Array();
 	
@@ -16,6 +17,7 @@ Array.prototype.findAllMatches = function(searchStr, matchCase) {
 	return returnArray;
 }
 
+// This function finds the next match after the cursor position
 Array.prototype.findNext = function(searchStr, matchCase) {
 	var curLine = getCursorLine();
 	var curCol = getCursorColumn();
@@ -42,6 +44,7 @@ Array.prototype.findNext = function(searchStr, matchCase) {
     return false;
 }
 
+// This function finds the previous match
 Array.prototype.findPrev = function(searchStr, matchCase) {
 	var foundIndex;
 	var curLine = getCursorLine();
@@ -67,6 +70,23 @@ Array.prototype.findPrev = function(searchStr, matchCase) {
     return false;
 }
 
+// This function takes the line number from the goto line popup window and goes to it
+function gotoLineGo()
+{
+	var lineNum = document.getElementById('gotoLineInput').value;
+	if(lineNum == ""){
+		alert('Please enter a line number');
+		return;
+	}
+	var IsNum = /^-?\d+$/.test(lineNum);
+	if(IsNum == false){
+		alert('Please only enter numbers');
+		return;
+	}
+	gotoLine(lineNum);
+	hidePopup('goto_window');
+}
+
 /////////////////////////////////////////////////////
 ///////////////////// result object ////////////////////
 function result(paramLineID, paramStartIndex, paramEndIndex)
@@ -86,13 +106,9 @@ function findAll(){
 		return;
 	}
 	return XPODoc.document.findAllMatches(text, document.findForm.findMatchCase.checked);
-	
-	//var ans = result.pop();
-	//alert('line: '+ans.lineID);
-	//alert('start: '+ans.startIndex);
-	//alert('end: '+ans.endIndex);
 }
 
+// This function is called by the Find window when the user clicks Find Next
 function findText(){
 	var text = document.getElementById('textToFind').value;
 	if(text == ""){

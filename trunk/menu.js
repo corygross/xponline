@@ -58,6 +58,11 @@ function findMenuClick()
 	openPopup('find_text','Find','find_text');
 }
 
+function gotoMenuClick()
+{
+	openPopup('goto_window','Go To Line','goto_window');
+}
+
 function hidemenu(elmnt)
 {
     document.getElementById(elmnt).style.visibility="hidden";
