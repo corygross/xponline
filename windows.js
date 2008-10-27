@@ -106,8 +106,7 @@ function makeNewPopup(id, title, type)
 		newHTML += "<br/>";
 		newHTML += "<textarea id='send"+popupID+"' name='send"+popupID+"' style='width:98%;' rows='4' onkeyup=\"checkEnter(event,'"+popupID+"');\"></textarea>";
 	}
-	else
-	if(type == 'upload')
+	else if(type == 'upload')
 	{
 		//Create the form that will allow file selection
 		newHTML += "<iframe id='uploadIframe' name='uploadIframe' style='display:none'></iframe>";
@@ -119,8 +118,7 @@ function makeNewPopup(id, title, type)
 		newHTML += "</form><br />";
 		newHTML += "</div>";
 	}
-	else 
-	if(type == 'addBM')
+	else if(type == 'addBM')
 	{
 		newHTML += "<form name='addBMForm'><table style='width:100%;'><tr><td style='width:10%;'></td><td style='width:80%;'>Select a bookmark type:</td><td style='width:10%;'></td></tr>";
 		newHTML += "<tr><td></td><td><input type='radio' name='bmType' value='TODO' checked='checked'/>TODO</td><td></td></tr>";
@@ -132,84 +130,98 @@ function makeNewPopup(id, title, type)
 		newHTML += "<tr><td></td><td align='right'><input type='button' value='Cancel' onClick=\"hidePopup('"+popupID+"')\"/><input type='button' value='Ok' onClick=\"addBM('"+popupID+"')\"/></td><td></td></tr>";
 		newHTML += "</table><br /></form>";
 	}
-	else 
-		if(type == 'findBM')
+	else if(type == 'findBM')
+	{
+		newHTML += "<table style='width:100%;'><tr><td style='width:10%;'></td><td style='width:80%;'>Current bookmarks:</td><td style='width:10%;'></td></tr>";
+		newHTML += "<tr><td>&nbsp;</td><td>";
+		newHTML += "<div style='overflow:auto;background-color:white;margin-left:5px;margin-right:5px;height:250px;'>";
+		newHTML += "<ul class='bms'>";
+		
+		for (i=0; i<bookmarkArray.length; i++)
 		{
-			newHTML += "<table style='width:100%;'><tr><td style='width:10%;'></td><td style='width:80%;'>Current bookmarks:</td><td style='width:10%;'></td></tr>";
-			newHTML += "<tr><td>&nbsp;</td><td>";
-			newHTML += "<div style='overflow:auto;background-color:white;margin-left:5px;margin-right:5px;height:250px;'>";
-			newHTML += "<ul class='bms'>";
-			
-			for (i=0; i<bookmarkArray.length; i++)
-			{
-				newHTML += "<li class='bm' onClick=\"selectBM(this,'"+bookmarkArray[i].lineID+"');\">"+bookmarkArray[i].lineText+"</li>";
-			}
-			
-			newHTML += "</ul></div>";
-			newHTML += "</td><td></td></tr>";
-			newHTML += "<tr><td>&nbsp;</td><td></td><td></td></tr>";
-			newHTML += "<tr><td></td><td align='right'><input type='button' value='Cancel' onClick=\"destroyPopup('"+popupID+"')\"/><input type='button' value='Ok' onClick=\"goToBM('"+popupID+"');\"/></td><td></td></tr>";
-			newHTML += "</table><br />";
+			newHTML += "<li class='bm' onClick=\"selectBM(this,'"+bookmarkArray[i].lineID+"');\">"+bookmarkArray[i].lineText+"</li>";
 		}
-		else if(type == 'color'){
-			newHTML += "<form><table style='width:100%;'><tr><td style='width:10%;'></td><td style='width:80%;'>Select a color scheme:</td><td style='width:10%;'></td></tr>";
-			newHTML += "<tr><td></td><td><input type='radio' name='color' value='black'/>Black</td><td></td></tr>";
-			newHTML += "<tr><td></td><td><input type='radio' name='color' value='blue'/>Blue</td><td></td></tr>";
-			newHTML += "<tr><td></td><td><input type='radio' name='color' value='gray'/>Gray</td><td></td></tr>";
-			newHTML += "<tr><td>&nbsp;</td><td></td><td></td></tr>";
-			newHTML += "<tr><td></td><td align='right'><input type='button' value='Cancel' onClick=\"hidePopup('"+popupID+"')\"/><input type='button' id='submitColor' name='submitColor' value='Ok'/></td><td></td></tr>";
-			newHTML += "</table>";
-			newHTML += "</form>";
-		}
-		else if(type == 'addContact'){
-			newHTML += "<table style='width:100%;'><tr><td style='width:10%;'></td><td style='width:80%;'>Search for a contact:</td><td style='width:10%;'></td></tr>";
-			newHTML += "<tr><td></td><td>";
-			newHTML += "<div id='search-wrap'>";
-			newHTML += "<input name='search-q' id='search-q' type='text' onkeydown='checkTabKey(event)' onkeyup='autosuggest(event,\"notFriends\")'/><br />";
-			newHTML += "</div><div id='results'></div>";
-			newHTML += "</td><td></td></tr>";
-			newHTML += "<tr><td>&nbsp;</td><td></td><td></td></tr>";
-			newHTML += "<tr><td>&nbsp;</td><td>Note: Before you can chat with a new contact, they must first confirm you as a contact.</td><td></td></tr>";
-			newHTML += "<tr><td></td><td align='right'><input type='button' value='Cancel' onClick=\"destroyPopup('"+popupID+"');\"/><input type='button' id='btnAddContact' name='btnAddContact' value='Add' disabled='disabled' onClick='addContact();'/></td><td></td></tr>";
-			newHTML += "</table>";
-		}
-		else if(type == 'confirmContact'){
-			newHTML += "<form name='confirmForm'><div id='pendingContainer' name='pendingContainer'>Retrieving...</div></form>";
-		}
-		else if(type == 'new_blank'){
-			newHTML += "<table style='width:100%;'><tr><td style='width:10%;'></td><td style='width:80%;'>Enter a name for the new file:</td><td style='width:10%;'></td></tr>";
-			newHTML += "<tr><td>&nbsp;</td><td><input id='newDocName' name='newDocName' type='text' style='width:100%' /></td><td></td></tr>";
-			newHTML += "<tr><td>&nbsp;</td><td></td><td></td></tr>";
-			newHTML += "<tr><td></td><td align='right'><input type='button' value='Ok' onClick='newBlankDocument();'/><input type='button' value='Cancel' onClick=\"destroyPopup('"+popupID+"');\"/></td><td></td></tr>";
-			newHTML += "</table>";
-		}
-		else if(type == 'open_doc'){
-			newHTML += "<div id='openDocContainer' name='openDocContainer'>Retrieving...</div>";
-		}
-		else if(type == 'grantAccess'){
-			newHTML += "<table style='width:100%;'><tr><td style='width:10%;'></td><td style='width:80%;'>Search for a user:</td><td style='width:10%;'></td></tr>";
-			newHTML += "<tr><td></td><td>";
-			newHTML += "<div id='search-wrap'>";
-			newHTML += "<input name='search-q' id='search-q' type='text' onkeydown='checkTabKey(event)' onkeyup='autosuggest(event,\"all\")'/><br />";
-			newHTML += "</div><div id='results'></div>";
-			newHTML += "</td><td></td></tr>";
-			newHTML += "<tr><td>&nbsp;</td><td></td><td></td></tr>";
-			newHTML += "<tr><td>&nbsp;</td><td>Select a document:</td><td></td></tr>";
-			newHTML += "<tr><td>&nbsp;</td><td><div id='accessDocContainer' name='accessDocContainer'>Retrieving document list...</div></td><td></td></tr>";
-			newHTML += "<tr><td>&nbsp;</td><td><form name='grantForm'><input type='radio' name='aLevel' value='r' checked='checked'/>Read<br />";
-			newHTML += "<input type='radio' name='aLevel' value='w'/>Write<br />";
-			newHTML += "<input type='radio' name='aLevel' value='n'/>None</form></td><td></td></tr>";
-			newHTML += "<tr><td></td><td align='right'><input type='button' value='Cancel' onClick=\"destroyPopup('"+popupID+"');\"/><input type='button' value='Grant' onClick='grantAccess();'/></td><td></td></tr>";
-			newHTML += "</table>";
-		}
-		else if(type == 'find_text'){
-			newHTML += "<br /><form name='findForm' onkeypress='callFunctionOnEnter(event, findText);'><table style='width:100%;'><tr><td style='width:25%;'></td><td style='width:50%;'></td><td style='width:25%;'></td></tr>";
-			newHTML += "<tr><td>&nbsp;Find what:</td><td><input id='textToFind' name='textToFind' type='text' style='width:95%' /></td><td><input type='button' value='Find Next' style='width:100%' onClick='findText();'/></td></tr>";
-			newHTML += "<tr><td>&nbsp;</td><td><input type='radio' name='findType' value='up' />Up<br />";
-			newHTML += "<input type='radio' name='findType' value='down' checked='checked' />Down</td><td><input type='button' value='Find All' style='width:100%' onClick='findAll();'/><br /><input type='button' value='Close' style='width:100%' onClick=\"hidePopup('"+popupID+"');\"/></td></tr>";
-			newHTML += "<tr><td colspan='2'><input type='checkbox' id='findMatchCase' name='findMatchCase' value='matchCase' />&nbsp;Match case</td><td align='right'></td><td></td></tr>";
-			newHTML += "</table></form>";
-		}
+		
+		newHTML += "</ul></div>";
+		newHTML += "</td><td></td></tr>";
+		newHTML += "<tr><td>&nbsp;</td><td></td><td></td></tr>";
+		newHTML += "<tr><td></td><td align='right'><input type='button' value='Cancel' onClick=\"destroyPopup('"+popupID+"')\"/><input type='button' value='Ok' onClick=\"goToBM('"+popupID+"');\"/></td><td></td></tr>";
+		newHTML += "</table><br />";
+	}
+	else if(type == 'color')
+	{
+		newHTML += "<form><table style='width:100%;'><tr><td style='width:10%;'></td><td style='width:80%;'>Select a color scheme:</td><td style='width:10%;'></td></tr>";
+		newHTML += "<tr><td></td><td><input type='radio' name='color' value='black'/>Black</td><td></td></tr>";
+		newHTML += "<tr><td></td><td><input type='radio' name='color' value='blue'/>Blue</td><td></td></tr>";
+		newHTML += "<tr><td></td><td><input type='radio' name='color' value='gray'/>Gray</td><td></td></tr>";
+		newHTML += "<tr><td>&nbsp;</td><td></td><td></td></tr>";
+		newHTML += "<tr><td></td><td align='right'><input type='button' value='Cancel' onClick=\"hidePopup('"+popupID+"')\"/><input type='button' id='submitColor' name='submitColor' value='Ok'/></td><td></td></tr>";
+		newHTML += "</table>";
+		newHTML += "</form>";
+	}
+	else if(type == 'addContact')
+	{
+		newHTML += "<table style='width:100%;'><tr><td style='width:10%;'></td><td style='width:80%;'>Search for a contact:</td><td style='width:10%;'></td></tr>";
+		newHTML += "<tr><td></td><td>";
+		newHTML += "<div id='search-wrap'>";
+		newHTML += "<input name='search-q' id='search-q' type='text' onkeydown='checkTabKey(event)' onkeyup='autosuggest(event,\"notFriends\")'/><br />";
+		newHTML += "</div><div id='results'></div>";
+		newHTML += "</td><td></td></tr>";
+		newHTML += "<tr><td>&nbsp;</td><td></td><td></td></tr>";
+		newHTML += "<tr><td>&nbsp;</td><td>Note: Before you can chat with a new contact, they must first confirm you as a contact.</td><td></td></tr>";
+		newHTML += "<tr><td></td><td align='right'><input type='button' value='Cancel' onClick=\"destroyPopup('"+popupID+"');\"/><input type='button' id='btnAddContact' name='btnAddContact' value='Add' disabled='disabled' onClick='addContact();'/></td><td></td></tr>";
+		newHTML += "</table>";
+	}
+	else if(type == 'confirmContact')
+	{
+		newHTML += "<form name='confirmForm'><div id='pendingContainer' name='pendingContainer'>Retrieving...</div></form>";
+	}
+	else if(type == 'new_blank')
+	{
+		newHTML += "<table style='width:100%;'><tr><td style='width:10%;'></td><td style='width:80%;'>Enter a name for the new file:</td><td style='width:10%;'></td></tr>";
+		newHTML += "<tr><td>&nbsp;</td><td><input id='newDocName' name='newDocName' type='text' style='width:100%' /></td><td></td></tr>";
+		newHTML += "<tr><td>&nbsp;</td><td></td><td></td></tr>";
+		newHTML += "<tr><td></td><td align='right'><input type='button' value='Ok' onClick='newBlankDocument();'/><input type='button' value='Cancel' onClick=\"destroyPopup('"+popupID+"');\"/></td><td></td></tr>";
+		newHTML += "</table>";
+	}
+	else if(type == 'open_doc')
+	{
+		newHTML += "<div id='openDocContainer' name='openDocContainer'>Retrieving...</div>";
+	}
+	else if(type == 'grantAccess')
+	{
+		newHTML += "<table style='width:100%;'><tr><td style='width:10%;'></td><td style='width:80%;'>Search for a user:</td><td style='width:10%;'></td></tr>";
+		newHTML += "<tr><td></td><td>";
+		newHTML += "<div id='search-wrap'>";
+		newHTML += "<input name='search-q' id='search-q' type='text' onkeydown='checkTabKey(event)' onkeyup='autosuggest(event,\"all\")'/><br />";
+		newHTML += "</div><div id='results'></div>";
+		newHTML += "</td><td></td></tr>";
+		newHTML += "<tr><td>&nbsp;</td><td></td><td></td></tr>";
+		newHTML += "<tr><td>&nbsp;</td><td>Select a document:</td><td></td></tr>";
+		newHTML += "<tr><td>&nbsp;</td><td><div id='accessDocContainer' name='accessDocContainer'>Retrieving document list...</div></td><td></td></tr>";
+		newHTML += "<tr><td>&nbsp;</td><td><form name='grantForm'><input type='radio' name='aLevel' value='r' checked='checked'/>Read<br />";
+		newHTML += "<input type='radio' name='aLevel' value='w'/>Write<br />";
+		newHTML += "<input type='radio' name='aLevel' value='n'/>None</form></td><td></td></tr>";
+		newHTML += "<tr><td></td><td align='right'><input type='button' value='Cancel' onClick=\"destroyPopup('"+popupID+"');\"/><input type='button' value='Grant' onClick='grantAccess();'/></td><td></td></tr>";
+		newHTML += "</table>";
+	}
+	else if(type == 'find_text')
+	{
+		newHTML += "<br /><form name='findForm' onkeypress='callFunctionOnEnter(event, findText);'><table style='width:100%;'><tr><td style='width:25%;'></td><td style='width:50%;'></td><td style='width:25%;'></td></tr>";
+		newHTML += "<tr><td>&nbsp;Find what:</td><td><input id='textToFind' name='textToFind' type='text' style='width:95%' /></td><td><input type='button' value='Find Next' style='width:100%' onClick='findText();'/></td></tr>";
+		newHTML += "<tr><td>&nbsp;</td><td><input type='radio' name='findType' value='up' />Up<br />";
+		newHTML += "<input type='radio' name='findType' value='down' checked='checked' />Down</td><td><input type='button' value='Find All' style='width:100%' onClick='findAll();'/><br /><input type='button' value='Close' style='width:100%' onClick=\"hidePopup('"+popupID+"');\"/></td></tr>";
+		newHTML += "<tr><td colspan='2'><input type='checkbox' id='findMatchCase' name='findMatchCase' value='matchCase' />&nbsp;Match case</td><td align='right'></td><td></td></tr>";
+		newHTML += "</table></form>";
+	}
+	else if(type == 'goto_window')
+	{
+		newHTML += "<table style='width:100%;'><tr><td style='width:10%;'></td><td style='width:80%;'>Line number:</td><td style='width:10%;'></td></tr>";
+		newHTML += "<tr><td>&nbsp;</td><td><input id='gotoLineInput' name='gotoLineInput' type='text' style='width:100%' /></td><td></td></tr>";
+		newHTML += "<tr><td>&nbsp;</td><td></td><td></td></tr>";
+		newHTML += "<tr><td></td><td align='right'><input type='button' value='Go' onClick='gotoLineGo();'/><input type='button' value='Cancel' onClick=\"hidePopup('"+popupID+"');\"/></td><td></td></tr>";
+		newHTML += "</table>";
+	}
 
 	newElm.innerHTML = newHTML;
 	document.body.appendChild(newElm);
