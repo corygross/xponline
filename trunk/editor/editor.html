@@ -68,42 +68,7 @@ function textDocument()
 	
 	//////////////////////////////////////////////////
 	////////////// MEMBER FUNCTIONS ///////////////
-	this.indexLineText = function(inputText){
-		var testArr = new Array("public", "static", "void");
-		//alert("create words arr");
-		var words = inputText.split(" ");
-//		alert("create newLine var");
 
-		//Change the document css to the applicable language css
-		//HERE!
-		
-		var newLine = " ";
-//		alert("enter for loop");
-		for(var count = 0; count < words.length; count++)
-		{	
-//			alert("beginning of function");
-			if(testArr.indexOf(words[count]) == -1)
-			{
-//				alert("nothing");
-				newLine += words[count] + " ";
-			}
-			else
-			{
-//				alert("got one");
-				var temp = words[count];
-//				var markedWord = "<span style='color:#CDAAFF;'" + temp + "'>" + temp + "</span>";
-				var markedWord = "<span class='" + temp + "'>" + temp + "</span>";
-				newLine += markedWord + " ";
-				delete markedWord;
-				delete temp;
-			}
-//			alert(words[count]);
-		}
-//		alert(newLine);
-		return newLine;
-		//return words.length;
-		//return "test";
-	}
 	// This function adds a line to the end of the document
 	this.appendLine = function( paramText ) {
 		this.insertLine( this.getDocumentLength(), paramText );
@@ -238,7 +203,8 @@ var cursor_column_box;
 var mouse_x_box;
 var mouse_y_box;
 
-var readOnly;
+var readOnly = true;
+var syntaxHighlightOn = true;
 
 function getDoc(){
 	if(isIE == true){
@@ -735,7 +701,10 @@ function displayCursorPos() {
 // This function clears the formatting of the line specified by paramLineNumber
 function clearFormatting( paramLineNum ) {
 	if(getDoc().getElementById( XPODoc.getLineId(paramLineNum) ) != null){
-		getDoc().getElementById( XPODoc.getLineId(paramLineNum) ).innerHTML = XPODoc.getLineText(paramLineNum);
+		//getDoc().getElementById( XPODoc.getLineId(paramLineNum) ).innerHTML = XPODoc.getLineText(paramLineNum);
+
+		//Parses the contents of each line for syntax hightlighting.
+		getDoc().getElementById( XPODoc.getLineId(paramLineNum) ).innerHTML = indexLineText(XPODoc.getLineText(paramLineNum));
 	}
 }
 // This function clears the old cursor and moves to the line specified by paramLineNumber
@@ -754,19 +723,71 @@ function gotoPosition( paramLineNum, paramColNum ) {
 	renderCursor();
 	adjustScroll();
 }
+// This function takes each line of input and applies formatting based on keywords
+function indexLineText(inputText){
+
+	if(syntaxHighlightOn == false) return inputText;
+	
+	var testArr = new Array("public", "static", "void");
+	//alert("create words arr");
+	var words = inputText.split(" ");
+//		alert("create newLine var");
+
+	//Change the document css to the applicable language css
+	//HERE!
+	
+	var newLine = "";
+//		alert("enter for loop");
+	for(var count = 0; count < words.length; count++)
+	{	
+//			alert("beginning of function");
+		if(testArr.indexOf(words[count]) == -1)
+		{
+			// This regex probably should be global, but I am testing - CG
+			// If the 'word' is a number, highlight it with the class 'number'
+			var IsNum = /^-?\d+$/.test(words[count]);
+			if(IsNum == true){
+				var markedWord = "<span class='" + "number" + "'>" + words[count] + "</span>";
+				newLine += markedWord + " ";
+			}
+			else{
+//				alert("nothing");
+				newLine += words[count] + " ";
+			}
+		}
+		else
+		{
+//				alert("got one");
+			var temp = words[count];
+//				var markedWord = "<span style='color:#CDAAFF;'" + temp + "'>" + temp + "</span>";
+			var markedWord = "<span class='" + temp + "'>" + temp + "</span>";
+			newLine += markedWord + " ";
+			delete markedWord;
+			delete temp;
+		}
+//			alert(words[count]);
+	}
+//		alert(newLine);
+	return newLine;
+	//return words.length;
+	//return "test";
+}
 // This function renders the cursor in the document. 
 function renderCursor() {
 	// Slice 'n dice the line to isolate the cursor
 	var tempCurrentLine = new Array();
+
 	tempCurrentLine.push(XPODoc.getLineText(cursorLine).substring(0,cursorColumn));
 	tempCurrentLine.push(XPODoc.getLineText(cursorLine).substr(cursorColumn, 1));
 	tempCurrentLine.push(XPODoc.getLineText(cursorLine).substring(cursorColumn+1));
+
 	// Apply formatting
 //	if ( tempCurrentLine[1].length == 0 ) tempCurrentLine[1]=" ";  // <--- FIX#2
 	tempCurrentLine[1] = "<font style='BACKGROUND-COLOR: red'>" + tempCurrentLine[1] + "</font>";
 	// display new formatting
 	try {
-		getDoc().getElementById( XPODoc.getLineId(cursorLine) ).innerHTML = tempCurrentLine.join("");
+		//getDoc().getElementById( XPODoc.getLineId(cursorLine) ).innerHTML = tempCurrentLine.join("");
+		getDoc().getElementById( XPODoc.getLineId(cursorLine) ).innerHTML = indexLineText(tempCurrentLine.join(""));
 	}
 	catch (e) { alert("line not found!"); }
 	
@@ -788,6 +809,11 @@ function refreshDocument() {
 		if ( l == cursorLine ) {renderCursor();}
 		else clearFormatting( l );
 	}
+}
+// This function toggles whether or not syntax highlighting is on
+function toggleSyntaxHighlight() {
+	syntaxHighlightOn = !syntaxHighlightOn;
+	refreshDocument();
 }
 // This function will perform auto-scrolling of the IFrame to keep the cursor in view at all times
 function adjustScroll() {
@@ -865,11 +891,7 @@ function loadNewDoc(docText, accessMode) {
 	var textArr = docText.split(/\r\n|\r|\n/);
 	for(var i=0; i < textArr.length; i++ )
 	{
-		var temp = "";
-		//Parses the contents of each line for syntax hightlighting.
-		temp = XPODoc.indexLineText(textArr[i]);
-		XPODoc.appendLine( temp );			
-//	XPODoc.appendLine( textArr[i] );
+		XPODoc.appendLine( textArr[i] );
 	}
 	//********** Done populating data structure **********
 	

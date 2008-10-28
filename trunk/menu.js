@@ -39,7 +39,8 @@ function syntaxHighlightingToggle()
 {
 //	alert("Toggle Syntax Highlighting");
 //	document.getElementById('ss');
-	testFunction();
+	//testFunction();
+	toggleSyntaxHighlight();
 }
 function exitMenuClick()
 {
