@@ -6,7 +6,7 @@ function accessMenuClick()
 
 function addBookmarkMenuClick()
 {
-	openPopup('add_bm','Add Bookmark','addBM');
+	openPopup('add_bm','Add Bookmark','add_bm');
 }
 
 function changeDocTitle(title)
@@ -17,7 +17,7 @@ function changeDocTitle(title)
 
 function colorMenuClick()
 {
-	openPopup('color_pick','Color Scheme','color');
+	openPopup('color_pick','Color Scheme','color_pick');
 }
 
 function copyIconClicked()
@@ -50,7 +50,7 @@ var bookmarkArray;
 function findBookmarkMenuClick()
 {
 	bookmarkArray = XPODoc.document.findAllBookmarks();
-	openPopup('find_bm','Find Bookmark','findBM');
+	openPopup('find_bm','Find Bookmark','find_bm');
 }
 
 function findMenuClick()
@@ -70,7 +70,7 @@ function hidemenu(elmnt)
 
 function highlighMenuClick()
 {
-	alert("highlight");
+	openPopup('syntax_lang','Highlight Language','syntax_lang');
 }
 
 function newMenuClick()

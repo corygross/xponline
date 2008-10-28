@@ -1,11 +1,12 @@
 // This function adds a bookmark to the document
 // TODO: add bookmark into the doc
-function addBM(windowID){
+function addBM(){
 	var text = document.getElementById('bmText').value;
 	var newBM = get_bm_value() + ": " + text;
 	//XPODoc.insertLine(getCursorLine(), newBM);	
 	alert(newBM);
-	hidePopup(windowID);
+	insertBookmark(newBM);
+	hidePopup('add_bm');
 }
 
 // This function searches through the document and returns an array with all of the bookmarks in it
@@ -51,10 +52,10 @@ function get_bm_value()
 }
 
 // This function goes to the bookmark that was selected
-function goToBM(windowID){
+function goToBM(){
 	if( gotoLineNum != -1){
 		gotoLine(gotoLineNum);
-		destroyPopup(windowID);
+		destroyPopup('find_bm');
 	}
 	else{
 		alert('Please select a bookmark!');
