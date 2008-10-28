@@ -11,8 +11,10 @@ if(isset($_SESSION['uID']) == false || $_SESSION['uID'] == ""){
 <title>XPonline</title>
 <link rel="stylesheet" href="black.css" type="text/css" />
 <script language="javascript" src="prototype.js"></script>
+<script language="javascript" src="JSprototypes.js"></script>
 <script language="javascript" src="documentManagement.js"></script>
 <script language="javascript" src="editMenu.js"></script>
+<script language="javascript" src="viewMenu.js"></script>
 <script language="javascript" src="menu.js"></script>
 <script language="javascript" src="windows.js"></script>
 <script language="javascript" src="bm.js"></script>
@@ -39,7 +41,7 @@ require_once "menu.php";
 <td>
 <table style="margin-left:auto; margin-right:0px;">
 <tr>
-<td class="details"><span id="curLineCol" name="curLineCol">Ln: Col:</span></td>
+<td class="details"><span id="curLineCol" name="curLineCol"></span></td>
 <td class="details">&nbsp;&nbsp;&nbsp;<span id="fileName" name="fileName"></span></td>
 </tr>
 </table>

@@ -3,21 +3,6 @@ var offsetTop,offsetLeft;
 var myWindow;
 var z = 10;
 
-function grab(id, e) {
-	e = getEvent(e);	
-	myWindow = document.getElementById(id);
-
-	startTop = parseInt(myWindow.style.top);
-	startLeft = parseInt(myWindow.style.left);
-	offsetTop = startTop - e.clientY;
-	offsetLeft = startLeft - e.clientX;
-
-	document.onmousemove = drag;
-	document.onmouseup = drop;
-	
-	return false; //don't select text in some browsers
-}
-
 function drag(e){
 	e = getEvent(e);
 
@@ -39,6 +24,21 @@ function getEvent(e){
 	if (typeof e.layerX == 'undefined') e.layerX = e.offsetX;
 	if (typeof e.layerY == 'undefined') e.layerY = e.offsetY;
 	return e;
+}
+
+function grab(id, e) {
+	e = getEvent(e);	
+	myWindow = document.getElementById(id);
+
+	startTop = parseInt(myWindow.style.top);
+	startLeft = parseInt(myWindow.style.left);
+	offsetTop = startTop - e.clientY;
+	offsetLeft = startLeft - e.clientX;
+
+	document.onmousemove = drag;
+	document.onmouseup = drop;
+	
+	return false; //don't select text in some browsers
 }
 
 var curOpenWindow = null;
@@ -67,7 +67,6 @@ var lastNewTop = 0;
 var lastNewLeft = 100;
 function makeNewPopup(id, title, type)
 {
-	//var popupID = "mypopup" + windowCount;
 	var popupID = id;
 	windowCount++;
 
@@ -118,20 +117,21 @@ function makeNewPopup(id, title, type)
 		newHTML += "</form><br />";
 		newHTML += "</div>";
 	}
-	else if(type == 'addBM')
+	else if(type == 'add_bm')
 	{
-		newHTML += "<form name='addBMForm'><table style='width:100%;'><tr><td style='width:10%;'></td><td style='width:80%;'>Select a bookmark type:</td><td style='width:10%;'></td></tr>";
+		newHTML += "<form name='addBMForm' id='addBMForm' onkeypress='callFunctionOnEnter(event, addBM);'><table style='width:100%;'><tr><td style='width:10%;'></td><td style='width:80%;'>Select a bookmark type:</td><td style='width:10%;'></td></tr>";
 		newHTML += "<tr><td></td><td><input type='radio' name='bmType' value='TODO' checked='checked'/>TODO</td><td></td></tr>";
 		newHTML += "<tr><td></td><td><input type='radio' name='bmType' value='FIXME'/>FIXME</td><td></td></tr>";
 		newHTML += "<tr><td></td><td><input type='radio' name='bmType' value='HACK'/>HACK</td><td></td></tr>";
 		newHTML += "<tr><td>&nbsp;</td><td></td><td></td></tr>";
 		newHTML += "<tr><td>&nbsp;</td><td>Write a comment:</td><td></td></tr>";
 		newHTML += "<tr><td>&nbsp;</td><td><textarea id='bmText' style='width:98%;' rows='4'></textarea></td><td></td></tr>";
-		newHTML += "<tr><td></td><td align='right'><input type='button' value='Cancel' onClick=\"hidePopup('"+popupID+"')\"/><input type='button' value='Ok' onClick=\"addBM('"+popupID+"')\"/></td><td></td></tr>";
+		newHTML += "<tr><td></td><td align='right'><input type='button' value='Ok' onClick=\"addBM()\"/><input type='button' value='Cancel' onClick=\"hidePopup('"+popupID+"')\"/></td><td></td></tr>";
 		newHTML += "</table><br /></form>";
 	}
-	else if(type == 'findBM')
+	else if(type == 'find_bm')
 	{
+		newHTML += "<form onkeypress='callFunctionOnEnter(event, goToBM);'>";
 		newHTML += "<table style='width:100%;'><tr><td style='width:10%;'></td><td style='width:80%;'>Current bookmarks:</td><td style='width:10%;'></td></tr>";
 		newHTML += "<tr><td>&nbsp;</td><td>";
 		newHTML += "<div style='overflow:auto;background-color:white;margin-left:5px;margin-right:5px;height:250px;'>";
@@ -145,17 +145,28 @@ function makeNewPopup(id, title, type)
 		newHTML += "</ul></div>";
 		newHTML += "</td><td></td></tr>";
 		newHTML += "<tr><td>&nbsp;</td><td></td><td></td></tr>";
-		newHTML += "<tr><td></td><td align='right'><input type='button' value='Cancel' onClick=\"destroyPopup('"+popupID+"')\"/><input type='button' value='Ok' onClick=\"goToBM('"+popupID+"');\"/></td><td></td></tr>";
-		newHTML += "</table><br />";
+		newHTML += "<tr><td></td><td align='right'><input type='button' value='Ok' onClick='goToBM();'/><input type='button' value='Cancel' onClick=\"destroyPopup('"+popupID+"')\"/></td><td></td></tr>";
+		newHTML += "</table><br /></form>";
 	}
-	else if(type == 'color')
+	else if(type == 'color_pick')
 	{
-		newHTML += "<form><table style='width:100%;'><tr><td style='width:10%;'></td><td style='width:80%;'>Select a color scheme:</td><td style='width:10%;'></td></tr>";
-		newHTML += "<tr><td></td><td><input type='radio' name='color' value='black'/>Black</td><td></td></tr>";
+		newHTML += "<form name='changeColorForm' id='changeColorForm' onkeypress='callFunctionOnEnter(event, changeColorScheme);'><table style='width:100%;'><tr><td style='width:10%;'></td><td style='width:80%;'>Select a color scheme:</td><td style='width:10%;'></td></tr>";
+		newHTML += "<tr><td></td><td><input type='radio' name='color' value='black' checked='checked'/>Black</td><td></td></tr>";
 		newHTML += "<tr><td></td><td><input type='radio' name='color' value='blue'/>Blue</td><td></td></tr>";
 		newHTML += "<tr><td></td><td><input type='radio' name='color' value='gray'/>Gray</td><td></td></tr>";
 		newHTML += "<tr><td>&nbsp;</td><td></td><td></td></tr>";
-		newHTML += "<tr><td></td><td align='right'><input type='button' value='Cancel' onClick=\"hidePopup('"+popupID+"')\"/><input type='button' id='submitColor' name='submitColor' value='Ok'/></td><td></td></tr>";
+		newHTML += "<tr><td></td><td align='right'><input type='button' id='submitColor' name='submitColor' value='Ok' onClick='changeColorScheme();'/><input type='button' value='Cancel' onClick=\"hidePopup('"+popupID+"')\"/></td><td></td></tr>";
+		newHTML += "</table>";
+		newHTML += "</form>";
+	}
+	else if(type == 'syntax_lang')
+	{
+		newHTML += "<form name='changeSyntaxLangForm' id='changeSyntaxLangForm' onkeypress='callFunctionOnEnter(event, changeLiteLanguage);'><table style='width:100%;'><tr><td style='width:10%;'></td><td style='width:80%;'>Select a syntax highlighting type:</td><td style='width:10%;'></td></tr>";
+		newHTML += "<tr><td></td><td><input type='radio' name='synLang' value='java' checked='checked'/>Java</td><td></td></tr>";
+		newHTML += "<tr><td></td><td><input type='radio' name='synLang' value='...'/>...</td><td></td></tr>";
+		newHTML += "<tr><td></td><td><input type='radio' name='synLang' value='...'/>...</td><td></td></tr>";
+		newHTML += "<tr><td>&nbsp;</td><td></td><td></td></tr>";
+		newHTML += "<tr><td></td><td align='right'><input type='button' id='submitSynLang' name='submitSynLang' value='Ok' onClick='changeLiteLanguage()'/><input type='button' value='Cancel' onClick=\"hidePopup('"+popupID+"')\"/></td><td></td></tr>";
 		newHTML += "</table>";
 		newHTML += "</form>";
 	}
@@ -178,11 +189,12 @@ function makeNewPopup(id, title, type)
 	}
 	else if(type == 'new_blank')
 	{
+		newHTML += "<form onkeypress='callFunctionOnEnter(event, newBlankDocument);'>";
 		newHTML += "<table style='width:100%;'><tr><td style='width:10%;'></td><td style='width:80%;'>Enter a name for the new file:</td><td style='width:10%;'></td></tr>";
 		newHTML += "<tr><td>&nbsp;</td><td><input id='newDocName' name='newDocName' type='text' style='width:100%' /></td><td></td></tr>";
 		newHTML += "<tr><td>&nbsp;</td><td></td><td></td></tr>";
 		newHTML += "<tr><td></td><td align='right'><input type='button' value='Ok' onClick='newBlankDocument();'/><input type='button' value='Cancel' onClick=\"destroyPopup('"+popupID+"');\"/></td><td></td></tr>";
-		newHTML += "</table>";
+		newHTML += "</table></form>";
 	}
 	else if(type == 'open_doc')
 	{
@@ -202,7 +214,7 @@ function makeNewPopup(id, title, type)
 		newHTML += "<tr><td>&nbsp;</td><td><form name='grantForm'><input type='radio' name='aLevel' value='r' checked='checked'/>Read<br />";
 		newHTML += "<input type='radio' name='aLevel' value='w'/>Write<br />";
 		newHTML += "<input type='radio' name='aLevel' value='n'/>None</form></td><td></td></tr>";
-		newHTML += "<tr><td></td><td align='right'><input type='button' value='Cancel' onClick=\"destroyPopup('"+popupID+"');\"/><input type='button' value='Grant' onClick='grantAccess();'/></td><td></td></tr>";
+		newHTML += "<tr><td></td><td align='right'><input type='button' value='Grant' onClick='grantAccess();'/><input type='button' value='Cancel' onClick=\"destroyPopup('"+popupID+"');\"/></td><td></td></tr>";
 		newHTML += "</table>";
 	}
 	else if(type == 'find_text')
@@ -216,11 +228,12 @@ function makeNewPopup(id, title, type)
 	}
 	else if(type == 'goto_window')
 	{
+		newHTML += "<form onkeypress='callFunctionOnEnter(event, gotoLineGo);'>";
 		newHTML += "<table style='width:100%;'><tr><td style='width:10%;'></td><td style='width:80%;'>Line number:</td><td style='width:10%;'></td></tr>";
 		newHTML += "<tr><td>&nbsp;</td><td><input id='gotoLineInput' name='gotoLineInput' type='text' style='width:100%' /></td><td></td></tr>";
 		newHTML += "<tr><td>&nbsp;</td><td></td><td></td></tr>";
 		newHTML += "<tr><td></td><td align='right'><input type='button' value='Go' onClick='gotoLineGo();'/><input type='button' value='Cancel' onClick=\"hidePopup('"+popupID+"');\"/></td><td></td></tr>";
-		newHTML += "</table>";
+		newHTML += "</table></form>";
 	}
 
 	newElm.innerHTML = newHTML;
@@ -229,10 +242,35 @@ function makeNewPopup(id, title, type)
 	makePopupVisible(popupID);
 }
 
-function makePopupVisible(id) {
-	var window = document.getElementById(id);
-	window.style.display = "block";
-	moveToFrontAgain(window);
+function callFunctionOnEnter(ev, callFunction){
+	callFunctionOnEnter(ev, callFunction, null);
+}
+
+function callFunctionOnEnter(ev, callFunction, param){
+	var myEvt;
+	if(window.event == null) myEvt = ev;
+	else myEvt = window.event;
+	
+	var element = myEvt.target || myEvt.srcElement;
+	
+	if(myEvt.keyCode == 13 && element.type != 'button'){
+		if(param == null) callFunction();
+		else callFunction(param);
+
+		// cancel the default submit (THIS IS OVERKILL)
+	    myEvt.returnValue=false;
+	    myEvt.cancel = true;
+		myEvt.cancelBubble  = true;
+		if (myEvt.preventDefault) myEvt.preventDefault();
+		if (myEvt.stopPropagation) myEvt.stopPropagation();
+		return false;
+	}
+}
+
+function destroyPopup(id){
+	var pop = document.getElementById(id);
+	pop.parentNode.removeChild(pop);
+	curOpenWindow = null;
 }
 
 function hidePopup(id){
@@ -243,10 +281,18 @@ function hidePopup(id){
 	document.getElementById(id).style.display="none";
 }
 
-function destroyPopup(id){
-	var pop = document.getElementById(id);
-	pop.parentNode.removeChild(pop);
-	curOpenWindow = null;
+function makePopupVisible(id) {
+	var window = document.getElementById(id);
+	window.style.display = "block";
+	moveToFrontAgain(window);
+}
+
+function moveToFront(){
+	this.style.zIndex = z++;
+}
+
+function moveToFrontAgain(window){
+	window.style.zIndex = z++;
 }
 
 function windowExists(id){
@@ -261,32 +307,4 @@ function windowIsVisible(id){
 		return true;
 	}
 	return false;
-}
-
-function moveToFront(){
-	this.style.zIndex = z++;
-}
-
-function moveToFrontAgain(window){
-	window.style.zIndex = z++;
-}
-
-function callFunctionOnEnter(ev, callFunction){
-	var myEvt;
-	if(window.event == null) myEvt = ev;
-	else myEvt = window.event;
-	
-	var element = myEvt.target || myEvt.srcElement;
-	
-	if(myEvt.keyCode == 13 && element.type != 'button'){
-		callFunction();
-
-		// cancel the default submit (THIS IS OVERKILL)
-	    myEvt.returnValue=false;
-	    myEvt.cancel = true;
-		myEvt.cancelBubble  = true;
-		if (myEvt.preventDefault) myEvt.preventDefault();
-		if (myEvt.stopPropagation) myEvt.stopPropagation();
-		return false;
-	}
 }
