@@ -357,6 +357,33 @@ function resetSelection() {
 /**********************************************/
 /******** USER INPUT RELATED FUNCTIONS ********/
 
+// This function inserts a bookmark into the document and displays it
+function insertBookmark( paramBMtext ) {
+	if( XPODoc.getLineText( cursorLine ).trim() == "" ){
+		XPODoc.setLineText( cursorLine, paramBMtext );
+		clearFormatting( cursorLine );
+		renderCursor();
+	}
+	else{
+		XPODoc.insertLine( cursorLine+1, XPODoc.getLineText( cursorLine ) );
+		XPODoc.setLineText( cursorLine, paramBMtext );
+
+		// TODO: FIXME: HACK:  Need to make the above change visible in the GUI
+		// The following lines are very similar to the code in ENTER
+		clearFormatting( cursorLine );
+		var myDoc = getDoc();
+		var addMe = myDoc.createElement('div');
+		addMe.setAttribute('id', XPODoc.getLineId( cursorLine+1 ) );
+		addMe.setAttribute('class', "line");
+		myDoc.getElementById("entireDocument").insertBefore( addMe, myDoc.getElementById( XPODoc.getLineId( cursorLine+2 ) ) );
+		
+		cursorLine++;
+		cursorColumn = 0;
+		
+		renderCursor();
+	}
+}
+
 // This function is responsible for recalculating the cursor position
 // after a command to move the cursor has been issued. It takes as a 
 // parameter a DIRECTION, of which valid values are defined above in
@@ -846,6 +873,7 @@ function loadNewDoc(docText, accessMode) {
 	}
 	//********** Done populating data structure **********
 	
+	// See if we are in readOnly mode
 	readOnly = (accessMode == "r");
 	
 	// Render the entire document's HTML
@@ -854,27 +882,43 @@ function loadNewDoc(docText, accessMode) {
 	// Only enable listeners in write mode
 	if(readOnly == false){
 		if(isIE == true || isChrome == true || isSafari == true){
-			getDoc().onclick = function(event){clearFormatting(cursorLine);captureMousePos(event);deriveCursor();renderCursor();};
-			getDoc().onkeydown = function(event){clearFormatting(cursorLine);type(event);renderCursor();adjustScroll();return false;};
+			getDoc().onclick = onClickFunction;
+			getDoc().onkeydown = onTypeFunction;
 		}
 		else{
-			getDoc().addEventListener("click",function(e){clearFormatting(cursorLine);captureMousePos(e);deriveCursor();renderCursor();}, true);
-			getDoc().addEventListener("keypress",function(e){clearFormatting(cursorLine);type(e);renderCursor();adjustScroll();}, true);
+			getDoc().addEventListener("click", onClickFunction, true);
+			getDoc().addEventListener("keypress", onTypeFunction, true);
 		}
 		
 		// Enable immediate editing
 		if(isIE == true) myIFrame.focus();
 		else myIFrame.contentWindow.focus();
 	}
-	else{
+	else{ // Remove event listeners because we are in readOnly mode
 		if(isIE == true || isChrome == true || isSafari == true){
 			getDoc().onclick = null;
 			getDoc().onkeydown = null;
 		}
 		else{
-			// Remove event listener for FF here...
+			getDoc().removeEventListener("click", onClickFunction, true);
+			getDoc().removeEventListener("keypress", onTypeFunction, true);
 		}
 	}
+}
+
+onClickFunction = function( event ){
+	clearFormatting(cursorLine);
+	captureMousePos(event);
+	deriveCursor();
+	renderCursor();
+}
+
+onTypeFunction = function( event ){
+	clearFormatting(cursorLine);
+	type(event);
+	renderCursor();
+	adjustScroll();
+	return false;
 }
 
 </script>
