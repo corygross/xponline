@@ -4,7 +4,9 @@
  * CSS for Java reserved words syntax highlighting
  *
  */
+#cursor{background-color:red;}
 .public{color:blue;};
+.System{color:orange;}
 .abstract{color:}
 .continue{color:}	
 .for	{color:}

@@ -7,7 +7,7 @@
    <tr><td class="menu" onclick="openMenuClick();">Open...</td></tr>
    <tr><td class="menu" onclick="uploadMenuClick();">Upload New...</td></tr>
    <tr><td class="menu" onclick="downloadMenuClick();">Download</td></tr>
-   <tr><td class="menu" onclick="accessMenuClick();">Grant Access...</td></tr>
+   <tr><td class="menu" onclick="accessMenuClick();">Grant Access...</td></tr>   
    <tr><td class="menu" onclick="exitMenuClick();">Exit</td></tr>
    </table>
 </td>
@@ -18,7 +18,6 @@
    <tr><td class="menu" onclick="replaceMenuClick();">Replace...</td></tr>
    <tr><td class="menu" onclick="gotoMenuClick();">Go To...</td></tr>
    <tr><td class="menu" onclick="selectAllMenuClick();">Select All</td></tr>
-   <tr><td class="menu" onclick="syntaxHighlightingToggle();">Toggle Syntax Highlighting</td></tr>
    </table>
 </td>
 

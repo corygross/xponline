@@ -37,9 +37,13 @@ function downloadMenuClick()
 
 function syntaxHighlightingToggle()
 {
-//	alert("Toggle Syntax Highlighting");
+	//This should just be a general on/off toggle switch
+	//The current file type should dictate the type of 
+	//syntax highlighting applied
 //	document.getElementById('ss');
 	//testFunction();
+	var testVar = document.getElementById('SS');
+	alert(testVar);
 	toggleSyntaxHighlight();
 }
 function exitMenuClick()
@@ -71,7 +75,14 @@ function hidemenu(elmnt)
 
 function highlighMenuClick()
 {
-	openPopup('syntax_lang','Highlight Language','syntax_lang');
+	var testVar = getDoc().getElementById('SS').href;
+	if(testVar.indexOf("java.css") == -1)
+	{
+		getDoc().getElementById('SS').href = "../java.css"; /*alert(testVar);*/ return;
+	}
+	getDoc().getElementById('SS').href = "../style.css";
+	//	alert(testVar);
+	//openPopup('syntax_lang','Highlight Language','syntax_lang');
 }
 
 function newMenuClick()
