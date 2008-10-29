@@ -1,4 +1,4 @@
-
+<script type="text/javascript" charset="utf-8" src="tokensearch.js"></script>
 <script type="text/javascript">
 /*var theIFrame = document.getElementByID('')
 var cssLink = document.createElement("link") 
@@ -701,8 +701,9 @@ function displayCursorPos() {
 // This function clears the formatting of the line specified by paramLineNumber
 function clearFormatting( paramLineNum ) {
 	if(getDoc().getElementById( XPODoc.getLineId(paramLineNum) ) != null){
-		//getDoc().getElementById( XPODoc.getLineId(paramLineNum) ).innerHTML = XPODoc.getLineText(paramLineNum);
+		getDoc().getElementById( XPODoc.getLineId(paramLineNum) ).innerHTML = XPODoc.getLineText(paramLineNum);
 
+		//RT - NOT SURE WHAT THIS DOES....
 		//Parses the contents of each line for syntax hightlighting.
 		getDoc().getElementById( XPODoc.getLineId(paramLineNum) ).innerHTML = indexLineText(XPODoc.getLineText(paramLineNum));
 	}
@@ -724,54 +725,46 @@ function gotoPosition( paramLineNum, paramColNum ) {
 	adjustScroll();
 }
 // This function takes each line of input and applies formatting based on keywords
-function indexLineText(inputText){
+function indexLineText(inputText)
+{
+//	alert("beginning of indexLineText function");
 
-	if(syntaxHighlightOn == false) return inputText;
+	if(!syntaxHighlightOn){ alert('syntaxHighlighting off'); return inputText; }
 	
 	var testArr = new Array("public", "static", "void");
-	//alert("create words arr");
 	var words = inputText.split(" ");
-//		alert("create newLine var");
-
+	
 	//Change the document css to the applicable language css
 	//HERE!
 	
 	var newLine = "";
-//		alert("enter for loop");
-	for(var count = 0; count < words.length; count++)
+//	alert("enter for loop");
+	for(var counter = 0; counter < words.size(); counter++)
 	{	
-//			alert("beginning of function");
-		if(testArr.indexOf(words[count]) == -1)
+			var curWord = words[counter];
+		//If the current word is one that needs to be highlighted	
+		if(tokenSearch)
+		//if(testArr.indexOf(words[count]) != -1)
 		{
 			// This regex probably should be global, but I am testing - CG
 			// If the 'word' is a number, highlight it with the class 'number'
-			var IsNum = /^-?\d+$/.test(words[count]);
-			if(IsNum == true){
-				var markedWord = "<span class='" + "number" + "'>" + words[count] + "</span>";
+//			var IsNum = /^-?\d+$/.test(words[count]);
+//			if(IsNum == true){
+//				alert("found one");
+			var markedWord = "<span class='" + curWord + "'>" + curWord + "</span>";
 				newLine += markedWord + " ";
-			}
-			else{
+			//}
+		}
+			else
+			{
 //				alert("nothing");
-				newLine += words[count] + " ";
+				newLine += curWord + " ";
 			}
 		}
-		else
-		{
-//				alert("got one");
-			var temp = words[count];
-//				var markedWord = "<span style='color:#CDAAFF;'" + temp + "'>" + temp + "</span>";
-			var markedWord = "<span class='" + temp + "'>" + temp + "</span>";
-			newLine += markedWord + " ";
-			delete markedWord;
-			delete temp;
-		}
-//			alert(words[count]);
-	}
-//		alert(newLine);
+//		alert("exit for loop");
 	return newLine;
-	//return words.length;
-	//return "test";
 }
+
 // This function renders the cursor in the document. 
 function renderCursor() {
 	// Slice 'n dice the line to isolate the cursor
@@ -783,18 +776,19 @@ function renderCursor() {
 
 	// Apply formatting
 //	if ( tempCurrentLine[1].length == 0 ) tempCurrentLine[1]=" ";  // <--- FIX#2
-	tempCurrentLine[1] = "<font style='BACKGROUND-COLOR: red'>" + tempCurrentLine[1] + "</font>";
+//	tempCurrentLine[1] = "<font style='BACKGROUND-COLOR: red'>" + tempCurrentLine[1] + "</font>";
+	tempCurrentLine[1] = "<span id='cursor'>" + tempCurrentLine[1] + "</span>";
 	// display new formatting
 	try {
-		//getDoc().getElementById( XPODoc.getLineId(cursorLine) ).innerHTML = tempCurrentLine.join("");
-		getDoc().getElementById( XPODoc.getLineId(cursorLine) ).innerHTML = indexLineText(tempCurrentLine.join(""));
+		getDoc().getElementById( XPODoc.getLineId(cursorLine) ).innerHTML = tempCurrentLine.join("");
+		//getDoc().getElementById( XPODoc.getLineId(cursorLine) ).innerHTML = indexLineText(tempCurrentLine.join(""));
 	}
 	catch (e) { alert("line not found!"); }
 	
 	// Update the GUI with the correct line and col
 	displayCursorPos();
 }
-// This function re-renders the entire document
+// This function renders the entire document
 function refreshDocument() {
 	var myDoc = getDoc().getElementById("entireDocument");
 	while ( myDoc.firstChild ) {
@@ -809,9 +803,11 @@ function refreshDocument() {
 		if ( l == cursorLine ) {renderCursor();}
 		else clearFormatting( l );
 	}
+
 }
 // This function toggles whether or not syntax highlighting is on
-function toggleSyntaxHighlight() {
+function toggleSyntaxHighlight() 
+{
 	syntaxHighlightOn = !syntaxHighlightOn;
 	refreshDocument();
 }

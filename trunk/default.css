@@ -1,0 +1,9 @@
+/*
+ * Whatever default css we want in the 
+ * editor when there is no syntax 
+ * highlighting applied.
+ *
+ */
+#cursor{background-color:red;}
+body {font-family: monospace; font-size: 14px;white-space:nowrap; div.line{white-space: pre;}}
+
