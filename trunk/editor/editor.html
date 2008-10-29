@@ -701,7 +701,7 @@ function displayCursorPos() {
 // This function clears the formatting of the line specified by paramLineNumber
 function clearFormatting( paramLineNum ) {
 	if(getDoc().getElementById( XPODoc.getLineId(paramLineNum) ) != null){
-		getDoc().getElementById( XPODoc.getLineId(paramLineNum) ).innerHTML = XPODoc.getLineText(paramLineNum);
+		//getDoc().getElementById( XPODoc.getLineId(paramLineNum) ).innerHTML = XPODoc.getLineText(paramLineNum);
 
 		//RT - NOT SURE WHAT THIS DOES....
 		//Parses the contents of each line for syntax hightlighting.
@@ -729,7 +729,7 @@ function indexLineText(inputText)
 {
 //	alert("beginning of indexLineText function");
 
-	if(!syntaxHighlightOn){ alert('syntaxHighlighting off'); return inputText; }
+	if(!syntaxHighlightOn){ return inputText; }
 	
 	var testArr = new Array("public", "static", "void");
 	var words = inputText.split(" ");
@@ -778,6 +778,7 @@ function renderCursor() {
 //	if ( tempCurrentLine[1].length == 0 ) tempCurrentLine[1]=" ";  // <--- FIX#2
 //	tempCurrentLine[1] = "<font style='BACKGROUND-COLOR: red'>" + tempCurrentLine[1] + "</font>";
 	tempCurrentLine[1] = "<span id='cursor'>" + tempCurrentLine[1] + "</span>";
+
 	// display new formatting
 	try {
 		getDoc().getElementById( XPODoc.getLineId(cursorLine) ).innerHTML = tempCurrentLine.join("");
