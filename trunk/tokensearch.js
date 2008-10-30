@@ -13,13 +13,20 @@ var reservedWords = new Array('public', 'static', 'void', 'System');
  *
  * Parameters: term - the term to search for
  *					  in the list.
+ *
+ *
+ *
+ * Preconditons: term must be a single token otherwise this
+ *				 breaks to high hell.
  * 
  */
 function tokenSearch(term)
 {
+	//alert("received " + term);
 	var beforeCount = reservedWords.size();
 	var newArr = reservedWords.without(term);
 	var afterCount = newArr.size();
+	//alert("before we had " + beforeCount + " and now we have " + afterCount);
 	delete newArr; 
 	
 	(beforeCount == afterCount) ? output=false : output=true;
