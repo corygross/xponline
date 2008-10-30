@@ -66,6 +66,7 @@ function textDocument()
 	}
 	this.document = new Array();		// This is to be an array of lines
 	this.uniqueNameCounter = 0;		// This variable is used to provide unique id's to each line
+	this.documentID;
 	
 	//////////////////////////////////////////////////
 	////////////// MEMBER FUNCTIONS ///////////////
@@ -208,6 +209,7 @@ var mouse_y_box;
 
 var readOnly = true;
 var syntaxHighlightOn = true;
+var lockedLines = new Array();
 
 function getDoc(){
 	if(isIE == true){
@@ -263,6 +265,16 @@ function deriveCursor(paramMouseX, paramMouseY) {
 		if ( curcol < 0 ) curcol = 0;
 		if ( curcol >= XPODoc.getLineLength(currow) ) curcol = XPODoc.getLineLength(currow)-1;
 	}
+	
+	// Loop through the locked lines and make sure we aren't trying to move to it.
+	for(var l=0; l < lockedLines.length; l++ )
+	{
+		if(lockedLines[l] == currow){
+			alert("Another user is currently on that line, and it is locked.");
+			return;
+		}
+	}
+	
 	// Store the calculated values
 	cursorLine = currow;
 	cursorColumn = curcol;
@@ -770,6 +782,21 @@ function indexLineText(inputText)
 	return newLine;
 }
 
+// This function highlights and locks lines given by the 'newLineLocks' array it receives
+function lockLines( newLineLocks ) {
+	// Clear the old line locks
+	for( var i=0; i < lockedLines.length; i++ )
+	{
+		clearFormatting( lockedLines[i] );
+	}
+	// Add the new line locks
+	for( var j=0; j < newLineLocks.length; j++ )
+	{
+		getDoc().getElementById( XPODoc.getLineId(newLineLocks[j]) ).innerHTML = "<font style='BACKGROUND-COLOR: orange'>" + XPODoc.getLineText(newLineLocks[j]) + "</font>";
+	}
+	lockedLines = newLineLocks;
+}
+
 // This function renders the cursor in the document. 
 function renderCursor() {
 		// Slice 'n dice the line to isolate the cursor
@@ -874,6 +901,15 @@ function adjustScroll() {
 }
 
 
+/**********************************************/
+/****** DOCUMENT SYNCHRONIZATION *****/
+
+function updateLineLock( line ) {
+	new Ajax.Request('./documents/lineLock/updateLineLock.php?curLine='+line+'&docID='+XPODoc.documentID, {
+		method:'get'		
+	});
+}
+
 
 /********************************************/
 /********** INITIALIZATION FUNCTION *********/
@@ -908,8 +944,10 @@ function init() {
 }
 // FIXME:  ^^^ REALLY THIS SUCKS
 
-function loadNewDoc(docText, accessMode) {
+function loadNewDoc(docID, docText, accessMode) {
 	XPODoc.blankDocument();
+	XPODoc.documentID = docID;
+	
 	var textArr = docText.split(/\r\n|\r|\n/);
 	for(var i=0; i < textArr.length; i++ )
 	{
@@ -951,17 +989,21 @@ function loadNewDoc(docText, accessMode) {
 }
 
 onClickFunction = function( event ){
+	var oldCursorLine = cursorLine;
 	clearFormatting(cursorLine);
 	captureMousePos(event);
 	deriveCursor();
 	renderCursor();
+	if(oldCursorLine != cursorLine) updateLineLock(cursorLine);
 }
 
 onTypeFunction = function( event ){
+	var oldCursorLine = cursorLine;
 	clearFormatting(cursorLine);
 	type(event);
 	renderCursor();
 	adjustScroll();
+	if(oldCursorLine != cursorLine) updateLineLock(cursorLine);
 	return false;
 }
 

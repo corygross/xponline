@@ -38,7 +38,7 @@ $existingSQL = "SELECT * FROM access WHERE dID='$dID' AND uID='$user2';";
 $existingResult = runQuery($existingSQL);
 if(mysql_num_rows($existingResult) < 1){
 	//grant access
-	$accessSQL = "INSERT INTO access VALUES('$dID','$user2','$aLevel');";
+	$accessSQL = "INSERT INTO access VALUES('$dID','$user2','$aLevel',CURRENT_TIMESTAMP);";
 	$docsResult = runQuery($accessSQL);
 }
 else{

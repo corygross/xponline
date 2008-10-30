@@ -6,10 +6,25 @@ function handleXMLResponse( response ){
 		if( XMLobj.contents[i].name == "chat" ){
 			handleChatResponse(XMLobj.contents[i]);		
 		}
-		else if( XMLobj.contents[i].name == "editor" ){
-			alert('editor related');
+		else if( XMLobj.contents[i].name == "docUpdate" ){
+			alert('docUpdate related');
+		}
+		else if( XMLobj.contents[i].name == "locks" ){
+			handleLockResponse(XMLobj.contents[i]);			
 		}
 	}
+}
+
+// Take the array of line locks and get the document to lock them
+function handleLockResponse( lockArray ){
+	var newLockArray = new Array();
+	for( var i=0; i < lockArray.contents.length; i++ )
+	{
+		//below code will output the id of the user that is on the line
+		//lockArray.contents[i].contents[0].contents[0].value
+		newLockArray[i] = lockArray.contents[i].contents[1].contents[0].value;
+	}	
+	lockLines(newLockArray);
 }
 
 

@@ -2,15 +2,23 @@
 session_start();
 require_once "dbConnect.php";
 
-$browser = getBrowser();
+//$browser = getBrowser();
 
 //Validate login
 $currentUserID = $_SESSION['uID'];
 //if($currentUserID == ''){echo 'error 003: User not logged in.'; return;}
 
+$currentDocumentID = $_SESSION['dID'];
+
 //UPDATE when the last connection was made
 $sqlUpdateTime = "UPDATE users SET uLastActivity=CURRENT_TIMESTAMP WHERE uID='$currentUserID';";
 runQuery($sqlUpdateTime);
+
+//UPDATE when the last time the user was connected and working on a particular document
+if($currentDocumentID != ""){
+	$sqlUpdateDocTime = "UPDATE access SET dLastActivity=CURRENT_TIMESTAMP WHERE dID='$currentDocumentID' AND uID='$currentUserID';";
+	runQuery($sqlUpdateDocTime);
+}
 
 if (ob_get_level() == 0) ob_start();
 
@@ -112,20 +120,83 @@ function getMessage($currentUserID)
 		runQuery($updateSQL);	
 	}
 	
-	return $xmlToSend;
+	if($xmlToSend != ""){
+		return "<chat>" . $xmlToSend . "</chat>";
+	}
+	else{
+		return "";
+	}
 }
 
-//echo "<chat>";
-$messageToSend;
-//Check for messages, and if found, send to client
+function getCollisionInfo($uID, $dID){
+	if($dID == ""){
+		return "";
+	}
+	
+	$fileName = "./documents/lineLock/doc".$dID."-lock";
+	if(file_exists($fileName)){
+		$fileModifyTime = filemtime($fileName);
+		$lastModifyKey = 'lastFileModify'.$dID;
+		if($fileModifyTime != $_SESSION["$lastModifyKey"]){
+			$_SESSION["$lastModifyKey"] = $fileModifyTime;
+			
+			$fileHandle = fopen($fileName, 'r') or die("can't open file");
+			$wholeFile = fread($fileHandle, filesize($fileName)+1);
+			fclose($fileHandle);
+
+			$locksToReturn = "";
+			$lineArray = explode("\n", $wholeFile);
+			foreach($lineArray as $line){		
+				$pos = strpos($line, "$uID");
+				if($pos === false || $pos != 0){
+					$lockInfo = explode(",", $line);
+					$locksToReturn .= "<lineLock><userID>$lockInfo[0]</userID><lineNum>$lockInfo[1]</lineNum></lineLock>";
+				}
+			}
+			if($locksToReturn != ""){
+				return "<locks>".$locksToReturn."</locks>";
+			}
+		}		
+	}
+	return "";
+}
+
+function getPeerUpdates(){
+	//docUpdate
+	//return "<docUpdate></docUpdate>";
+	return "";
+}
+
+// Loop for awhile... waiting for something interesting to happen...
 for ($i = 0; $i<100; $i++) 
 { 	
-	$messageToSend = getMessage($currentUserID);	
+	// Get the message to send (if any)
+	$messageToSend = getMessage($currentUserID);
+	
+	// Get information about where another user is located in the current document
+	$collisionInfo = getCollisionInfo($currentUserID, $currentDocumentID);
+	
+	// Get any changes that our peers have made to the current document
+	$peerUpdates = getPeerUpdates();
+	
+	$isDataToSend = false;
 	
 	if ($messageToSend != ""){
-		echo "<chat>";
-		echo $messageToSend;
-		echo "</chat>";
+		$isDataToSend = true;
+		echo $messageToSend;		
+	}
+	
+	if ($collisionInfo != ""){
+		$isDataToSend = true;
+		echo $collisionInfo;		
+	}
+	
+	if ($peerUpdates != ""){
+		$isDataToSend = true;
+		echo $peerUpdates;		
+	}
+	
+	if($isDataToSend == true){
 		echo "</body>"; //This is key to have this here, at least for Safari
 		ob_flush();
 		flush();

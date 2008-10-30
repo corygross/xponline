@@ -129,7 +129,7 @@ function openDocument(dID, dName)
 				var docInfoArr = transport.responseText.split("&^*");
 				if(docInfoArr[0] == "r") dName = dName + " (Readonly)";
 				changeDocTitle(dName);
-				loadNewDoc(docInfoArr[1], docInfoArr[0]);
+				loadNewDoc(dID, docInfoArr[1], docInfoArr[0]);
 			}
 		},		
 		onFailure: function()
