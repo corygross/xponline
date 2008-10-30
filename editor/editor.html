@@ -1,4 +1,5 @@
 <script type="text/javascript" charset="utf-8" src="tokensearch.js"></script>
+<script type="text/javascript" charset="utf-8" src="writeSpans.js"></script>
 <script type="text/javascript">
 /*var theIFrame = document.getElementByID('')
 var cssLink = document.createElement("link") 
@@ -95,6 +96,8 @@ function textDocument()
 	this.getLineText = function( paramLineNum ) {
 		if ( paramLineNum < this.getDocumentLength() && this.document[paramLineNum] != undefined ) {
 			return this.document[paramLineNum].text;
+		//RT - Theory test
+		//return this.document[paramLineNum].innerHTML;
 		}
 		else return false;
 	}
@@ -743,7 +746,7 @@ function indexLineText(inputText)
 	{	
 			var curWord = words[counter];
 		//If the current word is one that needs to be highlighted	
-		if(tokenSearch)
+		if(tokenSearch(curWord))
 		//if(testArr.indexOf(words[count]) != -1)
 		{
 			// This regex probably should be global, but I am testing - CG
@@ -751,7 +754,9 @@ function indexLineText(inputText)
 //			var IsNum = /^-?\d+$/.test(words[count]);
 //			if(IsNum == true){
 //				alert("found one");
-			var markedWord = "<span class='" + curWord + "'>" + curWord + "</span>";
+//			var markedWord = "<span class='" + curWord + "'>" + curWord + "</span>";
+			var markedWord = writeSpans(curWord);
+			
 				newLine += markedWord + " ";
 			//}
 		}
@@ -767,27 +772,47 @@ function indexLineText(inputText)
 
 // This function renders the cursor in the document. 
 function renderCursor() {
-	// Slice 'n dice the line to isolate the cursor
-	var tempCurrentLine = new Array();
+		// Slice 'n dice the line to isolate the cursor
+		var tempCurrentLine = new Array();
 
-	tempCurrentLine.push(XPODoc.getLineText(cursorLine).substring(0,cursorColumn));
-	tempCurrentLine.push(XPODoc.getLineText(cursorLine).substr(cursorColumn, 1));
-	tempCurrentLine.push(XPODoc.getLineText(cursorLine).substring(cursorColumn+1));
+		//The line must be re-rendered if there is syntax highlighting is active
+		//tempCurrentLine.push(XPODoc.getLineText(cursorLine));
+	//	alert("got: " + tempCurrentLine);
+		//var indexedLine = indexLineText(XPODoc.getLineText(cursorLine));
+		//tempCurrentLine = new Array();
 
-	// Apply formatting
-//	if ( tempCurrentLine[1].length == 0 ) tempCurrentLine[1]=" ";  // <--- FIX#2
-//	tempCurrentLine[1] = "<font style='BACKGROUND-COLOR: red'>" + tempCurrentLine[1] + "</font>";
-	tempCurrentLine[1] = "<span id='cursor'>" + tempCurrentLine[1] + "</span>";
+	//	alert("about to fill tempCurrentLine");
+	//	alert("tempCurrentLine is " + tempCurrentLine);
+	//	alert("being parsing line");
+		tempCurrentLine.push(XPODoc.getLineText(cursorLine).substring(0,cursorColumn));
+	//	alert("parsed first element");
+		tempCurrentLine.push(XPODoc.getLineText(cursorLine).substr(cursorColumn, 1));
+	//	alert("parsed second element");
+		tempCurrentLine.push(XPODoc.getLineText(cursorLine).substring(cursorColumn+1));
+	//	alert("done parsing line");
 
-	// display new formatting
-	try {
-		getDoc().getElementById( XPODoc.getLineId(cursorLine) ).innerHTML = tempCurrentLine.join("");
-		//getDoc().getElementById( XPODoc.getLineId(cursorLine) ).innerHTML = indexLineText(tempCurrentLine.join(""));
-	}
-	catch (e) { alert("line not found!"); }
-	
-	// Update the GUI with the correct line and col
-	displayCursorPos();
+		// Apply formatting
+	//	if ( tempCurrentLine[1].length == 0 ) tempCurrentLine[1]=" ";  // <--- FIX#2
+	//	tempCurrentLine[1] = "<font style='BACKGROUND-COLOR: red'>" + tempCurrentLine[1] + "</font>";
+		tempCurrentLine[1] = "<span id='cursor'>" + tempCurrentLine[1] + "</span>";
+
+		//Re render any syntax highlighting that may be there
+		var formatted = indexLineText(tempCurrentLine[0] + tempCurrentLine[1] + tempCurrentLine[2]);
+	//	alert("formatted is " + formatted);
+		//tempCurrentLine.push(indexedLine.substring(0,cursorColumn));
+	//	tempCurrentLine.push(indexedLine.substr(cursorColumn, 1));
+	//	tempCurrentLine.push(indexedLine.substring(cursorColumn+1));
+
+		// display new formatting
+		try {
+			//getDoc().getElementById( XPODoc.getLineId(cursorLine) ).innerHTML = tempCurrentLine.join("");
+			getDoc().getElementById( XPODoc.getLineId(cursorLine) ).innerHTML = formatted;
+			//getDoc().getElementById( XPODoc.getLineId(cursorLine) ).innerHTML = indexLineText(tempCurrentLine.join(""));
+		}
+		catch (e) { alert("line not found!"); }
+
+		// Update the GUI with the correct line and col
+		displayCursorPos();
 }
 // This function renders the entire document
 function refreshDocument() {
