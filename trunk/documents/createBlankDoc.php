@@ -27,7 +27,7 @@ if(!response){
 $newID = mysql_insert_id();
 
 //give the creating user write access
-$sql = "INSERT INTO access VALUES('$newID', '$uID', 'w')";
+$sql = "INSERT INTO access VALUES('$newID', '$uID', 'w', CURRENT_TIMESTAMP);";
 $response = runQuery($sql);
 
 //make a blank, empty document on the filesystem

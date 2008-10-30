@@ -1,6 +1,10 @@
 //////////////////////////////////////////////////////////////
 /////// functions related to the appearance of the messenger  ////////
 //////////////////////////////////////////////////////////////
+var groupStates = new Array();
+var currentHilites = new Array();
+var contactID = "";
+var contactName = "";
 
 function changeMessengerArrow(id){
 	var img = document.getElementById(id);
@@ -16,7 +20,6 @@ function changeMessengerArrow(id){
 	}
 }
 
-var groupStates = new Array();
 function fixGroupStates(){
 	for (var key in groupStates) {
 		var group = document.getElementById(key);
@@ -51,7 +54,6 @@ function hideMessenger(){
 	document.getElementById('collapse2').style.display = "";
 }
 
-var currentHilites = new Array();
 function hiliteContact(fromID,type){
 	var listID = 'contactItem'+fromID;
 	var contactItem = document.getElementById(listID);
@@ -69,8 +71,6 @@ function hiliteContact(fromID,type){
 	}
 }
 
-var contactID = "";
-var contactName = "";
 function selectContact(id, name){
 	contactID = id;
 	contactName = name;
@@ -125,7 +125,7 @@ function showMessenger(){
 }
 
 //////////////////////////////////////////////////////////////
-/////// functions related to the appearance of the messenger  ////////
+///////// functions related to messenger functionality  //////////
 //////////////////////////////////////////////////////////////
 
 function ackMessage(mID){

@@ -5,6 +5,9 @@ require_once "../dbConnect.php";
 $uID = $_SESSION['uID'];
 $dID = $_GET['dID'];
 
+// Store the current document ID in a session so we can use it elsewhere
+$_SESSION['dID'] = $dID;
+
 if($uID == "" || $dID == ""){
 	echo "fail";
 	return;
