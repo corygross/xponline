@@ -3,14 +3,14 @@
 -- http://www.phpmyadmin.net
 -- 
 -- Host: localhost
--- Generation Time: Oct 15, 2008 at 05:29 PM
+-- Generation Time: Oct 30, 2008 at 12:21 AM
 -- Server version: 5.0.45
 -- PHP Version: 5.2.5
 
 -- 
 -- Database: `xponline`
 -- 
-CREATE DATABASE `xponline` DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci;
+-- CREATE DATABASE `xponline` DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci;
 USE xponline;
 
 -- --------------------------------------------------------
@@ -20,10 +20,11 @@ USE xponline;
 -- 
 
 DROP TABLE IF EXISTS `access`;
-CREATE TABLE `access` (
+CREATE TABLE IF NOT EXISTS `access` (
   `dID` int(11) NOT NULL,
   `uID` int(11) NOT NULL,
   `accessLvl` enum('r','w') collate utf8_unicode_ci NOT NULL default 'r',
+  `dLastActivity` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
   PRIMARY KEY  (`dID`,`uID`),
   KEY `uID` (`uID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
@@ -40,7 +41,7 @@ CREATE TABLE `access` (
 -- 
 
 DROP TABLE IF EXISTS `contacts`;
-CREATE TABLE `contacts` (
+CREATE TABLE IF NOT EXISTS `contacts` (
   `uID1` int(11) NOT NULL,
   `uID2` int(11) NOT NULL,
   `u1accept` tinyint(1) NOT NULL default '0',
@@ -61,7 +62,7 @@ CREATE TABLE `contacts` (
 -- 
 
 DROP TABLE IF EXISTS `documents`;
-CREATE TABLE `documents` (
+CREATE TABLE IF NOT EXISTS `documents` (
   `dID` int(11) NOT NULL auto_increment,
   `dName` varchar(32) collate utf8_unicode_ci default NULL,
   `dLocation` varchar(128) collate utf8_unicode_ci default NULL,
@@ -80,7 +81,7 @@ CREATE TABLE `documents` (
 -- 
 
 DROP TABLE IF EXISTS `msgqueue`;
-CREATE TABLE `msgqueue` (
+CREATE TABLE IF NOT EXISTS `msgqueue` (
   `mID` int(11) NOT NULL auto_increment,
   `fromID` int(11) NOT NULL,
   `toID` int(11) NOT NULL,
@@ -104,7 +105,7 @@ CREATE TABLE `msgqueue` (
 -- 
 
 DROP TABLE IF EXISTS `users`;
-CREATE TABLE `users` (
+CREATE TABLE IF NOT EXISTS `users` (
   `uID` int(11) NOT NULL auto_increment,
   `uFName` varchar(32) collate utf8_unicode_ci NOT NULL,
   `uLName` varchar(32) collate utf8_unicode_ci NOT NULL,
@@ -114,16 +115,16 @@ CREATE TABLE `users` (
   `uLastActivity` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
   PRIMARY KEY  (`uID`),
   UNIQUE KEY `uEmail` (`uEmail`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=16 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=15 ;
 
 -- 
 -- Dumping data for table `users`
 -- 
 
 INSERT INTO `users` (`uID`, `uFName`, `uLName`, `uEmail`, `uPass`, `uColor`, `uLastActivity`) VALUES 
-(7, 'Cory', 'Gross', 'corygross@hotmail.com', 'dfa9e8660763fd9453cbe56eebff2e39', 'black', '2008-10-15 17:27:00'),
-(9, 'Bob', 'Villa', 'bv@hotmail.com', 'dfa9e8660763fd9453cbe56eebff2e39', 'black', '2008-10-15 17:27:23'),
-(10, 'Cory', 'Tester', 'corygross@yahoo.com', 'dfa9e8660763fd9453cbe56eebff2e39', 'black', '2008-10-15 16:44:51'),
+(7, 'Cory', 'Gross', 'corygross@hotmail.com', 'dfa9e8660763fd9453cbe56eebff2e39', 'black', '2008-10-30 00:21:01'),
+(9, 'Bob', 'Villa', 'bv@hotmail.com', 'dfa9e8660763fd9453cbe56eebff2e39', 'black', '2008-10-29 19:39:52'),
+(10, 'Cory', 'Tester', 'corygross@yahoo.com', 'dfa9e8660763fd9453cbe56eebff2e39', 'black', '2008-10-29 22:32:00'),
 (11, 'Frank', 'Tank', 'ft@hotmail.com', 'dfa9e8660763fd9453cbe56eebff2e39', 'black', '2008-10-14 14:51:59'),
 (12, 'Red', 'Foreman', 'rf@hotmail.com', 'dfa9e8660763fd9453cbe56eebff2e39', 'black', '2008-10-14 14:57:27'),
 (13, 'Bob', 'Banks', 'bb2@hotmail.com', 'dfa9e8660763fd9453cbe56eebff2e39', 'black', '2008-10-14 14:58:05'),
