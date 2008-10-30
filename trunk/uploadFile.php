@@ -23,7 +23,7 @@ if((securityCheck($filename) == false))
 }
 
 //Insert relevant information in the database
-$insertStmt = "INSERT INTO `xponline`.`documents` (`dID`, `dName`, `dLocation`) VALUES (null, '$filename', '$filePath');";
+$insertStmt = "INSERT INTO documents (`dID`, `dName`, `dLocation`) VALUES (null, '$filename', '$filePath');";
 $con = runQuery($insertStmt);
 
 //The newly created document ID
