@@ -66,7 +66,7 @@ function textDocument()
 	}
 	this.document = new Array();		// This is to be an array of lines
 	this.uniqueNameCounter = 0;		// This variable is used to provide unique id's to each line
-	this.documentID;
+	this.documentID = null;
 	
 	//////////////////////////////////////////////////
 	////////////// MEMBER FUNCTIONS ///////////////
@@ -78,6 +78,8 @@ function textDocument()
 	//  Clears the contents of the document
 	this.blankDocument = function() {
 		this.document = new Array();
+		this.uniqueNameCounter = 0;		// This variable is used to provide unique id's to each line
+		this.documentID = null;
 	}
 	// Returns the length of the document in number of lines
 	this.getDocumentLength = function() {
