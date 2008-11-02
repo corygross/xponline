@@ -39,6 +39,10 @@ var lockedLines = new Array();
 // HTML-DOM handle for document pane
 var guiDoc;
 
+/*********** END OF GLOBAL VARIABLES ********/
+/**********************************************/
+
+
 
 // This function does a raw capture of mouse position, given an event
 function captureMousePos(e) {
@@ -54,26 +58,19 @@ function captureMousePos(e) {
 	}
 }
 
+/* These two functions return the numeric value for the scroll offset of the iFrame */
 function getScrollOffsetX() {
-	if(isIE == true){
-		return guiDoc.body.scrollLeft;
-	}
-	else{
-		return myIFrame.contentWindow.pageXOffset;
-	}
+	if(isIE == true) return guiDoc.body.scrollLeft;
+	else return myIFrame.contentWindow.pageXOffset;
 }
 function getScrollOffsetY() {
-	if(isIE == true){
-		return guiDoc.body.scrollTop;
-	}
-	else{
-		return myIFrame.contentWindow.pageYOffset;
-	}
+	if(isIE == true) return guiDoc.body.scrollTop;
+	else return myIFrame.contentWindow.pageYOffset;
 }
 
 
 
-/**********************************************/
+/**************************************************/
 /******** USER INPUT RELATED FUNCTIONS ********/
 
 // This function inserts a bookmark into the document and displays it
@@ -103,12 +100,9 @@ function insertBookmark( paramBMtext ) {
 	}
 }
 
-// This function is responsible for recalculating the cursor position
-// after a command to move the cursor has been issued. It takes as a 
-// parameter a DIRECTION, of which valid values are defined above in
-// the global variable declarations
+/* This function provides functionality to so-called "special keys".  Basically, any non-character related keyboard input. (kindof) */
 function typeSpecial(paramKEYCODE) {
-
+	
 	switch ( paramKEYCODE ) {
 	
 		case LEFTARROWKEY: 
@@ -276,103 +270,22 @@ function typeSpecial(paramKEYCODE) {
 			typeCharacter(" ".charCodeAt(0), XPODoc );
 			typeCharacter(" ".charCodeAt(0), XPODoc );
 			break;
-		case SHIFTKEY:
-		
-			break;
-		case CAPSLOCKKEY:
 			
+		case SHIFTKEY:
 			break;
-		//case SPACEKEY:
-		//	typeCharacter(" ".charCodeAt(0), XPODoc );
-		//	break;
+			
+		case CAPSLOCKKEY:
+			break;
+			
 		default:
-			return false;
+			return true;		// Return  values are this way for the convenience of the onKeyDown event handler function
 	}
-	return true;
+	return false;	// Return  values are this way for the convenience of the onKeyDown event handler function
 } // END typeSpecial(paramKEY)
 
-function getCharCode( paramKey, paramShiftPressed ){
-
-	if(paramShiftPressed){
-		if(paramKey >= 65 && paramKey <= 90) //A-Z a-z
-			return paramKey;
-		else if(paramKey == 49) // 1 !
-			return 33;
-		else if(paramKey == 50) // 2 @
-			return 64;
-		else if(paramKey == 51) // 3#
-			return 35;
-		else if(paramKey == 52) // 4$
-			return 36;
-		else if(paramKey == 53) // 5%
-			return 37;
-		else if(paramKey == 54) // 6^
-			return 94;
-		else if(paramKey == 55) // 7&
-			return 38;
-		else if(paramKey == 56) // 8*
-			return 42;
-		else if(paramKey == 57) // 9(
-			return 40;
-		else if(paramKey == 48) // 0)
-			return 41;
-		else if(paramKey == 186) // :
-			return 58;
-		else if(paramKey == 187) // +
-			return 43;
-		else if(paramKey == 188) // <
-			return 60;
-		else if(paramKey == 189) // _
-			return 95;
-		else if(paramKey == 190) // >
-			return 62;
-		else if(paramKey == 191) // ?
-			return 63;
-		else if(paramKey == 192) // ~
-			return 126;
-		else if(paramKey == 219) // {
-			return 123;
-		else if(paramKey == 220) // |
-			return 124;
-		else if(paramKey == 221) // }
-			return 125;
-		else if(paramKey == 222) // "
-			return 34;
-	}
-	else{
-		if(paramKey >= 65 && paramKey <= 90) //a-z
-			return paramKey + 32;
-		else if(paramKey >= 48 && paramKey <= 57) //0-9
-			return paramKey;
-		else if(paramKey == 186) // ;
-			return 59;
-		else if(paramKey == 187) // =
-			return 61;
-		else if(paramKey == 188) // ,
-			return 44;
-		else if(paramKey == 189) // -
-			return 45;
-		else if(paramKey == 190) // .
-			return 46;
-		else if(paramKey == 191) // /
-			return 47;
-		else if(paramKey == 192) // `
-			return 96;
-		else if(paramKey == 219) // [
-			return 91;
-		else if(paramKey == 220) // \
-			return 92;
-		else if(paramKey == 221) // ]
-			return 93;
-		else if(paramKey == 222) // '
-			return 39;		
-	}
-	return null;
-}
 
 
-
-/**********************************************/
+/*************************************************/
 /**** GUI RELATED / GUI SPECIFIC FUNCTIONS ****/
 
 // This function displays the cursor position in the GUI
@@ -494,7 +407,7 @@ function renderCursor() {
 		displayCursorPos();
 }
 
-// This function (re-)renders the entire document
+/* This function (re-)renders the entire document */
 function refreshDocument() {
 	var myDoc = guiDoc.getElementById("entireDocument");
 	while ( myDoc.firstChild ) {
@@ -546,12 +459,8 @@ function adjustScroll() {
 	if (cursorDocOffsetY>visibleEdgeY) scrollAmountY=cursorDocOffsetY-visibleEdgeY+100;
 	else if (cursorDocOffsetY<getScrollOffsetY()) scrollAmountY=cursorDocOffsetY-getScrollOffsetY()-100;
 	
-	if(isIE == true){
-		myIFrame.scrollBy(scrollAmountX, scrollAmountY);
-	}
-	else{
-		myIFrame.contentWindow.scrollBy(scrollAmountX, scrollAmountY);
-	}
+	if(isIE == true) myIFrame.scrollBy(scrollAmountX, scrollAmountY);
+	else myIFrame.contentWindow.scrollBy(scrollAmountX, scrollAmountY);
 }
 
 
@@ -565,8 +474,10 @@ function updateLineLock( line ) {
 }
 
 
-/********************************************/
-/********** INITIALIZATION FUNCTION *********/
+
+/*************************************************/
+/******* INITIALIZATION / LOAD FUNCTIONS *****/
+
 function init() {
 	/* Get handle on main document object */
 	mainDoc = document;	
@@ -586,6 +497,7 @@ function init() {
 	XPODoc = new TextDocument();
 }
 
+/* This function is responsible for (re-)initializing the text data structure, given a document ID, text, and setting the access mode */
 function loadNewDoc(docID, docText, accessMode) {
 	/* Ensure that the text data structure is clean  */
 	// NOTE:  Couldn't we instead, simply do:  XPODoc = new TextDocument();  ????  Would that be less efficient?
@@ -609,8 +521,8 @@ function loadNewDoc(docID, docText, accessMode) {
 	if(readOnly == false){
 		if(isIE == true || isChrome == true || isSafari == true){
 			guiDoc.onclick = onClickFunction;
-			//guiDoc.onkeydown = onKeyDownFunction;
 			guiDoc.onkeypress = onKeyPressFunction;
+			guiDoc.onkeydown = onKeyDownFunction;
 		}
 		else{
 			guiDoc.addEventListener("click", onClickFunction, true);
@@ -642,6 +554,12 @@ function loadNewDoc(docID, docText, accessMode) {
 	refreshDocument();
 }
 
+
+
+/***************************************************/
+/*********** EVENT HANDLER FUNCTIONS ***********/
+
+/* This function is the handler for the onclick event. */
 onClickFunction = function( paramEvent ){
 	var oldCursorLine = cursorLine;
 	clearFormatting(cursorLine);
@@ -651,8 +569,8 @@ onClickFunction = function( paramEvent ){
 	if(oldCursorLine != cursorLine) updateLineLock(cursorLine);
 }
 
+/* This function is the handler for the keypress event.  Mainly, this function will execute the typeCharacter function, if applicable */
 onKeyPressFunction = function( paramEvent ){
-//alert("keypress");
 	var oldCursorLine = cursorLine;
 	clearFormatting(cursorLine);
 	
@@ -669,11 +587,10 @@ onKeyPressFunction = function( paramEvent ){
 	renderCursor();
 	adjustScroll();
 	if(oldCursorLine != cursorLine) updateLineLock(cursorLine);
-	return false;
 }
 
+/* This function is the handler of the keydown event.  Mainly, this function will execute the typeSpecial function */
 onKeyDownFunction = function( paramEvent ) {
-//alert("keydown");
 	var oldCursorLine = cursorLine;
 	clearFormatting(cursorLine);
 	
@@ -682,12 +599,14 @@ onKeyDownFunction = function( paramEvent ) {
 	if(isIE == true) key = myIFrame.window.event.keyCode;
 	else key = paramEvent.keyCode;
 
-	typeSpecial( key );
+	// if typeSpecial actually did something, it returns false...
+	var returnValue = typeSpecial( key );
+	
 	renderCursor();
 	adjustScroll();
 	if(oldCursorLine != cursorLine) updateLineLock(cursorLine);
-	return false;
+	
+	return returnValue;	//  ... and if typeSpecial returns false, we don't want the event to bubble, so pass this return value along
 }
-
 </script>
 <iframe id="myI" name="myI" src="./editor/editableContent.html" style="width:100%;height:100%;"></iframe><br />
