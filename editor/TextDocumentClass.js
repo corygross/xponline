@@ -1,4 +1,3 @@
-alert("loading TextDocumentClass.js");
 // Data structure to hold unformatted document
 function TextDocument() 
 {
