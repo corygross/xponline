@@ -18,9 +18,13 @@ var LEFTARROWKEY = 37;	var UPARROWKEY = 38;
 var RIGHTARROWKEY = 39;	var DOWNARROWKEY = 40;
 var INSERTKEY = 45;		var SHIFTKEY = 16;
 
-// Input modes
+/* CONSTANTS: INPUT MODES */
 var INSERT = 0;
 var OVERWRITE = 1;
+
+// "Booleans" to keep track of what modes we are in
+var isSelection;
+var isInsertMode;
 
 
 
@@ -147,35 +151,7 @@ function setInputMode( paramMODE ) {
 // This function is responsible for analyzing a keyPressEvent and subsequently
 // executing the appropriate function, based on the charCode
 function type( paramEvent ) {
-	// This needs a lot of cleanup...
-	var evt;
-	if(isFF == true){
-		if ( paramEvent.charCode != 0 ) typeCharacter( paramEvent.charCode );
-		else typeSpecial( paramEvent.keyCode );
-		return;
-	}
-	else if(isIE == true){
-		evt = myIFrame.window.event;
-	}
-	else if(isChrome == true || isSafari == true){
-		evt = paramEvent;
-	}
-	else{
-		alert('an unknown browser... editing may not work.');
-	}
 	
-	// No browses besides FF are kind enough to have a charCode property...  We have to find out ourselves which character to display
-	var key = evt.keyCode;
-	if((key >= 48 && key <= 126) || (key >= 186 && key <= 192) || (key >= 219 && key <= 222)){
-		var charCode = getCharCode(key, evt.shiftKey);		
-		if(charCode != null) typeCharacter(charCode);
-	}
-	else{
-		typeSpecial( key );
-	}
-
-	//if ( key != 0 ) typeCharacter( key );
-	//else typeSpecial( key );	
 }
 
 // This function is responsible for text input

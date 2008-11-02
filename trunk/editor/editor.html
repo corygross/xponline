@@ -3,16 +3,6 @@
 <script type="text/javascript" charset="utf-8" src="editor/TextDocumentClass.js"></script>
 <script type="text/javascript" charset="utf-8" src="editor/userInputLogic.js"></script>
 <script type="text/javascript">
-/*var theIFrame = document.getElementByID('')
-var cssLink = document.createElement("link") 
-cssLink.href = "style.css"; 
-cssLink .rel = "stylesheet"; 
-cssLink .type = "text/css"; 
-frames['myI'].document.body.appendChild(cssLink);
-//(document.getElementByID('myI')).document.body.appendChild(cssLink);
-*/
-
-/* NOTE: OFFLOADED TextDocument OBJECT DEFINITION TO ITS OWN SOURCE FILE */
 
 /**********************************************/
 /********** DECLARE GLOBAL VARIABLES **********/
@@ -34,76 +24,29 @@ var PADDING_TOP = 8;
 var PADDING_LEFT = 8;
 
 // Text document container
-var XPODoc = new TextDocument();
-
-/* // Mouse and cursor related globals
-var mouseX;
-var mouseY;
-var cursorLine;
-var cursorColumn;
-var selectionAnchorLine;
-var selectionAnchorColumn;*/
+var XPODoc;
 
 // Text-editing related global flags (to be treated as BOOLEAN variables)
-var isSelection;
-var isInsertMode;
 var isShiftDown;
 var isCtlDown;
 var isAltDown;
 
-/*
-// Global constants
-// Special keys
-var BACKSPACEKEY = 8;
-var TABKEY = 9;
-var ENTERKEY = 13;
-var CAPSLOCKKEY = 20;
-var DELETEKEY = 46;
-var SPACEKEY = 32;
-var PAGEUPKEY = 33;
-var PAGEDOWNKEY = 34;
-var ENDKEY = 35;
-var HOMEKEY = 36;
-var LEFTARROWKEY = 37;
-var UPARROWKEY = 38;
-var RIGHTARROWKEY = 39;
-var DOWNARROWKEY = 40;
-var INSERTKEY = 45;
-var SHIFTKEY = 16;
-
-// Input modes
-var INSERT = 0;
-var OVERWRITE = 1;*/
-
-// Other GUI related handles
-var cursor_line_box;
-var cursor_column_box;
-var mouse_x_box;
-var mouse_y_box;
-
+// Other stuff
 var readOnly = true;
 var syntaxHighlightOn = true;
 var lockedLines = new Array();
 
-function getDoc(){
-	if(isIE == true){
-		return myIFrame.document;
-	}
-	else{
-		return myIFrame.contentWindow.document;
-	}
-}
+// HTML-DOM handle for document pane
+var guiDoc;
 
-/**********************************************/
-/**** MOUSE AND CURSOR ACCESSOR FUNCTIONS *****/
 
-// These functions are self-explanatory
+// This function does a raw capture of mouse position, given an event
 function captureMousePos(e) {
 	if(isIE == true){
 		//this is cory's attempt... its not perfect, but it shows how you can do it
 		e = myIFrame.window.event;
-		mouseX = e.clientX + getDoc().body.scrollLeft - 3;
-        mouseY = e.clientY + getDoc().body.scrollTop - 3;
+		mouseX = e.clientX + guiDoc.body.scrollLeft - 3;
+        mouseY = e.clientY + guiDoc.body.scrollTop - 3;
 	}
 	else{
 		mouseX = e.pageX;
@@ -111,66 +54,9 @@ function captureMousePos(e) {
 	}
 }
 
-
-/*function getMouseCoords() {
-	return [mouseX, mouseY];
-}
-function getMouseX() {
-	return mouseX;
-}
-function getMouseY() {
-	return mouseY;
-}
-
-// This function calculates the position of the cursor 
-// based on the given parameters representing mouseX,Y
-function deriveCursor(paramMouseX, paramMouseY) {
-
-	// Calculate line and column number based on mouse position
-	var currow = Math.floor((mouseY - PADDING_TOP)/FONT_HEIGHT);
-	var curcol = Math.floor((mouseX - PADDING_LEFT)/FONT_WIDTH);
-	// Perform sanity check on calculated values:
-	// If the calculated line is below the last line, then set cursor at last character in document
-	if (currow > XPODoc.getDocumentLength()-1) {
-		currow = XPODoc.getDocumentLength()-1;
-		curcol = XPODoc.getLineLength( XPODoc.getDocumentLength()-1 );
-	}
-	// If the calculated cursor is beyond the first or last character in a line, 
-	// then set the cursor to the first or last character, respectively
-	else {		
-		if ( curcol < 0 ) curcol = 0;
-		if ( curcol >= XPODoc.getLineLength(currow) ) curcol = XPODoc.getLineLength(currow)-1;
-	}
-	
-	// Loop through the locked lines and make sure we aren't trying to move to it.
-	for(var l=0; l < lockedLines.length; l++ )
-	{
-		if(lockedLines[l] == currow){
-			alert("Another user is currently on that line, and it is locked.");
-			return;
-		}
-	}
-	
-	// Store the calculated values
-	cursorLine = currow;
-	cursorColumn = curcol;
-}
-// These functions are self-explanatory again
-function getCursor() {
-	return [cursorLine,cursorColumn];
-}
-function getCursorLine() {
-	return cursorLine;
-}
-function getCursorColumn() {
-	return cursorColumn;
-}*/
-
-
-
 function getScrollOffsetX() {
 	if(isIE == true){
-		return getDoc().body.scrollLeft;
+		return guiDoc.body.scrollLeft;
 	}
 	else{
 		return myIFrame.contentWindow.pageXOffset;
@@ -178,39 +64,12 @@ function getScrollOffsetX() {
 }
 function getScrollOffsetY() {
 	if(isIE == true){
-		return getDoc().body.scrollTop;
+		return guiDoc.body.scrollTop;
 	}
 	else{
 		return myIFrame.contentWindow.pageYOffset;
 	}
 }
-
-
-
-/**********************************************/
-/******** SELECTION RELATED FUNCTIONS *********/
-
-// These functions returns the position of the selection anchor
-/*function getSelectionAnchor() {
-	return [selectionAnchorLine, selectionAnchorColumn];
-}
-function getSelectionAnchorLine() {
-	return selectionAnchorLine;
-}
-function getSelectionAnchorColumn() {
-	return selectionAnchorColumn;
-}
-// This function sets selection mode 'on', and furthermore sets the 
-// selectionAnchor position to the current cursor position
-function setSelection() {
-	selectionAnchorLine = cursorLine;
-	selectionAnchorColumn = cursorColumn;
-	isSelection = true;
-}
-// This function sets selection mode 'off'.
-function resetSelection() {
-	isSelection = false;
-}*/
 
 
 
@@ -231,7 +90,7 @@ function insertBookmark( paramBMtext ) {
 		// TODO: FIXME: HACK:  Need to make the above change visible in the GUI
 		// The following lines are very similar to the code in ENTER
 		clearFormatting( cursorLine );
-		var myDoc = getDoc();
+		var myDoc = guiDoc;
 		var addMe = myDoc.createElement('div');
 		addMe.setAttribute('id', XPODoc.getLineId( cursorLine+1 ) );
 		addMe.setAttribute('class', "line");
@@ -302,7 +161,7 @@ function typeSpecial(paramKEYCODE) {
 		case PAGEUPKEY:
 			// Move the cursor up a number of time relative to the current editing window's height			
 			if(isIE == true){
-				cursorLine -= Math.floor(getDoc().body.clientHeight / FONT_HEIGHT);
+				cursorLine -= Math.floor(guiDoc.body.clientHeight / FONT_HEIGHT);
 			}
 			else{
 				cursorLine -= Math.floor(myIFrame.contentWindow.innerHeight / FONT_HEIGHT);
@@ -313,7 +172,7 @@ function typeSpecial(paramKEYCODE) {
 				cursorColumn = 0;
 			} else if ( cursorColumn >= XPODoc.getLineLength( cursorLine ) ) cursorColumn = XPODoc.getLineLength(cursorLine)-1;
 			if(isIE == true){
-				myIFrame.scrollBy(0,-getDoc().body.clientHeight+PADDING_TOP);
+				myIFrame.scrollBy(0,-guiDoc.body.clientHeight+PADDING_TOP);
 			}
 			else{
 				myIFrame.contentWindow.scrollBy(0,-myIFrame.contentWindow.innerHeight+PADDING_TOP);
@@ -323,7 +182,7 @@ function typeSpecial(paramKEYCODE) {
 		case PAGEDOWNKEY:
 			// Move the cursor down a number of times relative to the current editing window's height
 			if(isIE == true){
-				cursorLine += Math.floor(getDoc().body.clientHeight / FONT_HEIGHT);
+				cursorLine += Math.floor(guiDoc.body.clientHeight / FONT_HEIGHT);
 			}
 			else{
 				cursorLine += Math.floor(myIFrame.contentWindow.innerHeight / FONT_HEIGHT);
@@ -334,7 +193,7 @@ function typeSpecial(paramKEYCODE) {
 				cursorColumn = XPODoc.getLineLength( cursorLine )-1;
 			} else if ( cursorColumn >= XPODoc.getLineLength( cursorLine ) ) cursorColumn = XPODoc.getLineLength(cursorLine)-1;
 			if(isIE == true){
-				myIFrame.scrollBy(0,getDoc().body.clientHeight-PADDING_TOP);
+				myIFrame.scrollBy(0,guiDoc.body.clientHeight-PADDING_TOP);
 			}
 			else{
 				myIFrame.contentWindow.scrollBy(0,myIFrame.contentWindow.innerHeight-PADDING_TOP);
@@ -354,7 +213,7 @@ function typeSpecial(paramKEYCODE) {
 				XPODoc.setLineText( cursorLine-1, XPODoc.getLineText( cursorLine-1 ) + XPODoc.getLineText( cursorLine ) );
 				
 				// FIXME: HACK:  BAD FORM!  The following lines promote tight coupling between GUI and backend!  ARRRGGGGHHHHH! 
-				var removeMe = getDoc().getElementById(XPODoc.getLineId( cursorLine ));
+				var removeMe = guiDoc.getElementById(XPODoc.getLineId( cursorLine ));
 				removeMe.parentNode.removeChild(removeMe);
 				
 				// Remove the line from our data structure
@@ -378,7 +237,7 @@ function typeSpecial(paramKEYCODE) {
 				XPODoc.setLineText( cursorLine, XPODoc.getLineText(cursorLine) + XPODoc.getLineText(cursorLine+1) );
 				
 				// FIXME: HACK:  BAD FORM!  The following lines promote tight coupling between GUI and backend!  ARRRGGGGHHHHH! 
-				var removeMe = getDoc().getElementById(XPODoc.getLineId( cursorLine+1 ));
+				var removeMe = guiDoc.getElementById(XPODoc.getLineId( cursorLine+1 ));
 				removeMe.parentNode.removeChild(removeMe);
 				
 				// Remove the line in question from our data structure
@@ -398,7 +257,7 @@ function typeSpecial(paramKEYCODE) {
 
 			// TODO: FIXME: HACK:  Need to make the above change visible in the GUI
 			clearFormatting( cursorLine );
-			var myDoc = getDoc();
+			var myDoc = guiDoc;
 			var addMe = myDoc.createElement('div');
 			addMe.setAttribute('id', XPODoc.getLineId( cursorLine+1 ) );
 			addMe.setAttribute('class', "line");
@@ -423,57 +282,14 @@ function typeSpecial(paramKEYCODE) {
 		case CAPSLOCKKEY:
 			
 			break;
-		case SPACEKEY:
-			typeCharacter(" ".charCodeAt(0), XPODoc );
-			break;
+		//case SPACEKEY:
+		//	typeCharacter(" ".charCodeAt(0), XPODoc );
+		//	break;
 		default:
 			return false;
 	}
 	return true;
 } // END typeSpecial(paramKEY)
-
-// This function toggles the InsertMode flag (representing Insert or Overwrite)
-/*function toggleInputMode() {
-	if ( isInsertMode ) isInsertMode = false;
-	else isInsertMode = true;
-}
-// This explicitly sets whether Insert Mode or Overwrite Mode is active
-function setInputMode( paramMODE ) {
-	isInsertMode = paramMODE;
-}*/
-// This function is responsible for analyzing a keyPressEvent and subsequently
-// executing the appropriate function, based on the charCode
-/*function type( paramEvent , paramDocument ) {
-	// This needs a lot of cleanup...
-	var evt;
-	if(isFF == true){
-		if ( paramEvent.charCode != 0 ) typeCharacter( paramEvent.charCode , XPODoc );
-		else typeSpecial( paramEvent.keyCode );
-		return;
-	}
-	else if(isIE == true){
-		evt = myIFrame.window.event;
-	}
-	else if(isChrome == true || isSafari == true){
-		evt = paramEvent;
-	}
-	else{
-		alert('an unknown browser... editing may not work.');
-	}
-	
-	// No browses besides FF are kind enough to have a charCode property...  We have to find out ourselves which character to display
-	var key = evt.keyCode;
-	if((key >= 48 && key <= 126) || (key >= 186 && key <= 192) || (key >= 219 && key <= 222)){
-	//	var charCode = getCharCode(key, evt.shiftKey);		
-		if(charCode != null) typeCharacter(charCode , XPODoc);
-	}
-	else{
-		typeSpecial( key , XPODoc);
-	}
-
-	//if ( key != 0 ) typeCharacter( key , XPODoc);
-	//else typeSpecial( key , XPODoc);	
-}*/
 
 function getCharCode( paramKey, paramShiftPressed ){
 
@@ -554,23 +370,6 @@ function getCharCode( paramKey, paramShiftPressed ){
 	return null;
 }
 
-// This function is responsible for text input
-/*function typeCharacter( paramCharCode , paramDocument ) {	
-	var tempCurrentLine = new Array();
-	tempCurrentLine.push(paramDocument.getLineText(cursorLine).substring(0,cursorColumn));
-	tempCurrentLine.push(paramDocument.getLineText(cursorLine).substr(cursorColumn, 1));
-	tempCurrentLine.push(paramDocument.getLineText(cursorLine).substring(cursorColumn+1));
-
-	// Insert character
-	tempCurrentLine[1]=String.fromCharCode(paramCharCode) + tempCurrentLine[1];
-	
-	// Update cursor
-	cursorColumn++;
-	
-	// Commit changes
-	paramDocument.setLineText( cursorLine, tempCurrentLine.join("") );
-}*/
-
 
 
 /**********************************************/
@@ -583,12 +382,12 @@ function displayCursorPos() {
 
 // This function clears the formatting of the line specified by paramLineNumber
 function clearFormatting( paramLineNum ) {
-	if(getDoc().getElementById( XPODoc.getLineId(paramLineNum) ) != null){
-		//getDoc().getElementById( XPODoc.getLineId(paramLineNum) ).innerHTML = XPODoc.getLineText(paramLineNum);
+	if(guiDoc.getElementById( XPODoc.getLineId(paramLineNum) ) != null){
+		//guiDoc.getElementById( XPODoc.getLineId(paramLineNum) ).innerHTML = XPODoc.getLineText(paramLineNum);
 
 		//RT - NOT SURE WHAT THIS DOES....
 		//Parses the contents of each line for syntax hightlighting.
-		getDoc().getElementById( XPODoc.getLineId(paramLineNum) ).innerHTML = indexLineText(XPODoc.getLineText(paramLineNum));
+		guiDoc.getElementById( XPODoc.getLineId(paramLineNum) ).innerHTML = indexLineText(XPODoc.getLineText(paramLineNum));
 	}
 }
 
@@ -663,7 +462,7 @@ function lockLines( newLineLocks ) {
 	// Add the new line locks
 	for( var j=0; j < newLineLocks.length; j++ )
 	{
-		getDoc().getElementById( XPODoc.getLineId(newLineLocks[j]) ).innerHTML = "<font style='BACKGROUND-COLOR: orange'>" + XPODoc.getLineText(newLineLocks[j]) + "</font>";
+		guiDoc.getElementById( XPODoc.getLineId(newLineLocks[j]) ).innerHTML = "<font style='BACKGROUND-COLOR: orange'>" + XPODoc.getLineText(newLineLocks[j]) + "</font>";
 	}
 	lockedLines = newLineLocks;
 }
@@ -685,9 +484,9 @@ function renderCursor() {
 	
 		// display new formatting
 		try {
-			//getDoc().getElementById( XPODoc.getLineId(cursorLine) ).innerHTML = tempCurrentLine.join("");
-			getDoc().getElementById( XPODoc.getLineId(cursorLine) ).innerHTML = formatted;
-			//getDoc().getElementById( XPODoc.getLineId(cursorLine) ).innerHTML = indexLineText(tempCurrentLine.join(""));
+			//guiDoc.getElementById( XPODoc.getLineId(cursorLine) ).innerHTML = tempCurrentLine.join("");
+			guiDoc.getElementById( XPODoc.getLineId(cursorLine) ).innerHTML = formatted;
+			//guiDoc.getElementById( XPODoc.getLineId(cursorLine) ).innerHTML = indexLineText(tempCurrentLine.join(""));
 		}
 		catch (e) { alert("line not found!"); }
 
@@ -697,35 +496,36 @@ function renderCursor() {
 
 // This function (re-)renders the entire document
 function refreshDocument() {
-	var myDoc = getDoc().getElementById("entireDocument");
+	var myDoc = guiDoc.getElementById("entireDocument");
 	while ( myDoc.firstChild ) {
 		myDoc.removeChild( myDoc.firstChild );
 	}
 	
 	for(var l=0; l < XPODoc.document.length; l++ ){
-		var newLine = getDoc().createElement('div');
+		var newLine = guiDoc.createElement('div');
 		newLine.setAttribute('id', XPODoc.getLineId(l) );
-		newLine.setAttribute('class', "line");		// RELATED TO FIX OF ISSUE #1
+		newLine.setAttribute('class', "line");		// RELATED TO FIX OF ISSUE #1 >> See DEVLOG.TXT is
 		myDoc.appendChild( newLine );				
 		if ( l == cursorLine ) {renderCursor();}
 		else clearFormatting( l );
 	}
-
 }
+
 // This function toggles whether or not syntax highlighting is on
 function toggleSyntaxHighlight() 
 {
 	syntaxHighlightOn = !syntaxHighlightOn;
 	refreshDocument();
 }
-// This function will perform auto-scrolling of the IFrame to keep the cursor in view at all times
+
+// This function will perform auto-scrolling of the iFrame to keep the cursor in view at all times
 function adjustScroll() {
 	// TODO: COMMENT THIS FUNCTION
 	var frameWidth;
 	var frameHeight;
 	if(isIE == true){
-		frameWidth = getDoc().body.clientWidth;
-		frameHeight = getDoc().body.clientHeight;
+		frameWidth = guiDoc.body.clientWidth;
+		frameHeight = guiDoc.body.clientHeight;
 	}
 	else{
 		frameWidth = myIFrame.contentWindow.innerWidth;
@@ -767,94 +567,122 @@ function updateLineLock( line ) {
 
 /********************************************/
 /********** INITIALIZATION FUNCTION *********/
-// FIXME:  I SUCK
 function init() {
+	/* Get handle on main document object */
+	mainDoc = document;	
+	
+	/* BROWSER DETECTION */
 	var ua = navigator.userAgent.toLowerCase();	
 	isFF = (ua.indexOf("firefox") != -1);
 	isIE = (ua.indexOf("msie") != -1);
 	isChrome = (ua.indexOf("chrome") != -1);
 	isSafari = (ua.indexOf("safari") != -1) && (ua.indexOf("chrome") == -1);
 	
-	if(isIE == false){
-		myIFrame = document.getElementById("myI");
-	}
-	else{
-		myIFrame = frames["myI"];
-	}
-	mainDoc = document;
-
-	mouse_x_box = document.getElementById("mX");
-	mouse_y_box = document.getElementById("mY");
-	cursor_line_box = document.getElementById("cL");
-	cursor_column_box = document.getElementById("cC");
-
-	cursorLine = 0;
-	cursorColumn = 0;
-
-	//*****Populate our data structure***********
-	var curline = "";
-	var curlineName = "";
-	var nextline = 0;
+	/* Get browser-dependent handle on the iFrame and the iFrame's content document */
+	if(isIE == false) myIFrame = document.getElementById("myI");
+	else myIFrame = frames["myI"];
+		
+	/* Initialize our text document data structure */
+	XPODoc = new TextDocument();
 }
-// FIXME:  ^^^ REALLY THIS SUCKS
 
 function loadNewDoc(docID, docText, accessMode) {
+	/* Ensure that the text data structure is clean  */
+	// NOTE:  Couldn't we instead, simply do:  XPODoc = new TextDocument();  ????  Would that be less efficient?
 	XPODoc.blankDocument();
 	XPODoc.documentID = docID;
 	
+	/* Populate the XPODoc data structure */
 	var textArr = docText.split(/\r\n|\r|\n/);
-	for(var i=0; i < textArr.length; i++ )
-	{
+	for(var i=0; i < textArr.length; i++ ) {
 		XPODoc.appendLine( textArr[i] );
 	}
-	//********** Done populating data structure **********
 	
-	// See if we are in readOnly mode
+	/* Get handle on iFrame's content document */
+	if(isIE == true) guiDoc = myIFrame.document;
+	else guiDoc = myIFrame.contentWindow.document;
+	
+	/* Set the access mode.  If not readonly, it shall be assume read-write */
 	readOnly = (accessMode == "r");
 	
-	// Render the entire document's HTML
-	refreshDocument();
-	
-	// Only enable listeners in write mode
+	/* Add event listeners, but only if the mode is read-write (NOT readOnly) */
 	if(readOnly == false){
 		if(isIE == true || isChrome == true || isSafari == true){
-			getDoc().onclick = onClickFunction;
-			getDoc().onkeydown = onTypeFunction;
+			guiDoc.onclick = onClickFunction;
+			//guiDoc.onkeydown = onKeyDownFunction;
+			guiDoc.onkeypress = onKeyPressFunction;
 		}
 		else{
-			getDoc().addEventListener("click", onClickFunction, true);
-			getDoc().addEventListener("keypress", onTypeFunction, true);
+			guiDoc.addEventListener("click", onClickFunction, true);
+			guiDoc.addEventListener("keydown", onKeyDownFunction, true);
+			guiDoc.addEventListener("keypress", onKeyPressFunction, true);
 		}
-		
-		// Enable immediate editing
-		if(isIE == true) myIFrame.focus();
-		else myIFrame.contentWindow.focus();
 	}
 	else{ // Remove event listeners because we are in readOnly mode
 		if(isIE == true || isChrome == true || isSafari == true){
-			getDoc().onclick = null;
-			getDoc().onkeydown = null;
+			guiDoc.onclick = null;
+			guiDoc.onkeydown = null;
+			guiDoc.onkeypress = null;
 		}
 		else{
-			getDoc().removeEventListener("click", onClickFunction, true);
-			getDoc().removeEventListener("keypress", onTypeFunction, true);
+			guiDoc.removeEventListener("click", onClickFunction, true);
+			guiDoc.removeEventListener("keydown", onKeyDownFunction, true);
+			guiDoc.removeEventListener("keypress", onKeyPressFunction, true);
 		}
 	}
+	
+	/* Ensure that the text 'window' has the focus, thus allowing immediate editing (if eventListeners are active, of course) */
+	if(isIE == true) myIFrame.focus();
+	else myIFrame.contentWindow.focus();
+	
+	/* Initialize the cursor to the starting position */
+	setCursor(0,0);
+	
+	/* Render the entire document */
+	refreshDocument();
 }
 
-onClickFunction = function( event ){
+onClickFunction = function( paramEvent ){
 	var oldCursorLine = cursorLine;
 	clearFormatting(cursorLine);
-	captureMousePos(event);
+	captureMousePos(paramEvent);
 	deriveCursorForDocument(mouseX,mouseY,XPODoc);
 	renderCursor();
 	if(oldCursorLine != cursorLine) updateLineLock(cursorLine);
 }
 
-onTypeFunction = function( event ){
+onKeyPressFunction = function( paramEvent ){
+//alert("keypress");
 	var oldCursorLine = cursorLine;
 	clearFormatting(cursorLine);
-	type(event, XPODoc);
+	
+	// Determine the ASCII code of the to-be-typed character (browser-dependent implementation)
+	var key;
+	if(isFF == true) key = paramEvent.charCode;
+	else if(isIE == true) key = myIFrame.window.event.keyCode;
+	else if(isChrome == true || isSafari == true) key = paramEvent.keyCode;
+	else alert('an unknown browser... editing may not work.');
+
+	// If a valid character (nonzero), then type it
+	if ( key != 0 ) typeCharacter( key );
+	
+	renderCursor();
+	adjustScroll();
+	if(oldCursorLine != cursorLine) updateLineLock(cursorLine);
+	return false;
+}
+
+onKeyDownFunction = function( paramEvent ) {
+//alert("keydown");
+	var oldCursorLine = cursorLine;
+	clearFormatting(cursorLine);
+	
+	// Determine the keyCode of the pressed key (browser-dependent implementation)
+	var key;
+	if(isIE == true) key = myIFrame.window.event.keyCode;
+	else key = paramEvent.keyCode;
+
+	typeSpecial( key );
 	renderCursor();
 	adjustScroll();
 	if(oldCursorLine != cursorLine) updateLineLock(cursorLine);
