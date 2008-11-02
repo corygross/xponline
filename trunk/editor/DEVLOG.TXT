@@ -1,0 +1,52 @@
+#####################
+KNOWN ISSUES SO FAR
+#####################
+- Using the UP/DOWN arrow keys to move the cursor 'thru' lines with varying lengths does not behave as a user would expect
+- HTML-like text does not render correctly: it changes how the line is rendered
+
+
+#######################
+RESOLVED ISSUES SO FAR
+#######################
+
+ISSUE : 	When typing, it is not currently possible to have two consecutive spaces, for some odd reason...
+ISSUE :  	When placing the cursor on an existing space, typing another space makes the cursor disappear and does not add more spaces
+SOLUTION : 	In the HTML "wrapper" of the document being edited, a CSS style of 'white-space:pre' needs to be applied.
+
+ISSUE : 	Placing the cursor at the last position of the line makes the cursor disappear (although it still works)
+SOLUTION <<OUTDATED>>: Added a line in the 'renderCursor' function, which adds a temporary space to the line so that the cursor can be rendered. 
+SOLUTION 2 : Added BUGFIX_SPACE function to TextDocument object, and made cursorColumn-related code compatible to this change
+
+ISSUE : Pressing "ENTER" breaks the app.
+SOLUTION : Correctly implemented ENTER-key functionality in the typeSpecial function.  Required an update to the TextDocument object, outlined above
+
+ISSUE :  Typing a single quote starts a "quick find" in firefox.  Have not yet prevented this from occurring.
+ISSUE :  Tab key is not captured correctly (moves to next tab space in overall document rather than types 4 spaces)
+ISSUE :  The content window scrolls at a different rate than the cursor, so often the cursor disappears from the screen in a long document
+SOLUTION : Adjusted the <body> tag in editableContent.html to read <body onkeypress="return false;"> in order to prevent the event from bubbling past the doc
+
+
+##########################
+TODO: NOT YET IMPLEMENTED
+##########################
+- CTL-END, CTL-HOME, CTL-PAGEUP, CTL-PAGEDWN
+- Handling selection of text (with mouse OR keyboard)
+- Auto-scrolling to follow cursor
+
+
+############################
+FIXME: BROKEN FUNCTIONALITY
+############################
+<NONE AT THE MOMENT>
+
+
+##########################################################
+CLEANUP:  NEED TO MAKE MORE EFFICIENT/STRAIGHTFORWARD/ETC
+##########################################################
+- Need to modularize the code much better.  Keep Data Structures separate from GUI separate from User Input Handling
+
+
+###################################################################################
+WISHLIST:  LIST OF TO-BE-ADDED FUNCTIONALITY/ETC, WHICH IS NOT ABSOLUTELY CRITICAL
+###################################################################################
+- Keep track of "tab stops" in the document so that a tab only inserts enough spaces to go to the next multiple of 4 characters across
