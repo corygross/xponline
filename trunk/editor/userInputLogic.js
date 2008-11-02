@@ -9,13 +9,11 @@ var selectionAnchorColumn;
 var selectionAnchorLine;
 
 /* KEYBOARD-RELATED */
-var BACKSPACEKEY = 8;	var TABKEY = 9;
-var ENTERKEY = 13;		var CAPSLOCKKEY = 20;
-var DELETEKEY = 46;		var SPACEKEY = 32;
-var PAGEUPKEY = 33;		var PAGEDOWNKEY = 34;
-var ENDKEY = 35;		var HOMEKEY = 36;
-var LEFTARROWKEY = 37;	var UPARROWKEY = 38;
-var RIGHTARROWKEY = 39;	var DOWNARROWKEY = 40;
+var BACKSPACEKEY = 8;	var TABKEY = 9;			var ENTERKEY = 13;
+var CAPSLOCKKEY = 20;	var ESCAPEKEY = 27;		var DELETEKEY = 46;
+var SPACEKEY = 32;		var PAGEUPKEY = 33;		var PAGEDOWNKEY = 34;
+var ENDKEY = 35;		var HOMEKEY = 36;		var LEFTARROWKEY = 37;
+var UPARROWKEY = 38;	var RIGHTARROWKEY = 39;	var DOWNARROWKEY = 40;
 var INSERTKEY = 45;		var SHIFTKEY = 16;
 
 /* CONSTANTS: INPUT MODES */
@@ -147,12 +145,6 @@ function setInputMode( paramMODE ) {
 /********** TEXT MODIFICATION RELATED FUNCTIONS ********/
 
 /* NOTE: THE typeSpecial FUNCTION IS LOCATED IN THE MAIN editor.html FILE */
-
-// This function is responsible for analyzing a keyPressEvent and subsequently
-// executing the appropriate function, based on the charCode
-function type( paramEvent ) {
-	
-}
 
 // This function is responsible for text input
 function typeCharacter( paramCharCode ) {	

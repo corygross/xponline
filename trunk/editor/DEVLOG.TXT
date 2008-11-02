@@ -3,6 +3,7 @@ KNOWN ISSUES SO FAR
 #####################
 - Using the UP/DOWN arrow keys to move the cursor 'thru' lines with varying lengths does not behave as a user would expect
 - HTML-like text does not render correctly: it changes how the line is rendered
+- In the Chrome browser (and presumably, Safari), the ENTERKEY does not work correctly - every one newline is rendered as two.
 
 
 #######################
@@ -31,7 +32,6 @@ TODO: NOT YET IMPLEMENTED
 ##########################
 - CTL-END, CTL-HOME, CTL-PAGEUP, CTL-PAGEDWN
 - Handling selection of text (with mouse OR keyboard)
-- Auto-scrolling to follow cursor
 
 
 ############################
@@ -43,7 +43,7 @@ FIXME: BROKEN FUNCTIONALITY
 ##########################################################
 CLEANUP:  NEED TO MAKE MORE EFFICIENT/STRAIGHTFORWARD/ETC
 ##########################################################
-- Need to modularize the code much better.  Keep Data Structures separate from GUI separate from User Input Handling
+- Need to modularize the code much better.  Keep {Data Structures} separate from {GUI} separate from {Data Interface Functions}
 
 
 ###################################################################################
