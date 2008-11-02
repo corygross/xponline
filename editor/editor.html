@@ -475,7 +475,7 @@ function setInputMode( paramMODE ) {
 	//else typeSpecial( key , XPODoc);	
 }*/
 
-/*function getCharCode( paramKey, paramShiftPressed ){
+function getCharCode( paramKey, paramShiftPressed ){
 
 	if(paramShiftPressed){
 		if(paramKey >= 65 && paramKey <= 90) //A-Z a-z
@@ -552,7 +552,7 @@ function setInputMode( paramMODE ) {
 			return 39;		
 	}
 	return null;
-}*/
+}
 
 // This function is responsible for text input
 /*function typeCharacter( paramCharCode , paramDocument ) {	
@@ -580,6 +580,7 @@ function setInputMode( paramMODE ) {
 function displayCursorPos() {
 	updateLineCol(cursorLine, cursorColumn);
 }
+
 // This function clears the formatting of the line specified by paramLineNumber
 function clearFormatting( paramLineNum ) {
 	if(getDoc().getElementById( XPODoc.getLineId(paramLineNum) ) != null){
@@ -590,6 +591,7 @@ function clearFormatting( paramLineNum ) {
 		getDoc().getElementById( XPODoc.getLineId(paramLineNum) ).innerHTML = indexLineText(XPODoc.getLineText(paramLineNum));
 	}
 }
+
 // This function clears the old cursor and moves to the line specified by paramLineNumber
 function gotoLine( paramLineNum ) {
 	clearFormatting(cursorLine);
@@ -598,6 +600,7 @@ function gotoLine( paramLineNum ) {
 	renderCursor();
 	adjustScroll();
 }
+
 // This function clears the old cursor and moves to the line specified by paramLineNumber
 function gotoPosition( paramLineNum, paramColNum ) {
 	clearFormatting(cursorLine);
@@ -606,6 +609,7 @@ function gotoPosition( paramLineNum, paramColNum ) {
 	renderCursor();
 	adjustScroll();
 }
+
 // This function takes each line of input and applies formatting based on keywords
 function indexLineText(inputText)
 {
@@ -668,35 +672,17 @@ function lockLines( newLineLocks ) {
 function renderCursor() {
 		// Slice 'n dice the line to isolate the cursor
 		var tempCurrentLine = new Array();
-
-		//The line must be re-rendered if there is syntax highlighting is active
-		//tempCurrentLine.push(XPODoc.getLineText(cursorLine));
-	//	alert("got: " + tempCurrentLine);
-		//var indexedLine = indexLineText(XPODoc.getLineText(cursorLine));
-		//tempCurrentLine = new Array();
-
-	//	alert("about to fill tempCurrentLine");
-	//	alert("tempCurrentLine is " + tempCurrentLine);
-	//	alert("being parsing line");
+		
 		tempCurrentLine.push(XPODoc.getLineText(cursorLine).substring(0,cursorColumn));
-	//	alert("parsed first element");
 		tempCurrentLine.push(XPODoc.getLineText(cursorLine).substr(cursorColumn, 1));
-	//	alert("parsed second element");
 		tempCurrentLine.push(XPODoc.getLineText(cursorLine).substring(cursorColumn+1));
-	//	alert("done parsing line");
 
 		// Apply formatting
-	//	if ( tempCurrentLine[1].length == 0 ) tempCurrentLine[1]=" ";  // <--- FIX#2
-	//	tempCurrentLine[1] = "<font style='BACKGROUND-COLOR: red'>" + tempCurrentLine[1] + "</font>";
 		tempCurrentLine[1] = "<span id='cursor'>" + tempCurrentLine[1] + "</span>";
 
 		//Re render any syntax highlighting that may be there
 		var formatted = indexLineText(tempCurrentLine[0] + tempCurrentLine[1] + tempCurrentLine[2]);
-	//	alert("formatted is " + formatted);
-		//tempCurrentLine.push(indexedLine.substring(0,cursorColumn));
-	//	tempCurrentLine.push(indexedLine.substr(cursorColumn, 1));
-	//	tempCurrentLine.push(indexedLine.substring(cursorColumn+1));
-
+	
 		// display new formatting
 		try {
 			//getDoc().getElementById( XPODoc.getLineId(cursorLine) ).innerHTML = tempCurrentLine.join("");
@@ -708,6 +694,7 @@ function renderCursor() {
 		// Update the GUI with the correct line and col
 		displayCursorPos();
 }
+
 // This function (re-)renders the entire document
 function refreshDocument() {
 	var myDoc = getDoc().getElementById("entireDocument");
