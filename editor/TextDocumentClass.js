@@ -11,7 +11,7 @@ function TextDocument()
 		this.text = paramLineText;
 	}
 	this.document = new Array();		// This is to be an array of lines
-	this.uniqueNameCounter = 0;		// This variable is used to provide unique id's to each line
+	this.uniqueNameCounter = 0;			// This variable is used to provide unique id's to each line
 	this.documentID = null;
 	
 	//////////////////////////////////////////////////
@@ -65,10 +65,6 @@ function TextDocument()
 		if ( paramLineNum <= this.getDocumentLength() && paramLineNum >= 0 ) this.document.splice( paramLineNum, 1 );
 		else return false;
 	}
-	// Replace tabs with 4 spaces
-	this.replaceTab = function( paramText ) {
-		return paramText.replace(/\t/g,"    ");
-	}
 	/* NOTE: setLineId is deliberately omitted.  Id's shall be handled internally by the document structure during line creation only */
 	// Set the text of a specified line to equal paramText
 	this.setLineText = function( paramLineNum, paramText ) {
@@ -78,12 +74,4 @@ function TextDocument()
 		}
 		else return false;
 	}
-	// BUGFIX FUNCTION.  Returns paramText, after ensuring the last char is a space character
-	this.BUGFIX_SPACE = function( paramText ) {
-		// FIX RENDERING ISSUE FOR HTML: If last character of a line is not a space character, then append one.
-		// This fixes 2 things: 1.) allows the cursor to be at the 'true' end of the line
-		//                      2.) fixes bug where blank lines are not rendered
-		if ( paramText.charAt(paramText.length-1) != ' ' ) paramText = paramText + ' ';
-		return paramText;
-	}	
 }
