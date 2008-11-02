@@ -300,7 +300,7 @@ function clearFormatting( paramLineNum ) {
 
 		//RT - NOT SURE WHAT THIS DOES....
 		//Parses the contents of each line for syntax hightlighting.
-		guiDoc.getElementById( XPODoc.getLineId(paramLineNum) ).innerHTML = indexLineText(XPODoc.getLineText(paramLineNum));
+		guiDoc.getElementById( XPODoc.getLineId(paramLineNum) ).innerHTML = indexLineText(replaceHTMLEntities(XPODoc.getLineText(paramLineNum)));
 	}
 }
 
@@ -388,6 +388,10 @@ function renderCursor() {
 		tempCurrentLine.push(XPODoc.getLineText(cursorLine).substring(0,cursorColumn));
 		tempCurrentLine.push(XPODoc.getLineText(cursorLine).substr(cursorColumn, 1));
 		tempCurrentLine.push(XPODoc.getLineText(cursorLine).substring(cursorColumn+1));
+		
+		tempCurrentLine[0] = replaceHTMLEntities(tempCurrentLine[0]);
+		tempCurrentLine[1] = replaceHTMLEntities(tempCurrentLine[1]);
+		tempCurrentLine[2] = replaceHTMLEntities(tempCurrentLine[2]);
 
 		// Apply formatting
 		tempCurrentLine[1] = "<span id='cursor'>" + tempCurrentLine[1] + "</span>";
@@ -405,6 +409,18 @@ function renderCursor() {
 
 		// Update the GUI with the correct line and col
 		displayCursorPos();
+}
+
+/* Replace some things like tabs, spaces, < and > */
+function replaceHTMLEntities( paramText ) {
+	paramText = paramText.replace(/&/g, "&amp;"); // Leave this one first.
+	paramText = paramText.replace(/>/g, "&gt;");
+	paramText = paramText.replace(/</g, "&lt;");
+	paramText = paramText.replace(/ /g, "&nbsp;");	
+	paramText = paramText.replace(/\//g, "&#47;");
+	paramText = paramText.replace(/\\/g, "&#92;");
+	paramText = paramText.replace(/\t/g,"&nbsp;&nbsp;&nbsp;&nbsp;");
+	return paramText;
 }
 
 /* This function (re-)renders the entire document */
