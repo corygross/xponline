@@ -52,9 +52,6 @@ function TextDocument()
 	}
 	// Insert a line with the given text into the document at the specified line number
 	this.insertLine = function( paramLineNum, paramText ) {
-		paramText = this.replaceTab( paramText );
-		paramText = this.BUGFIX_SPACE( paramText );
-		
 		if ( paramLineNum <= this.getDocumentLength() && paramLineNum >= 0 ) {
 			this.document.splice( paramLineNum, 0, new this.line( "line"+this.uniqueNameCounter, paramText ) );
 			this.uniqueNameCounter++;
@@ -68,7 +65,6 @@ function TextDocument()
 	/* NOTE: setLineId is deliberately omitted.  Id's shall be handled internally by the document structure during line creation only */
 	// Set the text of a specified line to equal paramText
 	this.setLineText = function( paramLineNum, paramText ) {
-		paramText = this.BUGFIX_SPACE( paramText );
 		if ( paramLineNum < this.getDocumentLength() ) {
 			this.document[paramLineNum].text = paramText;
 		}
