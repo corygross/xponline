@@ -136,12 +136,13 @@ function getCollisionInfo($uID, $dID){
 	$fileName = "./documents/lineLock/doc".$dID."-lock";
 	if(file_exists($fileName)){
 		$fileModifyTime = filemtime($fileName);
-		$lastModifyKey = 'lastFileModify'.$dID;
+		$lastModifyKey = 'lastLockFileModify'.$dID;
 		if($fileModifyTime != $_SESSION["$lastModifyKey"]){
 			$_SESSION["$lastModifyKey"] = $fileModifyTime;
 			
 			$fileHandle = fopen($fileName, 'r') or die("can't open file");
-			$wholeFile = fread($fileHandle, filesize($fileName)+1);
+			//$wholeFile = fread($fileHandle, filesize($fileName)+1);
+			$wholeFile = fread($fileHandle, filesize($fileName));
 			fclose($fileHandle);
 
 			$locksToReturn = "";
@@ -161,9 +162,20 @@ function getCollisionInfo($uID, $dID){
 	return "";
 }
 
-function getPeerUpdates(){
-	//docUpdate
-	//return "<docUpdate></docUpdate>";
+function getPeerUpdates($dID){
+	if($dID == ""){
+		return "";
+	}
+	
+	$fileName = "./documents/doc".$dID;
+	if(file_exists($fileName)){
+		$fileModifyTime = filemtime($fileName);
+		$lastModifyKey = 'lastMasterFileModify'.$dID;
+		if($fileModifyTime != $_SESSION["$lastModifyKey"]){
+			$_SESSION["$lastModifyKey"] = $fileModifyTime;
+			return "<docUpdate>the file was updated</docUpdate>";
+		}		
+	}
 	return "";
 }
 
@@ -177,7 +189,7 @@ for ($i = 0; $i<100; $i++)
 	$collisionInfo = getCollisionInfo($currentUserID, $currentDocumentID);
 	
 	// Get any changes that our peers have made to the current document
-	$peerUpdates = getPeerUpdates();
+	$peerUpdates = getPeerUpdates($currentDocumentID);
 	
 	$isDataToSend = false;
 	
