@@ -101,11 +101,14 @@ function insertBookmark( paramBMtext ) {
 }
 
 /* This function provides functionality to so-called "special keys".  Basically, any non-character related keyboard input. (kindof) */
-function typeSpecial(paramKEYCODE) {
+function typeSpecial(paramKEYCODE, paramIsAlt, paramIsCtl, paramIsShift) {
 	
 	switch ( paramKEYCODE ) {
 	
 		case LEFTARROWKEY: 
+			/* If we are holding shift, moving the cursor actually selects text, so we need to ensure we are in select mode */
+			if ( paramIsShift ) if ( !isSelectMode ) setSelectMode();
+			
 			// If we are at the first char of the first line do nothing
 			// If we are at the first char of any other line, wrap to the last char of the previous line
 			// Otherwise, simply move left
@@ -114,15 +117,18 @@ function typeSpecial(paramKEYCODE) {
 				cursorLine--;
 				cursorColumn = XPODoc.getLineLength(cursorLine)-1;
 			}
-			else cursorColumn--;			
+			else cursorColumn--;	
 			break;
 			
 		case RIGHTARROWKEY:
+			/* If we are holding shift, moving the cursor actually selects text, so we need to ensure we are in select mode */
+			if ( paramIsShift ) if ( !isSelectMode ) setSelectMode();
+			
 			// If we are at the last char of the last line, do nothing
 			// If we are at the last char of any other line, wrap to the first char of the next line
 			// Otherwise, simply move right
-			if ( cursorColumn == XPODoc.getLineLength(cursorLine)-1 && cursorLine == XPODoc.getDocumentLength()-1 ) break;
-			if ( cursorColumn == XPODoc.getLineLength(cursorLine)-1 ) {
+			if ( cursorColumn == XPODoc.getLineLength(cursorLine) && cursorLine == XPODoc.getDocumentLength()-1 ) break;
+			if ( cursorColumn == XPODoc.getLineLength(cursorLine) ) {
 				cursorLine++;
 				cursorColumn = 0;
 			}
@@ -130,29 +136,45 @@ function typeSpecial(paramKEYCODE) {
 			break;
 			
 		case UPARROWKEY:
+			/* If we are holding shift, moving the cursor actually selects text, so we need to ensure we are in select mode */
+			if ( paramIsShift ) if ( !isSelectMode ) setSelectMode();
+			
 			// If we are on the first line, move to first char of line.
 			// Otherwise, move up. If we end up out of range of the line, move to the last char of the line
 			if ( cursorLine == 0 ) cursorColumn = 0;
-			else if ( cursorColumn > XPODoc.getLineLength(--cursorLine) ) cursorColumn = XPODoc.getLineLength(cursorLine)-1;
+			else if ( cursorColumn > XPODoc.getLineLength(--cursorLine) ) cursorColumn = XPODoc.getLineLength(cursorLine);
 			break;
 			
 		case DOWNARROWKEY:
+			/* If we are holding shift, moving the cursor actually selects text, so we need to ensure we are in select mode */
+			if ( paramIsShift ) if ( !isSelectMode ) setSelectMode();
+			
 			// If we are on the last line, move to last char of line.
 			// Otherwise, move down. If we end up out of range of the line, move to the last char of the line
-			if ( cursorLine == XPODoc.getDocumentLength()-1 ) cursorColumn = XPODoc.getLineLength(cursorLine)-1;
-			else if ( cursorColumn > XPODoc.getLineLength(++cursorLine) ) cursorColumn = XPODoc.getLineLength(cursorLine)-1;
+			if ( cursorLine == XPODoc.getDocumentLength()-1 ) cursorColumn = XPODoc.getLineLength(cursorLine);
+			else if ( cursorColumn > XPODoc.getLineLength(++cursorLine) ) cursorColumn = XPODoc.getLineLength(cursorLine);
 			break;
 			
 		case ENDKEY:
+			/* If we are holding shift, moving the cursor actually selects text, so we need to ensure we are in select mode */
+			if ( paramIsShift ) if ( !isSelectMode ) setSelectMode();
+			
 			// Move to the last char of the current line
-			cursorColumn = XPODoc.getLineLength(cursorLine)-1;
+			cursorColumn = XPODoc.getLineLength(cursorLine);
 			break;
 			
 		case HOMEKEY:
+			/* If we are holding shift, moving the cursor actually selects text, so we need to ensure we are in select mode */
+			if ( paramIsShift ) if ( !isSelectMode ) setSelectMode();
+			
 			// Move to the first char of the current line
 			cursorColumn = 0;
+			break;
 			
 		case PAGEUPKEY:
+			/* If we are holding shift, moving the cursor actually selects text, so we need to ensure we are in select mode */
+			if ( paramIsShift ) if ( !isSelectMode ) setSelectMode();
+			
 			// Move the cursor up a number of time relative to the current editing window's height			
 			if(isIE == true){
 				cursorLine -= Math.floor(guiDoc.body.clientHeight / FONT_HEIGHT);
@@ -164,7 +186,7 @@ function typeSpecial(paramKEYCODE) {
 			if ( cursorLine < 0 ) {
 				cursorLine = 0;
 				cursorColumn = 0;
-			} else if ( cursorColumn >= XPODoc.getLineLength( cursorLine ) ) cursorColumn = XPODoc.getLineLength(cursorLine)-1;
+			} else if ( cursorColumn >= XPODoc.getLineLength( cursorLine ) ) cursorColumn = XPODoc.getLineLength(cursorLine);
 			if(isIE == true){
 				myIFrame.scrollBy(0,-guiDoc.body.clientHeight+PADDING_TOP);
 			}
@@ -174,6 +196,9 @@ function typeSpecial(paramKEYCODE) {
 			break;
 					
 		case PAGEDOWNKEY:
+			/* If we are holding shift, moving the cursor actually selects text, so we need to ensure we are in select mode */
+			if ( paramIsShift ) if ( !isSelectMode ) setSelectMode();
+			
 			// Move the cursor down a number of times relative to the current editing window's height
 			if(isIE == true){
 				cursorLine += Math.floor(guiDoc.body.clientHeight / FONT_HEIGHT);
@@ -185,7 +210,7 @@ function typeSpecial(paramKEYCODE) {
 			if ( cursorLine > XPODoc.getDocumentLength()-1 ) {
 				cursorLine = XPODoc.getDocumentLength()-1;
 				cursorColumn = XPODoc.getLineLength( cursorLine )-1;
-			} else if ( cursorColumn >= XPODoc.getLineLength( cursorLine ) ) cursorColumn = XPODoc.getLineLength(cursorLine)-1;
+			} else if ( cursorColumn >= XPODoc.getLineLength( cursorLine ) ) cursorColumn = XPODoc.getLineLength(cursorLine);
 			if(isIE == true){
 				myIFrame.scrollBy(0,guiDoc.body.clientHeight-PADDING_TOP);
 			}
@@ -248,6 +273,7 @@ function typeSpecial(paramKEYCODE) {
 			// We need to insert a new line following the current line, which contains the current line's text starting from the cursor
 			XPODoc.insertLine( cursorLine+1, XPODoc.getLineText( cursorLine ).substring( cursorColumn ) );
 			XPODoc.setLineText( cursorLine, XPODoc.getLineText( cursorLine ).substring( 0, cursorColumn ) );
+			//XPODoc.insertText("\r\n", cursorLine, cursorColumn);
 
 			// TODO: FIXME: HACK:  Need to make the above change visible in the GUI
 			clearFormatting( cursorLine );
@@ -534,10 +560,7 @@ function loadNewDoc(docID, docText, accessMode) {
 	XPODoc.documentID = docID;
 	
 	/* Populate the XPODoc data structure */
-	var textArr = docText.split(/\r\n|\r|\n/);
-	for(var i=0; i < textArr.length; i++ ) {
-		XPODoc.appendLine( textArr[i] );
-	}
+	XPODoc.insertText(docText);
 	
 	/* Get handle on iFrame's content document */
 	if(isIE == true) guiDoc = myIFrame.document;
@@ -581,6 +604,7 @@ function loadNewDoc(docID, docText, accessMode) {
 	
 	/* Render the entire document */
 	refreshDocument();
+	renderCursor();
 }
 
 
@@ -595,26 +619,6 @@ onClickFunction = function( paramEvent ){
 	captureMousePos(paramEvent);
 	deriveCursorForDocument(mouseX,mouseY,XPODoc);
 	renderCursor();
-	if(oldCursorLine != cursorLine) updateLineLock(cursorLine);
-}
-
-/* This function is the handler for the keypress event.  Mainly, this function will execute the typeCharacter function, if applicable */
-onKeyPressFunction = function( paramEvent ){
-	var oldCursorLine = cursorLine;
-	clearFormatting(cursorLine);
-	
-	// Determine the ASCII code of the to-be-typed character (browser-dependent implementation)
-	var key;
-	if(isFF == true) key = paramEvent.charCode;
-	else if(isIE == true) key = myIFrame.window.event.keyCode;
-	else if(isChrome == true || isSafari == true) key = paramEvent.keyCode;
-	else alert('an unknown browser... editing may not work.');
-
-	// If a valid character (nonzero), then type it
-	if ( key != 0 ) typeCharacter( key );
-	
-	renderCursor();
-	adjustScroll();
 	if(oldCursorLine != cursorLine) updateLineLock(cursorLine);
 }
 
@@ -636,6 +640,32 @@ onKeyDownFunction = function( paramEvent ) {
 	if(oldCursorLine != cursorLine) updateLineLock(cursorLine);
 	
 	return returnValue;	//  ... and if typeSpecial returns false, we don't want the event to bubble, so pass this return value along
+}
+
+
+/* This function is the handler for the keypress event.  Mainly, this function will execute the typeCharacter function, if applicable */
+onKeyPressFunction = function( paramEvent ){
+	var oldCursorLine = cursorLine;
+	clearFormatting(cursorLine);
+	
+	// Determine the ASCII code of the to-be-typed character (browser-dependent implementation)
+	var key;
+	if(isFF == true) key = paramEvent.charCode;
+	else if(isIE == true) key = myIFrame.window.event.keyCode;
+	else if(isChrome == true || isSafari == true) key = paramEvent.keyCode;
+	else alert('an unknown browser... editing may not work.');
+
+	// If a valid character (nonzero), then type it
+	if ( key != 0 ) typeCharacter( key );
+	
+	renderCursor();
+	adjustScroll();
+	if(oldCursorLine != cursorLine) updateLineLock(cursorLine);
+}
+
+/* This function is the handler of the mousedown event */
+onMouseDownFunction = function( paramEvent ) {
+
 }
 </script>
 <iframe id="myI" name="myI" src="./editor/editableContent.html" style="width:100%;height:100%;"></iframe>
