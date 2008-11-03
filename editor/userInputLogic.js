@@ -9,19 +9,19 @@ var selectionAnchorColumn;
 var selectionAnchorLine;
 
 /* KEYBOARD-RELATED */
-var BACKSPACEKEY = 8;	var TABKEY = 9;			var ENTERKEY = 13;
-var CAPSLOCKKEY = 20;	var ESCAPEKEY = 27;		var DELETEKEY = 46;
-var SPACEKEY = 32;		var PAGEUPKEY = 33;		var PAGEDOWNKEY = 34;
-var ENDKEY = 35;		var HOMEKEY = 36;		var LEFTARROWKEY = 37;
-var UPARROWKEY = 38;	var RIGHTARROWKEY = 39;	var DOWNARROWKEY = 40;
-var INSERTKEY = 45;		var SHIFTKEY = 16;
+const BACKSPACEKEY = 8;	const TABKEY = 9;			const ENTERKEY = 13;
+const CAPSLOCKKEY = 20;	const ESCAPEKEY = 27;		const DELETEKEY = 46;
+const SPACEKEY = 32;	const PAGEUPKEY = 33;		const PAGEDOWNKEY = 34;
+const ENDKEY = 35;		const HOMEKEY = 36;			const LEFTARROWKEY = 37;
+const UPARROWKEY = 38;	const RIGHTARROWKEY = 39;	const DOWNARROWKEY = 40;
+const INSERTKEY = 45;	const SHIFTKEY = 16;
 
 /* CONSTANTS: INPUT MODES */
-var INSERT = 0;
-var OVERWRITE = 1;
+const INSERT = 0;
+const OVERWRITE = 1;
 
 // "Booleans" to keep track of what modes we are in
-var isSelection;
+var isSelectMode;
 var isInsertMode;
 
 
@@ -60,13 +60,13 @@ function deriveCursorForDocument(paramMouseX, paramMouseY, paramDocument) {
 	// If the calculated line is below the last line, then set cursor at last character in document
 	if (currow > paramDocument.getDocumentLength()-1) {
 		currow = paramDocument.getDocumentLength()-1;
-		curcol = paramDocument.getLineLength( paramDocument.getDocumentLength()-1 );
+		curcol = paramDocument.getLineLength( paramDocument.getDocumentLength() );
 	}
 	// If the calculated cursor is beyond the first or last character in a line, 
 	// then set the cursor to the first or last character, respectively
 	else {		
 		if ( curcol < 0 ) curcol = 0;
-		if ( curcol >= paramDocument.getLineLength(currow) ) curcol = paramDocument.getLineLength(currow)-1;
+		if ( curcol > paramDocument.getLineLength(currow) ) curcol = paramDocument.getLineLength(currow);
 	}
 	
 	// Loop through the locked lines and make sure we aren't trying to move to it.
@@ -112,16 +112,25 @@ function getSelectionAnchorLine() {
 function getSelectionAnchorColumn() {
 	return selectionAnchorColumn;
 }
-// This function sets selection mode 'on', and furthermore sets the 
-// selectionAnchor position to the current cursor position
-function setSelection() {
-	selectionAnchorLine = cursorLine;
-	selectionAnchorColumn = cursorColumn;
-	isSelection = true;
+function getSelectedText(paramDocument) {
+	return paramDocument.getTextInRange(selectionAnchorLine, selectionAnchorColumn, cursorLine, cursorColumn);
+}
+// If selection mode is not 'on', this function sets it 'on' and sets the selectionAnchor to given position (if given; otherwise current cursor position)
+// If selection mode is already on, this method does nothing
+// TODO / FIXME:  Really should check the legality of the given parameters.  Maybe make a function just for this purpose, since this problem comes up often
+function setSelectMode(paramLine, paramColumn) {
+	if ( !isSelectMode ) {
+		if (paramLine == null) paramLine = cursorLine;
+		if (paramColumn == null) paramColumn = cursorColumn;
+		selectionAnchorLine = paramLine;
+		selectionAnchorColumn = paramColumn;
+		isSelectMode = true;
+	}
+	else return false;
 }
 // This function sets selection mode 'off'.
-function resetSelection() {
-	isSelection = false;
+function resetSelectMode() {
+	isSelectMode = false;
 }
 
 
