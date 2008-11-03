@@ -2,8 +2,7 @@
 KNOWN ISSUES SO FAR
 #####################
 - Using the UP/DOWN arrow keys to move the cursor 'thru' lines with varying lengths does not behave as a user would expect
-- HTML-like text does not render correctly: it changes how the line is rendered
-- In the Chrome browser (and presumably, Safari), the ENTERKEY does not work correctly - every one newline is rendered as two.
+- Placing the cursor at the last position of the line makes the cursor disappear (although it still works)  <<WAS RESOLVED, NOW BACK>>
 
 
 #######################
@@ -12,11 +11,9 @@ RESOLVED ISSUES SO FAR
 
 ISSUE : 	When typing, it is not currently possible to have two consecutive spaces, for some odd reason...
 ISSUE :  	When placing the cursor on an existing space, typing another space makes the cursor disappear and does not add more spaces
-SOLUTION : 	In the HTML "wrapper" of the document being edited, a CSS style of 'white-space:pre' needs to be applied.
-
-ISSUE : 	Placing the cursor at the last position of the line makes the cursor disappear (although it still works)
-SOLUTION <<OUTDATED>>: Added a line in the 'renderCursor' function, which adds a temporary space to the line so that the cursor can be rendered. 
-SOLUTION 2 : Added BUGFIX_SPACE function to TextDocument object, and made cursorColumn-related code compatible to this change
+ISSUE :		HTML-like text does not render correctly: it changes how the line is rendered
+SOLUTION <<OUTDATED>> : In the HTML "wrapper" of the document being edited, a CSS style of 'white-space:pre' needs to be applied.
+SOLUTION :	During the rendering phase, we use escape sequences to render special characters.  this fixes almost all rendering-related problems
 
 ISSUE : Pressing "ENTER" breaks the app.
 SOLUTION : Correctly implemented ENTER-key functionality in the typeSpecial function.  Required an update to the TextDocument object, outlined above
@@ -24,7 +21,8 @@ SOLUTION : Correctly implemented ENTER-key functionality in the typeSpecial func
 ISSUE :  Typing a single quote starts a "quick find" in firefox.  Have not yet prevented this from occurring.
 ISSUE :  Tab key is not captured correctly (moves to next tab space in overall document rather than types 4 spaces)
 ISSUE :  The content window scrolls at a different rate than the cursor, so often the cursor disappears from the screen in a long document
-SOLUTION : Adjusted the <body> tag in editableContent.html to read <body onkeypress="return false;"> in order to prevent the event from bubbling past the doc
+SOLUTION <<OUTDATED>> : Adjusted the <body> tag in editableContent.html to read <body onkeypress="return false;"> in order to prevent the event from bubbling past the doc
+SOLUTION : In the onKeyDownFunction event handler function, we stop events from bubbling if we perform our own function.  This works quite well.
 
 
 ##########################
