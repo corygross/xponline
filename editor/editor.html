@@ -483,9 +483,16 @@ function adjustScroll() {
 /**********************************************/
 /****** DOCUMENT SYNCHRONIZATION *****/
 
+// paramAction: i (insert), u (update), d (delete)
+// paramText: the new text for the affected line
+// paramLineNum: the line where the action will take place
 function updateDocument( paramAction, paramText, paramLineNum ) {
 	new Ajax.Request('./handlers/documentUpdate.php?docID='+XPODoc.documentID+'&action='+paramAction+'&text='+paramText+'&lNum='+paramLineNum, {
-		method:'get'		
+		method:'get',
+		// get a response indicating if the change is acceptable
+		onSuccess: function(transport) {			
+			//alert(transport.responseText);
+		}		
 	});
 }
 
