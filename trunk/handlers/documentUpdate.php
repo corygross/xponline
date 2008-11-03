@@ -15,11 +15,31 @@ $text = $_GET['text'];
 $lineNum = $_GET['lNum'];
 
 if($uID == "" || $dID == "" || $action == "" || $lineNum == ""){
-	//return;
+	echo "missing info";
+	return;
 }
 
 
 // TODO: check to make sure the user has write access to the document
+
+// TODO: see if anything needs to be done beforehand - anything that might conflict or change line numbers
+
+// Add our changes that need to be made to the database so other users can find out about them
+$insert_update_query = "INSERT INTO updates VALUES(null,'$dID','$uID','$lineNum','$action','$text',CURRENT_TIMESTAMP);";
+$updateResult = runQuery($insert_update_query);
+$updateID = mysql_insert_id();
+
+// Now see if there are any other users working on the same document
+// If so, queue up the changes for them
+$active_user_query = "SELECT uID FROM access WHERE dID='$dID' AND uID!='$uID' AND (dLastActivity>DATE_SUB(CURRENT_TIMESTAMP,INTERVAL 10 SECOND));";
+$activeResult = runQuery($active_user_query);
+if(mysql_num_rows($activeResult) > 0){
+	while ($row = mysql_fetch_array($activeResult))
+	{
+		$update_queue_insert = "INSERT INTO updatequeue VALUES('$updateID','".$row['uID']."');";
+		$updateQueueResult = runQuery($update_queue_insert);
+	}
+}
 
 
 // Update the physical document

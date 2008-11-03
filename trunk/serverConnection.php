@@ -162,7 +162,7 @@ function getCollisionInfo($uID, $dID){
 	return "";
 }
 
-function getPeerUpdates($dID){
+function getPeerUpdates($uID, $dID){
 	if($dID == ""){
 		return "";
 	}
@@ -173,7 +173,18 @@ function getPeerUpdates($dID){
 		$lastModifyKey = 'lastMasterFileModify'.$dID;
 		if($fileModifyTime != $_SESSION["$lastModifyKey"]){
 			$_SESSION["$lastModifyKey"] = $fileModifyTime;
-			return "<docUpdate>the file was updated</docUpdate>";
+			$updateXML = "";
+			$pending_updates = "SELECT * FROM updatequeue, updates WHERE updatequeue.userID='$uID' AND updatequeue.updateID=updates.updateID ORDER BY updateTime ASC;";
+			$pendingResult = runQuery($pending_updates);
+			if(mysql_num_rows($pendingResult) > 0){
+				while ($row = mysql_fetch_array($pendingResult))
+				{
+					$updateXML .= "<docUpdate><line>".$row['lineID']."</line><action>".$row['action']."</action><text>".$row['text']."</text></docUpdate>";
+				}
+			}
+			if($updateXML != ""){
+				return "<docUpdates>".$updateXML."<docUpdates>";
+			}
 		}		
 	}
 	return "";
@@ -189,7 +200,7 @@ for ($i = 0; $i<100; $i++)
 	$collisionInfo = getCollisionInfo($currentUserID, $currentDocumentID);
 	
 	// Get any changes that our peers have made to the current document
-	$peerUpdates = getPeerUpdates($currentDocumentID);
+	$peerUpdates = getPeerUpdates($currentUserID, $currentDocumentID);
 	
 	$isDataToSend = false;
 	

@@ -6,13 +6,22 @@ function handleXMLResponse( response ){
 		if( XMLobj.contents[i].name == "chat" ){
 			handleChatResponse(XMLobj.contents[i]);		
 		}
-		else if( XMLobj.contents[i].name == "docUpdate" ){
-			alert('docUpdate related');
+		else if( XMLobj.contents[i].name == "docUpdates" ){
+			handleUpdateResponse(XMLobj.contents[i]);
 		}
 		else if( XMLobj.contents[i].name == "locks" ){
-			handleLockResponse(XMLobj.contents[i]);			
+			handleLockResponse(XMLobj.contents[i]);
 		}
 	}
+}
+
+// Take the array document updates...
+function handleUpdateResponse( updateArray ){
+	for( var i=0; i < updateArray.contents.length; i++ )
+	{
+		//alert(updateArray.contents[i].contents[1].contents[0].value);
+	}	
+
 }
 
 // Take the array of line locks and get the document to lock them
