@@ -9,16 +9,17 @@ var selectionAnchorColumn;
 var selectionAnchorLine;
 
 /* KEYBOARD-RELATED */
-const BACKSPACEKEY = 8;	const TABKEY = 9;			const ENTERKEY = 13;
-const CAPSLOCKKEY = 20;	const ESCAPEKEY = 27;		const DELETEKEY = 46;
-const SPACEKEY = 32;	const PAGEUPKEY = 33;		const PAGEDOWNKEY = 34;
-const ENDKEY = 35;		const HOMEKEY = 36;			const LEFTARROWKEY = 37;
-const UPARROWKEY = 38;	const RIGHTARROWKEY = 39;	const DOWNARROWKEY = 40;
-const INSERTKEY = 45;	const SHIFTKEY = 16;
+// const is mozilla only!!!!  do NOT use it!!!!
+var BACKSPACEKEY = 8;	var TABKEY = 9;			var ENTERKEY = 13;
+var CAPSLOCKKEY = 20;	var ESCAPEKEY = 27;		var DELETEKEY = 46;
+var SPACEKEY = 32;		var PAGEUPKEY = 33;		var PAGEDOWNKEY = 34;
+var ENDKEY = 35;		var HOMEKEY = 36;		var LEFTARROWKEY = 37;
+var UPARROWKEY = 38;	var RIGHTARROWKEY = 39;	var DOWNARROWKEY = 40;
+var INSERTKEY = 45;		var SHIFTKEY = 16;
 
 /* CONSTANTS: INPUT MODES */
-const INSERT = 0;
-const OVERWRITE = 1;
+var INSERT = 0;
+var OVERWRITE = 1;
 
 // "Booleans" to keep track of what modes we are in
 var isSelectMode;
