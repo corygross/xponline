@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 -- 
 -- Host: localhost
--- Generation Time: Oct 30, 2008 at 12:21 AM
+-- Generation Time: Nov 02, 2008 at 11:42 PM
 -- Server version: 5.0.45
 -- PHP Version: 5.2.5
 
@@ -101,6 +101,50 @@ CREATE TABLE IF NOT EXISTS `msgqueue` (
 -- --------------------------------------------------------
 
 -- 
+-- Table structure for table `updatequeue`
+-- 
+
+DROP TABLE IF EXISTS `updatequeue`;
+CREATE TABLE IF NOT EXISTS `updatequeue` (
+  `updateID` int(11) NOT NULL,
+  `userID` int(11) NOT NULL,
+  PRIMARY KEY  (`updateID`,`userID`),
+  KEY `userID` (`userID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+-- 
+-- Dumping data for table `updatequeue`
+-- 
+
+
+-- --------------------------------------------------------
+
+-- 
+-- Table structure for table `updates`
+-- 
+
+DROP TABLE IF EXISTS `updates`;
+CREATE TABLE IF NOT EXISTS `updates` (
+  `updateID` int(11) NOT NULL auto_increment,
+  `docID` int(11) NOT NULL,
+  `changeByUser` int(11) NOT NULL,
+  `lineID` int(11) NOT NULL,
+  `action` enum('u','i','d') collate utf8_unicode_ci NOT NULL,
+  `text` text collate utf8_unicode_ci,
+  `updateTime` timestamp NOT NULL default CURRENT_TIMESTAMP,
+  PRIMARY KEY  (`updateID`),
+  KEY `docID` (`docID`),
+  KEY `changeByUser` (`changeByUser`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1 ;
+
+-- 
+-- Dumping data for table `updates`
+-- 
+
+
+-- --------------------------------------------------------
+
+-- 
 -- Table structure for table `users`
 -- 
 
@@ -122,9 +166,9 @@ CREATE TABLE IF NOT EXISTS `users` (
 -- 
 
 INSERT INTO `users` (`uID`, `uFName`, `uLName`, `uEmail`, `uPass`, `uColor`, `uLastActivity`) VALUES 
-(7, 'Cory', 'Gross', 'corygross@hotmail.com', 'dfa9e8660763fd9453cbe56eebff2e39', 'black', '2008-10-30 00:21:01'),
+(7, 'Cory', 'Gross', 'corygross@hotmail.com', 'dfa9e8660763fd9453cbe56eebff2e39', 'black', '2008-11-02 23:39:54'),
 (9, 'Bob', 'Villa', 'bv@hotmail.com', 'dfa9e8660763fd9453cbe56eebff2e39', 'black', '2008-10-29 19:39:52'),
-(10, 'Cory', 'Tester', 'corygross@yahoo.com', 'dfa9e8660763fd9453cbe56eebff2e39', 'black', '2008-10-29 22:32:00'),
+(10, 'Cory', 'Tester', 'corygross@yahoo.com', 'dfa9e8660763fd9453cbe56eebff2e39', 'black', '2008-11-02 23:40:00'),
 (11, 'Frank', 'Tank', 'ft@hotmail.com', 'dfa9e8660763fd9453cbe56eebff2e39', 'black', '2008-10-14 14:51:59'),
 (12, 'Red', 'Foreman', 'rf@hotmail.com', 'dfa9e8660763fd9453cbe56eebff2e39', 'black', '2008-10-14 14:57:27'),
 (13, 'Bob', 'Banks', 'bb2@hotmail.com', 'dfa9e8660763fd9453cbe56eebff2e39', 'black', '2008-10-14 14:58:05'),
@@ -154,3 +198,17 @@ ALTER TABLE `contacts`
 ALTER TABLE `msgqueue`
   ADD CONSTRAINT `msgqueue_ibfk_1` FOREIGN KEY (`fromID`) REFERENCES `users` (`uID`) ON UPDATE CASCADE,
   ADD CONSTRAINT `msgqueue_ibfk_2` FOREIGN KEY (`toID`) REFERENCES `users` (`uID`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- 
+-- Constraints for table `updatequeue`
+-- 
+ALTER TABLE `updatequeue`
+  ADD CONSTRAINT `updatequeue_ibfk_2` FOREIGN KEY (`userID`) REFERENCES `users` (`uID`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `updatequeue_ibfk_1` FOREIGN KEY (`updateID`) REFERENCES `updates` (`updateID`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- 
+-- Constraints for table `updates`
+-- 
+ALTER TABLE `updates`
+  ADD CONSTRAINT `updates_ibfk_1` FOREIGN KEY (`docID`) REFERENCES `documents` (`dID`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `updates_ibfk_2` FOREIGN KEY (`changeByUser`) REFERENCES `users` (`uID`) ON DELETE CASCADE ON UPDATE CASCADE;
