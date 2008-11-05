@@ -189,8 +189,7 @@ function confirmContacts(cbGroup){
 			method:'get',
 			onSuccess: function(transport)
 			{
-				//alert(transport.responseText);
-				//maybe update their contact list now? probably not.  it will be updated in less than 30 seconds anyway.
+				updatePendingContactsNow();
 			},
 			onFailure: function()
 			{
@@ -246,6 +245,14 @@ new Ajax.PeriodicalUpdater({ success: 'pendingButton' }, './handlers/updatePendi
   {
     method: 'get',
     frequency: 30
+  });
+}
+
+//We'll call this one to update the pending contacts button immediately, instead of waiting...
+function updatePendingContactsNow(){
+new Ajax.Updater({ success: 'pendingButton' }, './handlers/updatePendingContactsButton.php',
+  {
+    method: 'get'
   });
 }
  
