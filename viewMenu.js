@@ -1,7 +1,14 @@
 function changeColorScheme()
 {
 	var selectedColor = getCheckedColorScheme();
-	alert(selectedColor);
+	if(selectedColor == ""){
+		document.getElementById('colorSchemeSS').href = "colorSchemes/black.css";
+	}
+	else{
+		document.getElementById('colorSchemeSS').href = "colorSchemes/" + selectedColor + ".css";
+		setColorScheme(selectedColor);
+	}
+	
 	hidePopup('color_pick');
 }
 
@@ -21,6 +28,7 @@ function getCheckedColorScheme()
 			return document.changeColorForm.color[i].value;
 		}
 	}
+	return "";
 }
 
 function getCheckedHighlight()
@@ -34,3 +42,8 @@ function getCheckedHighlight()
 	}
 }
 
+function setColorScheme(paramColor){
+	new Ajax.Request('./handlers/setColorScheme.php?color='+paramColor, {
+		method:'get'
+	});
+}

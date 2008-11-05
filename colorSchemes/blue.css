@@ -18,12 +18,12 @@ td.details {
 }
 
 tr.top_row{
-	background-image:url(../images/top_blue.JPG);
+	background-image:url(images/top_blue.JPG);
 	background-repeat:repeat-x;
 }
 
 div.window_head{
-	background-image:url(../images/top_blue.JPG);
+	background-image:url(images/top_blue.JPG);
 	background-repeat:repeat-x;
 	text-align: center;
 	font-size: 15px;
@@ -48,7 +48,7 @@ td.window_min:hover{
 }
 
 td.collapsed{
-	background-image:url('../images/side_blue.JPG');
+	background-image:url('images/side_blue.JPG');
 	background-repeat:repeat-y;
 	width:32px;
 }
@@ -159,7 +159,7 @@ li.contact_old_msg{
 }
 
 div.messenger_button{
-	background-image:url('../images/top_blue.JPG');
+	background-image:url('images/top_blue.JPG');
 	background-repeat:repeat-x;
 	text-align: center;
 	font-size: 15px;

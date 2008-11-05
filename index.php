@@ -9,7 +9,8 @@ if(isset($_SESSION['uID']) == false || $_SESSION['uID'] == ""){
 <html>
 <head>
 <title>XPonline</title>
-<link rel="stylesheet" href="black.css" type="text/css" />
+<link rel="stylesheet" id="colorSchemeSS" href="<?php echo "colorSchemes/".$_SESSION['uColor'].".css"; ?>" type="text/css" />
+
 <script language="javascript" src="prototype.js"></script>
 <script language="javascript" src="xparse.js"></script>
 <script language="javascript" src="JSprototypes.js"></script>
@@ -77,7 +78,7 @@ require_once "./editor/editor.html";
 ?>
 </div>
 </td>
-<td  id="mess2" bgcolor="gray" valign="top">
+<td  id="mess2" valign="top">
 <?php
 require_once "messenger.php";
 ?>
