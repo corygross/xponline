@@ -1,10 +1,9 @@
 // This function adds a bookmark to the document
 // TODO: add bookmark into the doc
 function addBM(){
+	// Some logic still needs to be done here to put the 'bookmark' in as a comment based on language...
 	var text = document.getElementById('bmText').value;
-	var newBM = get_bm_value() + ": " + text;
-	//XPODoc.insertLine(getCursorLine(), newBM);	
-	alert(newBM);
+	var newBM = "//" + get_bm_value() + ": " + text;
 	insertBookmark(newBM);
 	hidePopup('add_bm');
 }
