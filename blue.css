@@ -18,12 +18,12 @@ td.details {
 }
 
 tr.top_row{
-	background-image:url(images/top_black.JPG);
+	background-image:url(images/top_blue.JPG);
 	background-repeat:repeat-x;
 }
 
 div.window_head{
-	background-image:url(images/top_black.JPG);
+	background-image:url(images/top_blue.JPG);
 	background-repeat:repeat-x;
 	text-align: center;
 	font-size: 15px;
@@ -34,7 +34,7 @@ div.window_head{
 
 div.window{
 	background: white; 
-	border: 1px solid #777777;
+	border: 1px solid #000066;
 }
 
 td.window_min{
@@ -44,11 +44,11 @@ td.window_min{
 }
 
 td.window_min:hover{
-	background:#777777;
+	background:#000066;
 }
 
 td.collapsed{
-	background-image:url('images/side_black.JPG');
+	background-image:url('images/side_blue.JPG');
 	background-repeat:repeat-y;
 	width:32px;
 }
@@ -97,7 +97,7 @@ td.menu{
 }
 
 td.menu:hover, td.menu_item:hover, td.arrows:hover{
-	background:#777777;
+	background:#000066;
 }
 
 /**   END MENU  **/
@@ -126,7 +126,8 @@ ul.contacts{
 }
 
 li.contact:hover, li.contact_new_msg:hover, li.contact_old_msg:hover, div.contact_group:hover{
-	background:#777777;
+	background:#000099;
+	color: #FFFFFF;
 }
 
 li.contact{
@@ -158,7 +159,7 @@ li.contact_old_msg{
 }
 
 div.messenger_button{
-	background-image:url('images/top_black.JPG');
+	background-image:url('images/top_blue.JPG');
 	background-repeat:repeat-x;
 	text-align: center;
 	font-size: 15px;
@@ -195,7 +196,7 @@ li.bm_selected{
 	padding-left: 1px;
 	cursor: pointer;
 	border: 1px solid #000;
-	background:#777777;
+	background:#000066;
 }
 
 li.bm:hover{
