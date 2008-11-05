@@ -62,28 +62,37 @@ function openPopup(id, title, type){
 	}
 }
 
-var windowCount = 0;
 var lastNewTop = 0;
 var lastNewLeft = 100;
 function makeNewPopup(id, title, type)
 {
 	var popupID = id;
-	windowCount++;
+	var leftEdge;
+	var topEdge;
 
-	if(lastNewTop == 0 || lastNewTop > 250)
-	{
-		lastNewTop = 100;
+	if(type == 'chat'){
+		if(lastNewTop == 0 || lastNewTop > 250)
+		{
+			lastNewTop = 100;
+		}
+		else
+		{
+			lastNewTop += 15;	
+		}
+		lastNewLeft += 15;
+		
+		leftEdge = lastNewLeft;
+		topEdge = lastNewTop;
 	}
-	else
-	{
-		lastNewTop += 15;	
+	else{
+		leftEdge = (screen.width/2) - 150;
+		topEdge = 100;	
 	}
-	lastNewLeft += 15;
 
 	var newElm = document.createElement("div");
 	newElm.setAttribute('id',popupID);
 	newElm.setAttribute('name',popupID);
-	newElm.setAttribute("style","position: absolute; width: 300px; display: none; top:"+lastNewTop+"px;left:"+lastNewLeft+"px;");
+	newElm.setAttribute("style","position: absolute; width: 300px; display: none; top:"+topEdge+"px;left:"+leftEdge+"px;");
 	newElm.setAttribute("class","window");
 
 	newElm.onmousedown = moveToFront;
@@ -91,7 +100,7 @@ function makeNewPopup(id, title, type)
 	//an IE fix
 	var ua = navigator.userAgent.toLowerCase();
 	if((ua.indexOf("msie") != -1)){
-		newElm.style.setAttribute("cssText","position: absolute; width: 300px; display: none; top:"+lastNewTop+"px;left:"+lastNewLeft+"px;",0);
+		newElm.style.setAttribute("cssText","position: absolute; width: 300px; display: none; top:"+topEdge+"px;left:"+leftEdge+"px;",0);
 		newElm.className = "window";
 	}
 
@@ -112,7 +121,7 @@ function makeNewPopup(id, title, type)
 		newHTML += "<div id ='filechooser'><br />";
 		newHTML += "<form id='fileForm' name='fileForm' method='post' action='uploadFile.php' enctype='multipart/form-data' target='uploadIframe'>";
 		newHTML += "<input type='hidden' name='MAX_FILE_SIZE' value='5000000' />";
-		newHTML += "&nbsp;<input type='file' id='filename' name='filename' value='' size='30' /><br/>";
+		newHTML += "&nbsp;<input type='file' id='filename' name='filename' value='' style='width:270px' /><br/>";
 		newHTML += "&nbsp;<input type='submit' value='upload' onClick='submitUpload();'/>";
 		newHTML += "</form><br />";
 		newHTML += "</div>";
