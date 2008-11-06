@@ -155,7 +155,7 @@ CREATE TABLE IF NOT EXISTS `users` (
   `uLName` varchar(32) collate utf8_unicode_ci NOT NULL,
   `uEmail` varchar(32) collate utf8_unicode_ci NOT NULL,
   `uPass` char(32) collate utf8_unicode_ci NOT NULL,
-  `uColor` enum('black','blue') collate utf8_unicode_ci NOT NULL default 'black',
+  `uColor` enum('black','blue','gray') collate utf8_unicode_ci NOT NULL default 'black',
   `uLastActivity` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
   PRIMARY KEY  (`uID`),
   UNIQUE KEY `uEmail` (`uEmail`)
