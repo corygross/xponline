@@ -396,12 +396,12 @@ function lockLines( newLineLocks ) {
 	// Clear the old line locks
 	for( var i=0; i < lockedLines.length; i++ )
 	{
-		clearFormatting( lockedLines[i] );
+		clearFormatting( lockedLines[i].lineID );
 	}
 	// Add the new line locks
 	for( var j=0; j < newLineLocks.length; j++ )
-	{
-		guiDoc.getElementById( XPODoc.getLineId(newLineLocks[j]) ).innerHTML = "<font style='BACKGROUND-COLOR: orange'>" + XPODoc.getLineText(newLineLocks[j]) + "</font>";
+	{		
+		guiDoc.getElementById( XPODoc.getLineId(newLineLocks[j].lineID) ).innerHTML = "<span class='lock' onMouseOver=\"makeNewLockPopup(event,'lock"+j+"','"+newLineLocks[j].userName+"')\" onMouseOut=\"closeLockPopup('lock"+j+"')\">" + XPODoc.getLineText(newLineLocks[j].lineID) + "</span>";		
 	}
 	lockedLines = newLineLocks;
 }
