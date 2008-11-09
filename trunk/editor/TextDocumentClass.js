@@ -167,8 +167,15 @@ function TextDocument()
 		
 		// String input needs to be split by return/linefeeds;  Arrays need to be joined first, adding a return/linefeed at each element (line), and then 
 		// reprocessed into an array of lines (this way, it will absorb the possible line breaks present in the strings within the array elements
-		if ( inputType == 'string' ) return paramInput.replace(/\t/g,"").split(/\r\n|\r|\n/);
-		if ( inputType == 'array' ) return paramInput.join("\r\n").replace(/\t/g,"").split(/\r\n|\r|\n/);
+		if( isIE == true ){
+			// In IE, if javascript split is used with a regular expression, it ignores blank lines, -- like when two delimeters are matched in a row (\n\n)
+			if ( inputType == 'string' ) return paramInput.replace(/\t/g,"").replace(/\r\n|\r|\n/g,"\n").split("\n");
+			if ( inputType == 'array' ) return paramInput.join("\r\n").replace(/\t/g,"").replace(/\r\n|\r|\n/g,"\n").split("\n");
+		}
+		else{
+			if ( inputType == 'string' ) return paramInput.replace(/\t/g,"").split(/\r\n|\r|\n/);
+			if ( inputType == 'array' ) return paramInput.join("\r\n").replace(/\t/g,"").split(/\r\n|\r|\n/);
+		}
 		return false;
 	}
 	
