@@ -13,7 +13,7 @@ if($uID == "" || $dID == "" || $curLine == ""){
 }
 
 // userID,lineNum,time???\n
-$lockInfo = $uID.",".$curLine;
+$lockInfo = $uID.",".$curLine.",".$_SESSION['uName'];
 
 $fileName = "doc".$dID."-lock";
 if(file_exists($fileName)){
