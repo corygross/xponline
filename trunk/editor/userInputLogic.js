@@ -73,7 +73,7 @@ function deriveCursorForDocument(paramMouseX, paramMouseY, paramDocument) {
 	// Loop through the locked lines and make sure we aren't trying to move to it.
 	for(var l=0; l < lockedLines.length; l++ )
 	{
-		if(lockedLines[l] == currow){
+		if(lockedLines[l].lineID == currow){
 			alert("Another user is currently on that line, and it is locked.");
 			return;
 		}
