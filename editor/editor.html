@@ -2,6 +2,8 @@
 <script type="text/javascript" charset="utf-8" src="writeSpans.js"></script>
 <script type="text/javascript" charset="utf-8" src="editor/TextDocumentClass.js"></script>
 <script type="text/javascript" charset="utf-8" src="editor/userInputLogic.js"></script>
+<script type ="text/javascript" src="jWords.js">
+<script type="text/javascript" charset="utf-8" src = "editor/toggleSH.js"></script>
 <script type="text/javascript">
 
 /**********************************************/
@@ -42,6 +44,14 @@ var guiDoc;
 /*********** END OF GLOBAL VARIABLES ********/
 /**********************************************/
 
+function getDoc(){
+	if(isIE == true){
+		return myIFrame.document;
+	}
+	else{
+		return myIFrame.contentWindow.document;
+	}
+}
 
 
 // This function does a raw capture of mouse position, given an event
@@ -326,7 +336,8 @@ function clearFormatting( paramLineNum ) {
 
 		//RT - NOT SURE WHAT THIS DOES....
 		//Parses the contents of each line for syntax hightlighting.
-		guiDoc.getElementById( XPODoc.getLineId(paramLineNum) ).innerHTML = indexLineText(replaceHTMLEntities(XPODoc.getLineText(paramLineNum)));
+//		guiDoc.getElementById( XPODoc.getLineId(paramLineNum) ).innerHTML = indexLineText(replaceHTMLEntities(XPODoc.getLineText(paramLineNum)));
+		guiDoc.getElementById( XPODoc.getLineId(paramLineNum) ).innerHTML = indexLineText(XPODoc.getLineText(paramLineNum));
 	}
 }
 
@@ -351,43 +362,30 @@ function gotoPosition( paramLineNum, paramColNum ) {
 // This function takes each line of input and applies formatting based on keywords
 function indexLineText(inputText)
 {
-//	alert("beginning of indexLineText function");
-
-	if(!syntaxHighlightOn){ return inputText; }
-	
-	var testArr = new Array("public", "static", "void");
+	var newLine = "";
+//	var testArr = new Array("public", "static", "void");
 	var words = inputText.split(" ");
 	
-	//Change the document css to the applicable language css
-	//HERE!
-	
-	var newLine = "";
-//	alert("enter for loop");
-	for(var counter = 0; counter < words.size(); counter++)
-	{	
+
+		for(var counter = 0; counter < words.size(); counter++)
+		{	
 			var curWord = words[counter];
-		//If the current word is one that needs to be highlighted	
-		if(tokenSearch(curWord))
-		//if(testArr.indexOf(words[count]) != -1)
-		{
-			// This regex probably should be global, but I am testing - CG
-			// If the 'word' is a number, highlight it with the class 'number'
-//			var IsNum = /^-?\d+$/.test(words[count]);
-//			if(IsNum == true){
-//				alert("found one");
-//			var markedWord = "<span class='" + curWord + "'>" + curWord + "</span>";
-			var markedWord = writeSpans(curWord);
-			
-				newLine += markedWord + " ";
-			//}
-		}
+	
+			if(tokenSearch(curWord))
+			{
+				var markedWord = writeSpans(curWord, "");
+				newLine += markedWord;
+				newLine += writeSpans("", "space");
+			}
 			else
 			{
-//				alert("nothing");
-				newLine += curWord + " ";
+				var unmarkedWord = writeSpans(curWord, "none");
+				newLine += unmarkedWord;
+				newLine += writeSpans("", "space");
 			}
-		}
-//		alert("exit for loop");
+	//	}
+	}
+	//alert("I'm about to return " + newLine);
 	return newLine;
 }
 
@@ -407,34 +405,80 @@ function lockLines( newLineLocks ) {
 }
 
 // This function renders the cursor in the document. 
-function renderCursor() {
-		// Slice 'n dice the line to isolate the cursor
-		var tempCurrentLine = new Array();
-		
-		tempCurrentLine.push(XPODoc.getLineText(cursorLine).substring(0,cursorColumn));
-		tempCurrentLine.push(XPODoc.getLineText(cursorLine).substr(cursorColumn, 1));
-		tempCurrentLine.push(XPODoc.getLineText(cursorLine).substring(cursorColumn+1));
-		
-		tempCurrentLine[0] = replaceHTMLEntities(tempCurrentLine[0]);
-		tempCurrentLine[1] = replaceHTMLEntities(tempCurrentLine[1]);
-		tempCurrentLine[2] = replaceHTMLEntities(tempCurrentLine[2]);
+function renderCursor() 
+{
+	             // Slice 'n dice the line to isolate the cursor
+	                var tempCurrentLine = new Array();
 
-		// Apply formatting
-		tempCurrentLine[1] = "<span id='cursor'>" + tempCurrentLine[1] + "</span>";
+	                tempCurrentLine.push(XPODoc.getLineText(cursorLine).substring(0,cursorColumn));
+	                tempCurrentLine.push(XPODoc.getLineText(cursorLine).substr(cursorColumn, 1));
+	                tempCurrentLine.push(XPODoc.getLineText(cursorLine).substring(cursorColumn+1));
 
-		//Re render any syntax highlighting that may be there
-		var formatted = indexLineText(tempCurrentLine[0] + tempCurrentLine[1] + tempCurrentLine[2]);
+					//If syntax highlighting is enabled
+					if(checkSyntaxHighlighting())
+					{
+						//Parse the line text for any tokens and return the parsed html
+		                var formatted = indexLineText(tempCurrentLine[0] + tempCurrentLine[1] + tempCurrentLine[2]);
+										
+						//An attempt to get all of the span tags in the current line
+						var allSpans = new RegExp("<span\\b[^>]*>(.*?)</span> ?", "g");							
+						
+						var spansArray = formatted.match(allSpans, "gi");
+							
+							//If the line is empty, then just render the cursor where it is
+							if(spansArray == null)
+							{
+								tempCurrentLine[1] = "<span id='cursor'>" + tempCurrentLine[1] + "</span>";  
+								getDoc().getElementById( XPODoc.getLineId(cursorLine) ).innerHTML = tempCurrentLine.join("")
+								return;
+							}
+							else
+							{
+								//Grab the cursorColumn-th span in the array, which is where the 
+								//cursor should be
+								var cursorOn = "";
+								cursorOn = spansArray[cursorColumn];
+				
+								var cursorRegExp = new RegExp("<span\\b[^>]*>");
+								var temp = cursorOn.replace(cursorRegExp, "<span id='cursor'>");
+
+								spansArray[cursorColumn] = temp;
+								
+								delete cursorOn;
+								delete cursorRegExp;
+								delete temp;
+								
+								var newString = "";
+								for(var counter = 0; counter < spansArray.size(); counter++)
+								{
+									newString +=spansArray[counter];
+								}
+							
+							}
+						  	// display new formatting
+		                	try {
+		                        getDoc().getElementById( XPODoc.getLineId(cursorLine) ).innerHTML = newString;
+			                	}
+			                	catch (e) { alert("line not found!"); }
+					}
+					else
+					{
+						if(tempCurrentLine[1] == ""){tempCurrentLine[0] = "<span id='cursor'>" + tempCurrentLine[0] + "</span>";}
+						else
+						{
+                 			tempCurrentLine[1] = "<span id='cursor'>" + tempCurrentLine[1] + "</span>";
+						}
+						
+                		try 
+						{
+                   			getDoc().getElementById( XPODoc.getLineId(cursorLine) ).innerHTML = tempCurrentLine.join("");
+                		}
+	            		catch (e) { alert("line not found!"); }
+					}
+			
+	       // Update the GUI with the correct line and col
+	       displayCursorPos();
 	
-		// display new formatting
-		try {
-			//guiDoc.getElementById( XPODoc.getLineId(cursorLine) ).innerHTML = tempCurrentLine.join("");
-			guiDoc.getElementById( XPODoc.getLineId(cursorLine) ).innerHTML = formatted;
-			//guiDoc.getElementById( XPODoc.getLineId(cursorLine) ).innerHTML = indexLineText(tempCurrentLine.join(""));
-		}
-		catch (e) { alert("line not found!"); }
-
-		// Update the GUI with the correct line and col
-		displayCursorPos();
 }
 
 /* Replace some things like tabs, spaces, < and > */
@@ -466,12 +510,6 @@ function refreshDocument() {
 	}
 }
 
-// This function toggles whether or not syntax highlighting is on
-function toggleSyntaxHighlight() 
-{
-	syntaxHighlightOn = !syntaxHighlightOn;
-	refreshDocument();
-}
 
 // This function will perform auto-scrolling of the iFrame to keep the cursor in view at all times
 function adjustScroll() {

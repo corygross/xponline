@@ -1,10 +1,4 @@
 /*
- * TODO: Determine how we will get reserved words data to the client
- */
-var reservedWords = new Array('public', 'static', 'void', 'System');
-//var theURL = "./handlers/getTokens.php";
-
-/*
  * Function: tokenSearch
  * 
  * Purpose: Determine if the 
@@ -22,11 +16,10 @@ var reservedWords = new Array('public', 'static', 'void', 'System');
  */
 function tokenSearch(term)
 {
-	//alert("received " + term);
+	var reservedWords = javawords;	//Right now, just default to java syntax highlighting
 	var beforeCount = reservedWords.size();
 	var newArr = reservedWords.without(term);
 	var afterCount = newArr.size();
-	//alert("before we had " + beforeCount + " and now we have " + afterCount);
 	delete newArr; 
 	
 	(beforeCount == afterCount) ? output=false : output=true;
