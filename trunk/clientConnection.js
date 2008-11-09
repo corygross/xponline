@@ -56,8 +56,12 @@ Comet.prototype = {
 	//Define the connection function
 	connect:function()
 		{
+			var params = "";
+			if( typeof(XPODoc) != "undefined" ){
+				params = "?dID="+XPODoc.documentID;
+			}
 			//Create the AJAX object that inititiate the ajax connection
-			this.ajax = new Ajax.Request(this.url, 
+			this.ajax = new Ajax.Request(this.url+params, 
 				{
 					method:'get',
 					//On a successful response 

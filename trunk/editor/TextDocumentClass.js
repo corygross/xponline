@@ -27,7 +27,7 @@ function TextDocument()
 		this.document = new Array();
 		this.appendLine("");				// This avoids null-related errors in several places
 		this.uniqueNameCounter = 0;			// This variable is used to provide unique id's to each line
-		this.documentID = null;
+		this.documentID = "";
 	}
 	
 	// Returns the length of the document in number of lines

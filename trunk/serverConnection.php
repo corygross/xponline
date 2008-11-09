@@ -8,7 +8,8 @@ require_once "dbConnect.php";
 $currentUserID = $_SESSION['uID'];
 //if($currentUserID == ''){echo 'error 003: User not logged in.'; return;}
 
-$currentDocumentID = $_SESSION['dID'];
+$currentDocumentID = $_GET['dID'];
+//$currentDocumentID = $_SESSION['dID'];
 
 //UPDATE when the last connection was made
 $sqlUpdateTime = "UPDATE users SET uLastActivity=CURRENT_TIMESTAMP WHERE uID='$currentUserID';";
