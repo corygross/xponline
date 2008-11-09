@@ -7,49 +7,49 @@
 #cursor{background-color:red;}
 .public{color:blue;};
 .System{color:orange;}
-.abstract{color:}
-.continue{color:}	
-.for	{color:}
-.new	{color:}
-.switch{color:}
-.assert***	{color:}
-.default	goto*{color:}
-.package	{color:}
-.synchronized{color:}
-.boolean	{color:}
-.do	{color:}
-.if	{color:}
-.private	{color:}
-.this{color:}
-.break	{color:}
-.double	{color:}
-.implements	{color:}
-.protected	{color:}
-.throw{color:}
-.byte	{color:}
-.else	{color:}
-.import	{color:}
-.public	{color:}
-.throws{color:}
-.case	{color:}
-.enum****	{color:}
-.instanceof	{color:}
-.return	{color:}
+.abstract{color:red}
+.continue{color:blue}	
+.for	{color:red}
+.new	{color:blue}
+.switch{color:red}
+.assert***	{color:blue}
+.default_goto {color:green}
+.package	{color:green}
+.synchronized{color:red}
+.boolean	{color:blue}
+.do	{color:green}
+.if	{color:red}
+.private	{color:blue}
+.this{color:green}
+.break	{color:orange}
+.double	{color:red}
+.implements	{color:blue}
+.protected	{color:green}
+.throw{color:orange}
+.byte	{color:red}
+.else	{color:blue}
+.import	{color:green}
+.public	{color:red}
+.throws{color:blue}
+.case	{color:green}
+.enum{color:red}
+.instanceof	{color:blue}
+.return	{color:green}
 .transient{color:}
-.catch	{color:}
-.extends	{color:}
-.int	{color:}
-.short	{color:}
-.try{color:}
-.char	{color:}
-.final	{color:}
-.interface	{color:}
+.catch	{color:red}
+.extends	{color:blue}
+.int	{color:green}
+.short	{color:orange}
+.try{color:red}
+.char	{color:blue}
+.final	{color:green}
+.interface	{color:blue}
 .static	{color:#FFAABB}
 .void{color:#FFFFAA}
-.class	{color:}
-.finally	{color:}
-.long	{color:}
-.strictfp**	{color:}
-.volatile{color:}
-.const{color:}
+.class	{color:orange}
+.finally	{color:orange}
+.long	{color:orange}
+.strictfp**	{color:red}
+.volatile{color:blue}
+.const{color:green}
 .number{color:red}
