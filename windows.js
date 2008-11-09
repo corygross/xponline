@@ -50,10 +50,6 @@ function openPopup(id, title, type){
 		}
 		curOpenWindow = id;
 	}
-	if(type == "upload")
-	{
-		
-	}
 	if(document.getElementById(id) == null){
 		makeNewPopup(id, title, type);
 	}
