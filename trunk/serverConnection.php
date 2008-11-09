@@ -151,7 +151,7 @@ function getCollisionInfo($uID, $dID){
 				$pos = strpos($line, "$uID");
 				if($pos === false || $pos != 0){
 					$lockInfo = explode(",", $line);
-					$locksToReturn .= "<lineLock><userID>$lockInfo[0]</userID><lineNum>$lockInfo[1]</lineNum></lineLock>";
+					$locksToReturn .= "<lineLock><userID>$lockInfo[0]</userID><lineNum>$lockInfo[1]</lineNum><userName>$lockInfo[2]</userName></lineLock>";
 				}
 			}
 			if($locksToReturn != ""){

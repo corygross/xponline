@@ -29,11 +29,19 @@ function handleLockResponse( lockArray ){
 	var newLockArray = new Array();
 	for( var i=0; i < lockArray.contents.length; i++ )
 	{
-		//below code will output the id of the user that is on the line
-		//lockArray.contents[i].contents[0].contents[0].value
-		newLockArray[i] = lockArray.contents[i].contents[1].contents[0].value;
+		// Add line locks to our array
+		// Line locks have the line number that needs to be locked as well as the user that is on that line
+		newLockArray.push(new lockItem(lockArray.contents[i].contents[1].contents[0].value, lockArray.contents[i].contents[2].contents[0].value));
 	}	
 	lockLines(newLockArray);
+}
+
+/////////////////////////////////////////////////////
+/////////////////// lockItem object ////////////////////
+function lockItem(paramLineID, paramUserName)
+{
+	this.lineID = paramLineID;
+	this.userName = paramUserName;
 }
 
 
