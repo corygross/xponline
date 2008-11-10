@@ -463,7 +463,8 @@ function renderCursor()
 					}
 					else
 					{
-						if(tempCurrentLine[1] == ""){tempCurrentLine[0] = "<span id='cursor'>" + tempCurrentLine[0] + "</span>";}
+						//Check if the cursor selection has anything. 
+						if(tempCurrentLine[1] == ""){tempCurrentLine[1] = "<span id='cursor'> </span>";}
 						else
 						{
                  			tempCurrentLine[1] = "<span id='cursor'>" + tempCurrentLine[1] + "</span>";
