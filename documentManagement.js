@@ -1,4 +1,6 @@
 var uploadFrame = null;
+var languageFlag = "text"; //For syntax highlighting
+
 function checkUploadComplete(triesLeft){
 	if(uploadFrame == null){
 		uploadFrame = document.getElementById("uploadIframe");
@@ -129,6 +131,7 @@ function openDocument(dID, dName)
 				var docInfoArr = transport.responseText.split("&^*");
 				if(docInfoArr[0] == "r") dName = dName + " (Readonly)";
 				changeDocTitle(dName);
+				setSyntaxFlag(dName); //Set the syntax highlighting flag
 				loadNewDoc(dID, docInfoArr[1], docInfoArr[0]);
 			}
 		},		
@@ -138,6 +141,73 @@ function openDocument(dID, dName)
 		}		
 	});
 }
+
+/*
+ * Functions: setSyntaxFlag
+ *
+ * Purpose: Identify what type of file
+ * 			is being opened for syntax
+ *			highlighting purposes. 
+ *
+ * Input:  fileName - the name of the file being opened
+ * Output: None
+ *
+ * Preconditions: The function assumes that there is at least one
+ *				  character after the dot in the fileName
+ *
+ * Postconditons: None
+ *
+ */
+function setSyntaxFlag(filename)
+{
+//	alert("The filename is " + filename);
+	var pos = filename.indexOf(".");
+	var extension = filename.substring(pos+1);
+//	alert("The file extension is " + extension);
+	
+	//Determine which flag to set
+	setCurrentLanguage(extension);
+}
+/*
+ * Function: setCurrentLanguage
+ *
+ * Purpose: Set the language variable
+ *			for identifing what type of
+ *			file is currently being 
+ *			displayed.
+ *
+ *
+ * Input: extension - the currently displayed
+ *					  file's extension.
+ *
+ * Output: None
+ *
+ */
+function setCurrentLanguage(extension)
+{
+	//Parse out those weird characters that can appear
+	//at the end of an uploaded filename
+	extension = extension.replace("^5", "");
+	
+	if(extension == "java"){languageFlag = "java";}
+	else
+	languageFlag = extension;
+}
+
+/*
+ * Function: getCurrentLanguage
+ *
+ * Purpose: Return the value of the language
+ *			variable.
+ *
+ * Input: None
+ * Output The value of the language variable. 
+ *
+ * Preconditions: None
+ * Postconditions: None
+ *
+ */
+function getCurrentLanguage(){ return languageFlag; }
 
 function selectDocument(id, window)
 {

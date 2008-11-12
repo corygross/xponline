@@ -281,7 +281,11 @@ function typeSpecial(paramKEYCODE, paramIsAlt, paramIsCtl, paramIsShift) {
 		case ENTERKEY:
 			// When we press the enter key, we need to insert a new line into the document
 			// We need to insert a new line following the current line, which contains the current line's text starting from the cursor
-			XPODoc.insertLine( cursorLine+1, XPODoc.getLineText( cursorLine ).substring( cursorColumn ) );
+			//alert("The current line text is " + XPODoc.getLineText(cursorLine) + "okay! ");
+			//alert("Cursorline is " + cursorLine);
+			var nextLine = cursorLine++;
+			//alert("cursorLine plus 1 is " + nextLine);
+			XPODoc.insertLine( nextLine, XPODoc.getLineText( cursorLine ).substring( cursorColumn ) );
 			XPODoc.setLineText( cursorLine, XPODoc.getLineText( cursorLine ).substring( 0, cursorColumn ) );
 			//XPODoc.insertText("\r\n", cursorLine, cursorColumn);
 
@@ -289,12 +293,15 @@ function typeSpecial(paramKEYCODE, paramIsAlt, paramIsCtl, paramIsShift) {
 			clearFormatting( cursorLine );
 			var myDoc = guiDoc;
 			var addMe = myDoc.createElement('div');
-			addMe.setAttribute('id', XPODoc.getLineId( cursorLine+1 ) );
+			addMe.setAttribute('id', XPODoc.getLineId( nextLine ) );
 			addMe.setAttribute('class', "line");
 			myDoc.getElementById("entireDocument").insertBefore( addMe, myDoc.getElementById( XPODoc.getLineId( cursorLine+2 ) ) );
 				
 			cursorLine++;
 			cursorColumn = 0;
+			
+			//alert("the original line is " + XPODoc.getLineText(cursorLine--));
+			//alert("the new line is " + XPODoc.getLineText(cursorLine));
 			break;
 			
 		case TABKEY:
@@ -453,13 +460,13 @@ function renderCursor()
 								{
 									newString +=spansArray[counter];
 								}
-							
 							}
 						  	// display new formatting
-		                	try {
+		                	try 
+							{
 		                        getDoc().getElementById( XPODoc.getLineId(cursorLine) ).innerHTML = newString;
-			                	}
-			                	catch (e) { alert("line not found!"); }
+			                }
+			                catch (e) { alert("line not found!"); }
 					}
 					else
 					{
