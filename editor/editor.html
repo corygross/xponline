@@ -337,7 +337,7 @@ function clearFormatting( paramLineNum ) {
 		//RT - NOT SURE WHAT THIS DOES....
 		//Parses the contents of each line for syntax hightlighting.
 //		guiDoc.getElementById( XPODoc.getLineId(paramLineNum) ).innerHTML = indexLineText(replaceHTMLEntities(XPODoc.getLineText(paramLineNum)));
-		guiDoc.getElementById( XPODoc.getLineId(paramLineNum) ).innerHTML = indexLineText(replaceHTMLEntities(XPODoc.getLineText(paramLineNum)));
+		guiDoc.getElementById( XPODoc.getLineId(paramLineNum) ).innerHTML = indexLineText(XPODoc.getLineText(paramLineNum));
 	}
 }
 
