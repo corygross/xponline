@@ -172,15 +172,20 @@ function getPeerUpdates($uID, $dID){
 	if(file_exists($fileName)){
 		$fileModifyTime = filemtime($fileName);
 		$lastModifyKey = 'lastMasterFileModify'.$dID;
+		// not all updates are getting sent. the last one (if in rapid succession gets left in the db.) fix!
+		//if($fileModifyTime != $_SESSION["$lastModifyKey"]){
 		if($fileModifyTime != $_SESSION["$lastModifyKey"]){
 			$_SESSION["$lastModifyKey"] = $fileModifyTime;
 			$updateXML = "";
-			$pending_updates = "SELECT * FROM updatequeue, updates WHERE updatequeue.userID='$uID' AND updatequeue.updateID=updates.updateID ORDER BY updateTime ASC;";
+			$pending_updates = "SELECT * FROM updatequeue, updates WHERE updatequeue.userID='$uID' AND updatequeue.updateID=updates.updateID AND updates.docID='$dID' ORDER BY updateTime ASC;";
 			$pendingResult = runQuery($pending_updates);
 			if(mysql_num_rows($pendingResult) > 0){
 				while ($row = mysql_fetch_array($pendingResult))
 				{
-					$updateXML .= "<docUpdate><line>".$row['lineID']."</line><action>".$row['action']."</action><text>".$row['text']."</text></docUpdate>";
+					$updateXML .= "<docUpdate><updateID>".$row['updateID']."</updateID><action>".$row['action']."</action><line>".$row['lineID']."</line><text>".$row['text']."</text></docUpdate>";
+					// Should this be done with an ACK?
+					$clear_update = "DELETE FROM updatequeue WHERE userID='$uID' AND updateID='".$row['updateID']."';";
+					$clearResult = runQuery($clear_update);
 				}
 			}
 			if($updateXML != ""){

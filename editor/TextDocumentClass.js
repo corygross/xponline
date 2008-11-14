@@ -13,6 +13,7 @@ function TextDocument()
 	this.document;					// This is to be an array of lines
 	this.uniqueNameCounter;			// This variable is used to provide unique id's to each line
 	this.documentID;
+	this.updateToServer;	//This whole system is kind of a hack
 	
 	//////////////////////////////////////////////////
 	////////////// MEMBER FUNCTIONS ///////////////
@@ -28,6 +29,7 @@ function TextDocument()
 		this.appendLine("");				// This avoids null-related errors in several places
 		this.uniqueNameCounter = 0;			// This variable is used to provide unique id's to each line
 		this.documentID = "";
+		this.updateToServer = false;
 	}
 	
 	// Returns the length of the document in number of lines
@@ -110,12 +112,16 @@ function TextDocument()
 		if ( paramLineNum > this.getDocumentLength() || paramLineNum < 0 ) return false;
 		this.document.splice( paramLineNum, 0, new this.line( "line"+this.uniqueNameCounter, paramText ) );
 		this.uniqueNameCounter++;
+		
+		if(this.updateToServer == true){
+			updateDocument( "i", paramText, paramLineNum );
+		}
 	}
 	
 	// Insert some arbitrary text into the document at the specified position in the document.  This function is designed to accept any textual input, including an array of text.
 	// Array elements will be treated as candidates of new lines, and text will be parsed by newline characters and split into lines from there as well.  This function should be able
 	// to check for invalid input, and reject it if necessary
-	this.insertText = function( paramTextObject, paramLineNum, paramColumnNum  ) {
+	this.insertText = function( paramTextObject, paramLineNum, paramColumnNum ) {
 		// Validate coordinate of insertion
 		if ( !this.isLegalPosition( paramLineNum, paramColumnNum ) ) return false;
 		
@@ -140,6 +146,8 @@ function TextDocument()
 		this.setLineText( paramLineNum, targetLineFirstHalf + insertArray[0] );
 		// Append the original line's second half at end of last new line
 		this.setLineText( paramLineNum+insertArray.length-1, this.getLineText( paramLineNum+insertArray.length-1 ) + targetLineSecondHalf );
+		
+		this.updateToServer = true;
 	}
 	
 	// This function takes a lineNumber and an optional columnNumber and determines if their values are within bounds of the document
@@ -183,13 +191,21 @@ function TextDocument()
 	this.removeLine = function( paramLineNum ) {
 		if ( !this.isLegalPosition( paramLineNum ) ) return false;
 		this.document.splice( paramLineNum, 1 );
+		
+		if(this.updateToServer == true){
+			updateDocument( "d", "", paramLineNum );
+		}
 	}
 	
 	/* NOTE: setLineId is deliberately omitted.  Id's shall be handled internally by the document structure during line creation only */
 	// Set the text of a specified line to equal paramText
 	this.setLineText = function( paramLineNum, paramText ) {
 		if ( !this.isLegalPosition( paramLineNum ) ) return false;
-		this.document[paramLineNum].text = paramText;
+		this.document[paramLineNum].text = paramText;		
+		
+		if(this.updateToServer == true){
+			updateDocument( "u", paramText, paramLineNum );
+		}
 	}
 	
 	/************************************************************/
