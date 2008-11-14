@@ -2,7 +2,7 @@
 <script type="text/javascript" charset="utf-8" src="writeSpans.js"></script>
 <script type="text/javascript" charset="utf-8" src="editor/TextDocumentClass.js"></script>
 <script type="text/javascript" charset="utf-8" src="editor/userInputLogic.js"></script>
-<script type ="text/javascript" src="jWords.js">
+<script type="text/javascript" src="jWords.js"></script>
 <script type="text/javascript" charset="utf-8" src = "editor/toggleSH.js"></script>
 <script type="text/javascript">
 
@@ -281,11 +281,7 @@ function typeSpecial(paramKEYCODE, paramIsAlt, paramIsCtl, paramIsShift) {
 		case ENTERKEY:
 			// When we press the enter key, we need to insert a new line into the document
 			// We need to insert a new line following the current line, which contains the current line's text starting from the cursor
-			//alert("The current line text is " + XPODoc.getLineText(cursorLine) + "okay! ");
-			//alert("Cursorline is " + cursorLine);
-			var nextLine = cursorLine++;
-			//alert("cursorLine plus 1 is " + nextLine);
-			XPODoc.insertLine( nextLine, XPODoc.getLineText( cursorLine ).substring( cursorColumn ) );
+			XPODoc.insertLine( cursorLine+1, XPODoc.getLineText( cursorLine ).substring( cursorColumn ) );
 			XPODoc.setLineText( cursorLine, XPODoc.getLineText( cursorLine ).substring( 0, cursorColumn ) );
 			//XPODoc.insertText("\r\n", cursorLine, cursorColumn);
 
@@ -293,15 +289,12 @@ function typeSpecial(paramKEYCODE, paramIsAlt, paramIsCtl, paramIsShift) {
 			clearFormatting( cursorLine );
 			var myDoc = guiDoc;
 			var addMe = myDoc.createElement('div');
-			addMe.setAttribute('id', XPODoc.getLineId( nextLine ) );
+			addMe.setAttribute('id', XPODoc.getLineId( cursorLine+1 ) );
 			addMe.setAttribute('class', "line");
 			myDoc.getElementById("entireDocument").insertBefore( addMe, myDoc.getElementById( XPODoc.getLineId( cursorLine+2 ) ) );
 				
 			cursorLine++;
 			cursorColumn = 0;
-			
-			//alert("the original line is " + XPODoc.getLineText(cursorLine--));
-			//alert("the new line is " + XPODoc.getLineText(cursorLine));
 			break;
 			
 		case TABKEY:
@@ -344,7 +337,7 @@ function clearFormatting( paramLineNum ) {
 		//RT - NOT SURE WHAT THIS DOES....
 		//Parses the contents of each line for syntax hightlighting.
 //		guiDoc.getElementById( XPODoc.getLineId(paramLineNum) ).innerHTML = indexLineText(replaceHTMLEntities(XPODoc.getLineText(paramLineNum)));
-		guiDoc.getElementById( XPODoc.getLineId(paramLineNum) ).innerHTML = indexLineText(XPODoc.getLineText(paramLineNum));
+		guiDoc.getElementById( XPODoc.getLineId(paramLineNum) ).innerHTML = indexLineText(replaceHTMLEntities(XPODoc.getLineText(paramLineNum)));
 	}
 }
 
@@ -559,6 +552,9 @@ function adjustScroll() {
 // paramText: the new text for the affected line
 // paramLineNum: the line where the action will take place
 function updateDocument( paramAction, paramText, paramLineNum ) {
+	//this needs a lot of work still... cory is working on it.
+	//don't do anything here for now
+	return;
 	new Ajax.Request('./handlers/documentUpdate.php?docID='+XPODoc.documentID+'&action='+paramAction+'&text='+paramText+'&lNum='+paramLineNum, {
 		method:'get',
 		// get a response indicating if the change is acceptable

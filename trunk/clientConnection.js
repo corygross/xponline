@@ -19,6 +19,48 @@ function handleXMLResponse( response ){
 function handleUpdateResponse( updateArray ){
 	for( var i=0; i < updateArray.contents.length; i++ )
 	{
+		//this isn't the update id I really want... I want the document specific one
+		var updateID = updateArray.contents[i].contents[0].contents[0].value;
+//alert(updateID);
+		var lineNum = updateArray.contents[i].contents[2].contents[0].value;
+		var lineTextObj = updateArray.contents[i].contents[3].contents[0];
+		var lineText = "";
+		if( typeof(lineTextObj) != "undefined" ){
+				lineText = lineTextObj.value;
+		}
+		//var lineText = updateArray.contents[i].contents[2].contents[0].value;
+
+		// Its a line update
+		if(updateArray.contents[i].contents[1].contents[0].value == "u"){
+			XPODoc.updateToServer = false;
+			XPODoc.setLineText(lineNum, lineText);
+			clearFormatting(lineNum);
+			//alert("line:"+lineNum+" text:"+lineText);
+			XPODoc.updateToServer = true;
+		}
+		// A line insert
+		else if(updateArray.contents[i].contents[1].contents[0].value == "i"){
+			XPODoc.updateToServer = false;
+			XPODoc.insertLine(lineNum, lineText);
+			XPODoc.updateToServer = true;
+
+			var addMe = guiDoc.createElement('div');
+			addMe.setAttribute('id', XPODoc.getLineId( lineNum ) );
+			addMe.setAttribute('class', "line");
+			lineNum = parseInt(lineNum);
+			lineNum++;
+			guiDoc.getElementById("entireDocument").insertBefore( addMe, guiDoc.getElementById( XPODoc.getLineId( lineNum ) ) );
+			clearFormatting( lineNum );
+		}
+		// A line delete
+		else if(updateArray.contents[i].contents[1].contents[0].value == "d"){
+			//var removeMe = guiDoc.getElementById(XPODoc.getLineId( lineNum ));
+			//removeMe.parentNode.removeChild(removeMe);
+			
+			XPODoc.updateToServer = false;
+			//XPODoc.removeLine( lineNum );
+			XPODoc.updateToServer = true;				
+		}
 		//alert(updateArray.contents[i].contents[1].contents[0].value);
 	}	
 
