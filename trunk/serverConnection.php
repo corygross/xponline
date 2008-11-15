@@ -9,7 +9,6 @@ $currentUserID = $_SESSION['uID'];
 //if($currentUserID == ''){echo 'error 003: User not logged in.'; return;}
 
 $currentDocumentID = $_GET['dID'];
-//$currentDocumentID = $_SESSION['dID'];
 
 //UPDATE when the last connection was made
 $sqlUpdateTime = "UPDATE users SET uLastActivity=CURRENT_TIMESTAMP WHERE uID='$currentUserID';";
@@ -110,7 +109,7 @@ function getMessage($currentUserID)
 		$xmlToSend .= "<fromID>".$row['fromID']."</fromID>";
 		$xmlToSend .= "<uFName>".$row['uFName']."</uFName>";
 		$xmlToSend .= "<uLName>".$row['uLName']."</uLName>";
-		$xmlToSend .= "<msg>".$row['msg']."</msg>";
+		$xmlToSend .= "<msg>".stripslashes($row['msg'])."</msg>";
 		$xmlToSend .= "<mID>".$row['mID']."</mID>";
 		$xmlToSend .= "</newMsg>";
 		
@@ -148,7 +147,10 @@ function getCollisionInfo($uID, $dID){
 
 			$locksToReturn = "";
 			$lineArray = explode("\n", $wholeFile);
-			foreach($lineArray as $line){		
+			foreach($lineArray as $line){
+				if($line == ""){
+					continue;
+				}
 				$pos = strpos($line, "$uID");
 				if($pos === false || $pos != 0){
 					$lockInfo = explode(",", $line);
@@ -172,17 +174,29 @@ function getPeerUpdates($uID, $dID){
 	if(file_exists($fileName)){
 		$fileModifyTime = filemtime($fileName);
 		$lastModifyKey = 'lastMasterFileModify'.$dID;
-		// not all updates are getting sent. the last one (if in rapid succession gets left in the db.) fix!
-		//if($fileModifyTime != $_SESSION["$lastModifyKey"]){
+		$checkedAgainKey = 'checkedModifyAgain'.$dID;
+		
+		// We need to check again a second time... because if we don't an update might get stuck in the database until the user makes another change
+		$checkForUpdates = false;
 		if($fileModifyTime != $_SESSION["$lastModifyKey"]){
 			$_SESSION["$lastModifyKey"] = $fileModifyTime;
+			$_SESSION["$checkedAgainKey"] = "false";
+			$checkForUpdates = true;
+		}
+		else if($_SESSION["$checkedAgainKey"] == "false"){
+			$_SESSION["$checkedAgainKey"] = "true";
+			$checkForUpdates = true;
+		}
+		
+		if($checkForUpdates == true){
+			//$_SESSION["$lastModifyKey"] = $fileModifyTime;
 			$updateXML = "";
 			$pending_updates = "SELECT * FROM updatequeue, updates WHERE updatequeue.userID='$uID' AND updatequeue.updateID=updates.updateID AND updates.docID='$dID' ORDER BY updateTime ASC;";
 			$pendingResult = runQuery($pending_updates);
 			if(mysql_num_rows($pendingResult) > 0){
 				while ($row = mysql_fetch_array($pendingResult))
 				{
-					$updateXML .= "<docUpdate><updateID>".$row['updateID']."</updateID><action>".$row['action']."</action><line>".$row['lineID']."</line><text>".$row['text']."</text></docUpdate>";
+					$updateXML .= "<docUpdate><updateID>".$row['updateID']."</updateID><action>".$row['action']."</action><line>".$row['lineID']."</line><text>".stripslashes($row['text'])."</text></docUpdate>";
 					// Should this be done with an ACK?
 					$clear_update = "DELETE FROM updatequeue WHERE userID='$uID' AND updateID='".$row['updateID']."';";
 					$clearResult = runQuery($clear_update);

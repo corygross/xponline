@@ -98,6 +98,8 @@ function newBlankDocument()
 		return;
 	}
 	
+	showLoadingIndicator();
+	
 	new Ajax.Request('./documents/createBlankDoc.php?docName=' + dName, {
 		method:'get',
 		onSuccess: function(transport) {
@@ -120,10 +122,14 @@ function newBlankDocument()
 
 function openDocument(dID, dName)
 {	
+	// Show the loading indicator
+	showLoadingIndicator();
+	
 	//get the document from the server and display it!!!
 	new Ajax.Request('./handlers/getDocumentContents.php?dID=' + dID, {
 		method:'get',
 		onSuccess: function(transport) {
+			hideLoadingIndicator();
 			if(transport.responseText == "fail"){
 				alert('There was a problem opening the document.  Please try again.');
 			}
@@ -229,7 +235,34 @@ function selectUser(id, name){
 	userName = name;
 }
 
+var leftEdge = -1;
+var	topEdge = -1;
+function showLoadingIndicator()
+{
+	if(leftEdge == -1){
+		leftEdge = (screen.width/2) - 16;
+		topEdge = (getHeight()/2) - 16;
+	}
+	var loadingIMG = document.getElementById("loadingIndicator");
+
+	if(isIE){
+		loadingIMG.style.top = topEdge;
+		loadingIMG.style.left = leftEdge;
+		loadingIMG.style.display = "block";	
+	}
+	else{
+		// For browsers other than IE
+		loadingIMG.setAttribute("style","position: absolute; display: block; top:"+topEdge+"px;left:"+leftEdge+"px;");
+	}
+}
+
+function hideLoadingIndicator()
+{
+	document.getElementById("loadingIndicator").style.display="none";
+}
+
 function submitUpload(){
+	showLoadingIndicator();
 	setTimeout('checkUploadComplete(20)',1000)
 	hidePopup('upload');
 }
