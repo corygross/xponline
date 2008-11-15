@@ -109,6 +109,9 @@ M<br />E<br />S<br />S<br />E<br />N<br />G<br />E<br />R
 </td>
 </tr>
 </table>
+<div name="loadingIndicator" id="loadingIndicator" style="position:absolute;display:none;">
+<img src="images/red-loading.gif" alt="loading..." />
+</div>
 </body>
 </html>
 

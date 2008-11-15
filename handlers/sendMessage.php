@@ -4,7 +4,7 @@ require_once "../dbConnect.php";
 
 $uID = $_SESSION['uID'];
 $sendToID = $_GET['sendToID'];
-$message = $_GET['message'];
+$message = addslashes($_GET['message']);
 
 if($uID == "" || $sendToID == "" || $message == ""){
 	echo "fail";

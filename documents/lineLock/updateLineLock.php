@@ -3,7 +3,6 @@ session_start();
 require_once "../../dbConnect.php";
 
 $uID = $_SESSION['uID'];
-//$dID = $_SESSION['dID'];
 $dID = $_GET['docID'];
 
 $curLine = $_GET['curLine'];
@@ -26,7 +25,7 @@ if(file_exists($fileName)){
 	foreach($lineArray as $line){				
 		$lineParts = explode(",", $line);
 		if($lineParts[0] != $uID){
-			// See if the user has been active in that document in the last 30 seconds
+			// See if the user has been active in that document in the last 10 seconds
 			$sqlCheckStillActive = "SELECT * FROM access WHERE dID='$dID' AND uID='$lineParts[0]' AND (dLastActivity>DATE_SUB(CURRENT_TIMESTAMP,INTERVAL 30 SECOND));";
 			$result = runQuery($sqlCheckStillActive);
 			if(mysql_num_rows($result) > 0){

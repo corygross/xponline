@@ -45,12 +45,7 @@ var guiDoc;
 /**********************************************/
 
 function getDoc(){
-	if(isIE == true){
-		return myIFrame.document;
-	}
-	else{
-		return myIFrame.contentWindow.document;
-	}
+	return guiDoc;
 }
 
 
@@ -362,6 +357,8 @@ function gotoPosition( paramLineNum, paramColNum ) {
 // This function takes each line of input and applies formatting based on keywords
 function indexLineText(inputText)
 {
+// This function or a subsequent one is slow as hell.  bypass that for now by just returning the inputtext
+return inputText;
 	var newLine = "";
 //	var testArr = new Array("public", "static", "void");
 	var words = inputText.split(" ");
@@ -385,7 +382,6 @@ function indexLineText(inputText)
 			}
 	//	}
 	}
-	//alert("I'm about to return " + newLine);
 	return newLine;
 }
 
@@ -429,7 +425,7 @@ function renderCursor()
 							if(spansArray == null)
 							{
 								tempCurrentLine[1] = "<span id='cursor'>" + tempCurrentLine[1] + "</span>";  
-								getDoc().getElementById( XPODoc.getLineId(cursorLine) ).innerHTML = tempCurrentLine.join("")
+								guiDoc.getElementById( XPODoc.getLineId(cursorLine) ).innerHTML = tempCurrentLine.join("")
 								return;
 							}
 							else
@@ -457,7 +453,7 @@ function renderCursor()
 						  	// display new formatting
 		                	try 
 							{
-		                        getDoc().getElementById( XPODoc.getLineId(cursorLine) ).innerHTML = newString;
+		                        guiDoc.getElementById( XPODoc.getLineId(cursorLine) ).innerHTML = newString;
 			                }
 			                catch (e) { alert("line not found!"); }
 					}
@@ -472,7 +468,7 @@ function renderCursor()
 						
                 		try 
 						{
-                   			getDoc().getElementById( XPODoc.getLineId(cursorLine) ).innerHTML = tempCurrentLine.join("");
+                   			guiDoc.getElementById( XPODoc.getLineId(cursorLine) ).innerHTML = tempCurrentLine.join("");
                 		}
 	            		catch (e) { alert("line not found!"); }
 					}
@@ -548,20 +544,67 @@ function adjustScroll() {
 /**********************************************/
 /****** DOCUMENT SYNCHRONIZATION *****/
 
+// This will be an 'update' that we will send to the server
+function updateObject(paramAction, paramText, paramLineNum){
+	this.action = paramAction;
+	this.text = paramText;
+	this.lineNum = paramLineNum;
+	this.documentID = XPODoc.documentID;
+}
+
+// we might want to move this into the document
+var pendingServerUpdates = new Array();
+
 // paramAction: i (insert), u (update), d (delete)
 // paramText: the new text for the affected line
 // paramLineNum: the line where the action will take place
 function updateDocument( paramAction, paramText, paramLineNum ) {
-	//this needs a lot of work still... cory is working on it.
-	//don't do anything here for now
-	return;
-	new Ajax.Request('./handlers/documentUpdate.php?docID='+XPODoc.documentID+'&action='+paramAction+'&text='+paramText+'&lNum='+paramLineNum, {
-		method:'get',
-		// get a response indicating if the change is acceptable
-		onSuccess: function(transport) {			
-			//alert(transport.responseText);
-		}		
-	});
+	// Fix the line locks
+	if(paramAction == "i" || paramAction == "d"){
+		for( var i=0; i < lockedLines.length; i++ )
+		{			
+			if(paramAction == "i" && lockedLines[i].lineID > paramLineNum){
+				lockedLines[i].lineID = parseInt(lockedLines[i].lineID) + 1;
+			}
+			else if(paramAction == "d" && lockedLines[i].lineID > paramLineNum){
+				lockedLines[i].lineID = parseInt(lockedLines[i].lineID) - 1;
+			}
+		}
+	}
+	
+	// If we have multiple updates to the same line in a row, just use the latest one.
+	var arrayLength = pendingServerUpdates.length;
+	if(arrayLength > 0){
+		var lastUpdateObj = pendingServerUpdates[ arrayLength-1 ];
+		if(lastUpdateObj.action == "u" && paramAction == "u" && lastUpdateObj.lineNum == paramLineNum){
+			pendingServerUpdates[ arrayLength-1 ] = new updateObject(paramAction, paramText, paramLineNum);
+			return;
+		}
+	}
+	pendingServerUpdates.push( new updateObject(paramAction, paramText, paramLineNum) );
+}
+
+setTimeout('sendDocumentUpdates()',5000);
+
+function sendDocumentUpdates(){
+
+	if(pendingServerUpdates.length > 0){
+		new Ajax.Request('./handlers/documentUpdate.php?', {
+			method:'post',
+			postBody: 'updateData='+pendingServerUpdates.toJSON(),
+			onSuccess: function(transport) {
+				if(transport.responseText != ""){
+					alert(transport.responseText);
+				}
+			}		
+		});
+		
+		// Clear out the array so it doesn't send again.  We should probably also keep a record somewhere of them for awhile
+		pendingServerUpdates  = new Array();
+	}
+	
+	// Every 1 second, see if there is anything to send again
+	setTimeout('sendDocumentUpdates()', 1000);
 }
 
 function updateLineLock( line ) {

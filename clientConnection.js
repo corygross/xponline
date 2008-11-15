@@ -33,10 +33,9 @@ function handleUpdateResponse( updateArray ){
 		// Its a line update
 		if(updateArray.contents[i].contents[1].contents[0].value == "u"){
 			XPODoc.updateToServer = false;
-			XPODoc.setLineText(lineNum, lineText);
-			clearFormatting(lineNum);
-			//alert("line:"+lineNum+" text:"+lineText);
+			XPODoc.setLineText(lineNum, lineText);			
 			XPODoc.updateToServer = true;
+			clearFormatting(lineNum);
 		}
 		// A line insert
 		else if(updateArray.contents[i].contents[1].contents[0].value == "i"){
@@ -54,14 +53,13 @@ function handleUpdateResponse( updateArray ){
 		}
 		// A line delete
 		else if(updateArray.contents[i].contents[1].contents[0].value == "d"){
-			//var removeMe = guiDoc.getElementById(XPODoc.getLineId( lineNum ));
-			//removeMe.parentNode.removeChild(removeMe);
+			var removeMe = guiDoc.getElementById(XPODoc.getLineId( lineNum ));
+			removeMe.parentNode.removeChild(removeMe);
 			
 			XPODoc.updateToServer = false;
-			//XPODoc.removeLine( lineNum );
+			XPODoc.removeLine( lineNum );
 			XPODoc.updateToServer = true;				
 		}
-		//alert(updateArray.contents[i].contents[1].contents[0].value);
 	}	
 
 }
