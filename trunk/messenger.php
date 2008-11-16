@@ -20,6 +20,7 @@ Contacts
 
 <ul id="contactList" name="contactList" class="contacts">
 <!-- this is updated with the current contact list -->
+Loading...
 </ul>
 
 </div>
