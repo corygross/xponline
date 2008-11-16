@@ -107,7 +107,7 @@ function insertBookmark( paramBMtext ) {
 
 /* This function provides functionality to so-called "special keys".  Basically, any non-character related keyboard input. (kindof) */
 function typeSpecial(paramKEYCODE, paramIsAlt, paramIsCtl, paramIsShift) {
-	
+
 	switch ( paramKEYCODE ) {
 	
 		case LEFTARROWKEY: 
@@ -306,6 +306,11 @@ function typeSpecial(paramKEYCODE, paramIsAlt, paramIsCtl, paramIsShift) {
 			break;
 			
 		case CAPSLOCKKEY:
+			break;
+			
+		case HIDECHATWINDOWSKEY:
+			if( paramIsCtl ) { hideChatShortcut(); }
+			else{ return true; }
 			break;
 			
 		default:
@@ -714,11 +719,25 @@ onKeyDownFunction = function( paramEvent ) {
 	
 	// Determine the keyCode of the pressed key (browser-dependent implementation)
 	var key;
-	if(isIE == true) key = myIFrame.window.event.keyCode;
-	else key = paramEvent.keyCode;
+	var isShift;
+	var isAlt;
+	var isCtl;
+	if(isIE == true){ 
+		key = myIFrame.window.event.keyCode;
+		isShift = myIFrame.window.event.shiftKey;
+		isAlt = myIFrame.window.event.altKey;
+		isCtl = myIFrame.window.event.ctrlKey;
+	}
+	else{ 
+		key = paramEvent.keyCode;
+		isShift = paramEvent.shiftKey;
+		isAlt = paramEvent.altKey;
+		isCtl = paramEvent.ctrlKey;
+	}
 
 	// if typeSpecial actually did something, it returns false...
-	var returnValue = typeSpecial( key );
+	var returnValue = typeSpecial( key, isAlt, isCtl, isShift );
+	//var returnValue = typeSpecial( key );
 	
 	renderCursor();
 	adjustScroll();
