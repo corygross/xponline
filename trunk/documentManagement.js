@@ -1,26 +1,4 @@
-var uploadFrame = null;
 var languageFlag = "text"; //For syntax highlighting
-
-function checkUploadComplete(triesLeft){
-	if(uploadFrame == null){
-		uploadFrame = document.getElementById("uploadIframe");
-	}
-
-	if(uploadFrame.contentWindow.document.body.innerHTML == "" && triesLeft > 0){
-		setTimeout('checkUploadComplete('+(triesLeft-1)+')',1000)
-	}
-	else{
-		var docArr = uploadFrame.contentWindow.document.body.innerHTML.split("^5&amp;");
-		if(docArr[0] != "success"){
-			alert("There may have been a problem uploading your document.");
-			uploadFrame.contentWindow.document.body.innerHTML = "";
-		}
-		else{
-			openDocument(docArr[1], docArr[2]);
-			uploadFrame.contentWindow.document.body.innerHTML = "";
-		}
-	}	
-}
 
 function closeDocument(){	
 	if(documentIsOpen() == true){
@@ -235,10 +213,8 @@ function openDocument(dID, dName)
  */
 function setSyntaxFlag(filename)
 {
-//	alert("The filename is " + filename);
 	var pos = filename.indexOf(".");
 	var extension = filename.substring(pos+1);
-//	alert("The file extension is " + extension);
 	
 	//Determine which flag to set
 	setCurrentLanguage(extension);
@@ -332,6 +308,16 @@ function hideLoadingIndicator()
 
 function submitUpload(){
 	showLoadingIndicator();
-	setTimeout('checkUploadComplete(20)',1000)
 	hidePopup('upload');
+}
+
+// This function is called when an upload completes.
+// It then gets the document from the server and opens it up.
+function uploadComplete(paramResult, paramDocID, paramFileName){
+	if(paramResult != "success"){
+		alert(paramResult);
+	}
+	else{
+		openDocument(paramDocID, paramFileName);
+	}
 }

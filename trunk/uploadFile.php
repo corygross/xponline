@@ -4,7 +4,7 @@ require_once 'dbConnect.php';
 $uID = $_SESSION['uID'];
 
 if($uID == ""){
-	echo "fail";
+	sendResult("Please log in.","","");
 	return;
 }
 
@@ -39,8 +39,15 @@ $docNameOnFileSystem = "$filePath/doc" . $newID;
 //move the uploaded file to the directory of choice
 move_uploaded_file($_FILES['filename']['tmp_name'], $docNameOnFileSystem);
 
-echo "success^5&".$newID."^5&".$filename."^5&";	
+sendResult("success",$newID,$filename);
 
+// Send a result back to the client, which will run the 'uploadComplete' javascript function
+function sendResult($result, $newID, $filename)
+{
+?>
+<script language="javascript" type="text/javascript">window.top.window.uploadComplete(<?php echo "'".$result."','".$newID."','".$filename."'"; ?>);</script>   
+<?php
+}
 
 /*
  *  Function: securityCheck
@@ -59,7 +66,7 @@ function securityCheck($filename)
 	//Check for obvious executable files (.exe, a.out, etc...)
 	if(stristr($filename, ".exe")|| stristr($filename, "a.out"))
 	{
-		echo "Error, cannot upload file!";
+		sendResult("The file failed the security check and was not uploaded.","","");
 		return false;
 	}
 	return true;
