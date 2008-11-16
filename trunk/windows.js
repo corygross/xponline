@@ -118,7 +118,7 @@ function makeNewPopup(id, title, type)
 		//Create the form that will allow file selection
 		newHTML += "<iframe id='uploadIframe' name='uploadIframe' style='display:none'></iframe>";
 		newHTML += "<div id ='filechooser'><br />";
-		newHTML += "<form id='fileForm' name='fileForm' method='post' action='uploadFile.php' enctype='multipart/form-data' target='uploadIframe'>";
+		newHTML += "<form id='fileForm' name='fileForm' method='post' action='documents/uploadFile.php' enctype='multipart/form-data' target='uploadIframe'>";
 		newHTML += "<input type='hidden' name='MAX_FILE_SIZE' value='5000000' />";
 		newHTML += "&nbsp;<input type='file' id='filename' name='filename' value='' style='width:270px' /><br/>";
 		newHTML += "&nbsp;<input type='submit' value='upload' onClick='submitUpload();'/>";
