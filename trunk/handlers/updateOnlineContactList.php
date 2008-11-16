@@ -1,6 +1,7 @@
 <?php
 session_start();
-require_once "../dbConnect.php";
+//require_once "../dbConnect.php";
+require_once $_SESSION['homeDir']."\dbConnect.php";
 
 $currentUserID = "";
 

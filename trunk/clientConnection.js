@@ -12,6 +12,12 @@ function handleXMLResponse( response ){
 		else if( XMLobj.contents[i].name == "locks" ){
 			handleLockResponse(XMLobj.contents[i]);
 		}
+		else if( XMLobj.contents[i].name == "pendingButton" ){
+			updatePendingContactButton(XMLobj.contents[i].contents[0].value);
+		}
+		else if( XMLobj.contents[i].name == "contactList" ){
+			contactListUpdate(XMLobj.contents[i].contents[0].value);
+		}
 	}
 }
 
