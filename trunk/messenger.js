@@ -47,6 +47,19 @@ function fixHilites(){
 	}
 }
 
+// This function hides any open chat windows.
+// If there are no open chat windows, it hides the messenger component
+function hideChatShortcut(){
+	var hidChatWindow = false;
+	for( var i=0; i < chatWindows.length; i++ )
+	{
+		hidChatWindow = hidChatWindow || hidePopup( chatWindows[i] );
+	}
+	if(hidChatWindow == false){
+		hideMessenger();
+	}
+}
+
 function hideMessenger(){
 	document.getElementById('mess1').style.display = "none";
 	document.getElementById('mess2').style.display = "none";	

@@ -60,6 +60,7 @@ function openPopup(id, title, type){
 
 var lastNewTop = 0;
 var lastNewLeft = 100;
+var chatWindows = new Array();
 function makeNewPopup(id, title, type)
 {
 	var popupID = id;
@@ -79,6 +80,8 @@ function makeNewPopup(id, title, type)
 		
 		leftEdge = lastNewLeft;
 		topEdge = lastNewTop;
+		
+		chatWindows.push(id);
 	}
 	else{
 		leftEdge = (screen.width/2) - 150;
@@ -283,7 +286,12 @@ function hidePopup(id){
 	if(id.indexOf("chat") == -1){
 		curOpenWindow = null;
 	}
-	document.getElementById(id).style.display="none";
+	var popup = document.getElementById(id);
+	if(popup != null && popup.style.display != "none"){
+		popup.style.display="none";
+		return true; // return true if we actually hid a popup
+	}
+	return false; // return false if we did NOT hide the popup
 }
 
 function makePopupVisible(id) {
