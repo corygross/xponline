@@ -1,5 +1,5 @@
 <?php
-require_once 'dbConnect.php';
+require_once '../dbConnect.php';
 
 $uID = $_SESSION['uID'];
 
@@ -8,13 +8,12 @@ if($uID == ""){
 	return;
 }
 
-//Where on the server are we going to store these files?
+// Where on the server are we going to store these files?
 $filePath = "documents";
 
 $filename = $_FILES['filename']['name'];
 
-//Grab the selected file 
-//Uncomment this if we want to see what file we are uploading
+// Uncomment this if we want to see what file we are uploading
 //$filename = $_FILES['filename']['name'];
 
 if((securityCheck($filename) == false))
@@ -22,32 +21,24 @@ if((securityCheck($filename) == false))
 	return;
 }
 
-//Insert relevant information in the database
+// Insert relevant information in the database
 $insertStmt = "INSERT INTO documents (`dID`, `dName`, `dLocation`) VALUES (null, '$filename', '$filePath');";
 $con = runQuery($insertStmt);
 
-//The newly created document ID
+// The newly created document ID
 $newID = mysql_insert_id();
 
-//give the creating user write access
+// Give the creating user write access
 $sql = "INSERT INTO access VALUES('$newID', '$uID', 'w', CURRENT_TIMESTAMP);";
 $response = runQuery($sql);
 
-//make a blank, empty document on the filesystem
-$docNameOnFileSystem = "$filePath/doc" . $newID;
+// Our new unique document name
+$docNameOnFileSystem = "doc" . $newID;
 
-//move the uploaded file to the directory of choice
+// Move the uploaded file to the directory of choice
 move_uploaded_file($_FILES['filename']['tmp_name'], $docNameOnFileSystem);
 
 sendResult("success",$newID,$filename);
-
-// Send a result back to the client, which will run the 'uploadComplete' javascript function
-function sendResult($result, $newID, $filename)
-{
-?>
-<script language="javascript" type="text/javascript">window.top.window.uploadComplete(<?php echo "'".$result."','".$newID."','".$filename."'"; ?>);</script>   
-<?php
-}
 
 /*
  *  Function: securityCheck
@@ -72,4 +63,14 @@ function securityCheck($filename)
 	return true;
 	
 }
+
+// Send a result back to the client, which will run the 'uploadComplete' javascript function
+function sendResult($result, $newDocID, $filename)
+{
+?>
+<script language="javascript" type="text/javascript">window.top.window.uploadComplete(<?php echo "'".$result."','".$newDocID."','".$filename."'"; ?>);</script>   
+<?php
+}
+
+
 ?>
