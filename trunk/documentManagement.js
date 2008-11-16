@@ -172,7 +172,7 @@ function openDocument(dID, dName)
 	// Show the loading indicator
 	showLoadingIndicator();
 	
-	//get the document from the server and display it!!!
+	// Get the document from the server and display it!!!
 	new Ajax.Request('./handlers/getDocumentContents.php?dID=' + dID, {
 		method:'get',
 		onSuccess: function(transport) {
@@ -182,8 +182,10 @@ function openDocument(dID, dName)
 			}
 			else{
 				var docInfoArr = transport.responseText.split("&^*");
-				if(docInfoArr[0] == "r") dName = dName + " (Readonly)";
-				changeDocTitle(dName);
+				
+				if(docInfoArr[0] == "r") changeDocTitle(dName + " (Readonly)");
+				else changeDocTitle(dName);
+
 				setSyntaxFlag(dName); //Set the syntax highlighting flag
 				loadNewDoc(dID, docInfoArr[1], docInfoArr[0]);
 			}
@@ -213,7 +215,7 @@ function openDocument(dID, dName)
  */
 function setSyntaxFlag(filename)
 {
-	var pos = filename.indexOf(".");
+	var pos = filename.lastIndexOf(".");
 	var extension = filename.substring(pos+1);
 	
 	//Determine which flag to set
