@@ -202,7 +202,7 @@ function confirmContacts(cbGroup){
 			method:'get',
 			onSuccess: function(transport)
 			{
-				updatePendingContactsNow();
+				// Maybe check the button again now
 			},
 			onFailure: function()
 			{
@@ -211,6 +211,14 @@ function confirmContacts(cbGroup){
 		});
 	}
 	hidePopup('confirmContact');
+}
+
+// This function is called periodically with new HTML for the contact list
+function contactListUpdate(contactListHTML){
+	var contactListContainer = document.getElementById('contactList');
+	contactListContainer.innerHTML = contactListHTML;
+	fixHilites();
+	fixGroupStates();
 }
 
 function getPendingContacts(){
@@ -238,6 +246,7 @@ function handleChatResponse( chatArray ){
 }
 
 //This will update the contact list
+/*
 function initContactUpdate(){
 new Ajax.PeriodicalUpdater({ success: 'contactList' }, './handlers/updateContactList.php',
   {
@@ -251,23 +260,7 @@ new Ajax.PeriodicalUpdater({ success: 'contactList' }, './handlers/updateContact
 	}
   });
  }
- 
-//This will update the pending contact button
-function initPendingContactsUpdate(){
-new Ajax.PeriodicalUpdater({ success: 'pendingButton' }, './handlers/updatePendingContactsButton.php',
-  {
-    method: 'get',
-    frequency: 30
-  });
-}
-
-//We'll call this one to update the pending contacts button immediately, instead of waiting...
-function updatePendingContactsNow(){
-new Ajax.Updater({ success: 'pendingButton' }, './handlers/updatePendingContactsButton.php',
-  {
-    method: 'get'
-  });
-}
+ */
  
 function openChat(id, name)
 {
@@ -332,7 +325,8 @@ function sendMessage(toID){
 		}		
 	});
 }
- 
- 
-initContactUpdate();
-initPendingContactsUpdate();
+
+function updatePendingContactButton(buttonHTML){
+	var buttonContainer = document.getElementById('pendingButton');
+	buttonContainer.innerHTML = buttonHTML;
+}

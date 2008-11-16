@@ -210,6 +210,35 @@ function getPeerUpdates($uID, $dID){
 	return "";
 }
 
+// Update the pending contacts button every $interval seconds (approx)
+function updatePendingContactsButton($interval){
+	if( isset($_SESSION['updateContactButtonTime']) == false || $_SESSION['updateContactButtonTime'] < time() ){
+		$_SESSION['updateContactButtonTime'] = time() + $interval;
+	}
+	else{
+		return "";
+	}
+	require_once "handlers/updatePendingContactsButton.php";
+	$button = getButton();
+	
+	// The button HTML must be enclosed by the CDATA tag, otherwise the HTML will be chopped up by the XML parser
+	return "<pendingButton><![CDATA[".$button."]]></pendingButton>";
+}
+
+// Update the contact list every $interval seconds (approx)
+function updateContactList($interval){
+	if( isset($_SESSION['updateContactListTime']) == false || $_SESSION['updateContactListTime'] < time() ){
+		$_SESSION['updateContactListTime'] = time() + $interval;
+	}
+	else{
+		return "";
+	}
+	// The button HTML must be enclosed by the CDATA tag, otherwise the HTML will be chopped up by the XML parser
+	echo "<contactList><![CDATA[";
+	require_once "handlers/updateContactList.php";
+	echo "]]></contactList>";
+}
+
 // Loop for awhile... waiting for something interesting to happen...
 for ($i = 0; $i<100; $i++) 
 { 	
@@ -221,6 +250,12 @@ for ($i = 0; $i<100; $i++)
 	
 	// Get any changes that our peers have made to the current document
 	$peerUpdates = getPeerUpdates($currentUserID, $currentDocumentID);
+	
+	// Update the pending contacts button every 30 seconds
+	$pendingContactsUpdate = updatePendingContactsButton(30);
+	
+	// Update the contact list
+	updateContactList(15);
 	
 	$isDataToSend = false;
 	
@@ -237,6 +272,11 @@ for ($i = 0; $i<100; $i++)
 	if ($peerUpdates != ""){
 		$isDataToSend = true;
 		echo $peerUpdates;		
+	}
+	
+	if ($pendingContactsUpdate != ""){
+		$isDataToSend = true;
+		echo $pendingContactsUpdate;		
 	}
 	
 	if($isDataToSend == true){
