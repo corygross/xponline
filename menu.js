@@ -6,13 +6,27 @@ function accessMenuClick()
 
 function addBookmarkMenuClick()
 {
+	if(documentIsOpen() == false){
+		alert("Please open a document to add a bookmark.");
+		return;
+	}
 	openPopup('add_bm','Add Bookmark','add_bm');
 }
 
 function changeDocTitle(title)
 {
 	document.getElementById('fileName').innerHTML = title;
-	document.title = "XPonline | " + title;
+	if(title == ""){
+		document.title = "XPonline";
+	}
+	else{
+		document.title = title + " | XPonline";
+	}
+}
+
+function closeMenuClick()
+{
+	closeDocument();
 }
 
 function colorMenuClick()
@@ -28,6 +42,13 @@ function copyIconClicked()
 function cutIconClicked()
 {
 	alert("cut");
+}
+
+function deleteMenuClick()
+{
+	openPopup('delete_doc','Delete a Document','delete_doc');
+	getDeletableDocs();
+	return;
 }
 
 function downloadMenuClick()
@@ -54,17 +75,29 @@ function exitMenuClick()
 var bookmarkArray;
 function findBookmarkMenuClick()
 {
+	if(documentIsOpen() == false){
+		alert("Please open a document find bookmarks.");
+		return;
+	}
 	bookmarkArray = XPODoc.document.findAllBookmarks();
 	openPopup('find_bm','Find Bookmark','find_bm');
 }
 
 function findMenuClick()
 {
+	if(documentIsOpen() == false){
+		alert("Please open a document to find text in.");
+		return;
+	}
 	openPopup('find_text','Find','find_text');
 }
 
 function gotoMenuClick()
 {
+	if(documentIsOpen() == false){
+		alert("Please open a document first.");
+		return;
+	}
 	openPopup('goto_window','Go To Line','goto_window');
 }
 
@@ -106,6 +139,10 @@ function pasteIconClicked()
 
 function replaceMenuClick()
 {
+	if(documentIsOpen() == false){
+		alert("Please open a document to replace text in.");
+		return;
+	}
 	alert("replace");
 }
 
@@ -124,6 +161,10 @@ function updateLineCol(line, col)
 {
 	if(lineCol == null){
 		lineCol = document.getElementById('curLineCol');
+	}
+	if(line == "" && col == ""){
+		lineCol.innerHTML = "";
+		return;
 	}
 	lineCol.innerHTML = "Ln:" + line + " Col:" + col;
 }

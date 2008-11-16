@@ -22,6 +22,62 @@ function checkUploadComplete(triesLeft){
 	}	
 }
 
+function closeDocument(){	
+	if(documentIsOpen() == true){
+		XPODoc.blankDocument();
+		refreshDocument();
+	}
+	changeDocTitle("");
+	updateLineCol("","");
+}
+
+function deleteConfirm(){
+	var answer = confirm("Are you sure you want to delete this document?")
+	if (answer){
+		return true;
+	}
+	else{
+		return false;
+	}
+}
+
+function deleteDocument(){
+	var list = document.getElementById('writableList');
+	var docID = list.value;	
+	if(docID == ""){
+		alert("Please select a document to delete.");
+		return;
+	}
+	if(deleteConfirm() == false){
+		return;
+	}
+	
+	if(XPODoc.documentID == docID){
+		closeDocument();
+	}
+	
+	destroyPopup('delete_doc');	
+	new Ajax.Request('./handlers/deleteDocument.php?docID='+docID, {
+		method:'get',
+		onSuccess: function(transport) {
+			if(transport.responseText != "success"){
+				alert(transport.responseText);
+			}
+		},		
+		onFailure: function()
+		{
+			alert("There was a problem deleting the document.  Please try again.");
+		}		
+	});	
+}
+
+function documentIsOpen(){
+	if( typeof(XPODoc) == "undefined" || typeof(guiDoc) == "undefined" || typeof(XPODoc.documentID) == "undefined" || XPODoc.documentID == ""){
+		return false;
+	}
+	return true;
+}
+
 function getAccessibleDocs(){
 	new Ajax.Request('./handlers/accessibleDocs.php?', {
 		method:'get',
@@ -31,6 +87,19 @@ function getAccessibleDocs(){
 		onFailure: function()
 		{
 			alert("There was a problem getting your accessible documents.");
+		}		
+	});
+}
+
+function getDeletableDocs(){
+	new Ajax.Request('./handlers/writableDocs.php?', {
+		method:'get',
+		onSuccess: function(transport) {	
+			$('deleteDocContainer').innerHTML = transport.responseText;
+		},		
+		onFailure: function()
+		{
+			alert("There was a problem getting the document list.");
 		}		
 	});
 }

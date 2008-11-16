@@ -243,6 +243,14 @@ function makeNewPopup(id, title, type)
 		newHTML += "<tr><td></td><td align='right'><input type='button' value='Go' onClick='gotoLineGo();'/><input type='button' value='Cancel' onClick=\"hidePopup('"+popupID+"');\"/></td><td></td></tr>";
 		newHTML += "</table></form>";
 	}
+	else if(type == 'delete_doc')
+	{
+		newHTML += "<form onkeypress='callFunctionOnEnter(event, deleteDocument);'>";
+		newHTML += "<table style='width:100%;'><tr><td style='width:10%;'></td><td style='width:80%;'>Select a document to delete:</td><td style='width:10%;'></td></tr>";
+		newHTML += "<tr><td>&nbsp;</td><td><div id='deleteDocContainer' name='deleteDocContainer'>Retrieving document list...</div></td><td></td></tr>";
+		newHTML += "<tr><td></td><td align='right'><input type='button' value='Delete' onClick='deleteDocument();'/><input type='button' value='Cancel' onClick=\"destroyPopup('"+popupID+"');\"/></td><td></td></tr>";
+		newHTML += "</table></form>";
+	}
 
 	newElm.innerHTML = newHTML;
 	document.body.appendChild(newElm);
