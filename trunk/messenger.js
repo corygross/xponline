@@ -20,6 +20,14 @@ function changeMessengerArrow(id){
 	}
 }
 
+// This function is called periodically with new HTML for the contact list
+function contactListUpdate(contactListHTML){
+	var contactListContainer = document.getElementById('contactList');
+	contactListContainer.innerHTML = contactListHTML;
+	fixHilites();
+	fixGroupStates();
+}
+
 function fixGroupStates(){
 	for (var key in groupStates) {
 		var group = document.getElementById(key);
@@ -48,7 +56,7 @@ function fixHilites(){
 }
 
 // This function hides any open chat windows.
-// If there are no open chat windows, it hides the messenger component
+// If there are no open chat windows, it hides the messenger component if it is open, or unhides it if it isn't.
 function hideChatShortcut(){
 	var hidChatWindow = false;
 	for( var i=0; i < chatWindows.length; i++ )
@@ -56,7 +64,7 @@ function hideChatShortcut(){
 		hidChatWindow = hidChatWindow || hidePopup( chatWindows[i] );
 	}
 	if(hidChatWindow == false){
-		hideMessenger();
+		showHideMessenger();
 	}
 }
 
@@ -118,6 +126,15 @@ function showBlinkerIfNew(){
 	}
 }
 
+function showHideMessenger(){
+	if(document.getElementById('mess1').style.display == ""){
+		hideMessenger();
+	}
+	else{
+		showMessenger();
+	}
+}
+
 function showHideMessengerGroup(id){
 	var group = document.getElementById(id);
 	if(group.style.display == "none"){
@@ -135,6 +152,11 @@ function showMessenger(){
 	document.getElementById('mess2').style.display = "";	
 	document.getElementById('collapse1').style.display = "none";
 	document.getElementById('collapse2').style.display = "none";
+}
+
+function updatePendingContactButton(buttonHTML){
+	var buttonContainer = document.getElementById('pendingButton');
+	buttonContainer.innerHTML = buttonHTML;
 }
 
 //////////////////////////////////////////////////////////////
@@ -211,14 +233,6 @@ function confirmContacts(cbGroup){
 		});
 	}
 	hidePopup('confirmContact');
-}
-
-// This function is called periodically with new HTML for the contact list
-function contactListUpdate(contactListHTML){
-	var contactListContainer = document.getElementById('contactList');
-	contactListContainer.innerHTML = contactListHTML;
-	fixHilites();
-	fixGroupStates();
 }
 
 function getPendingContacts(){
@@ -324,9 +338,4 @@ function sendMessage(toID){
 			alert("There was a problem sending '"+message+".'");
 		}		
 	});
-}
-
-function updatePendingContactButton(buttonHTML){
-	var buttonContainer = document.getElementById('pendingButton');
-	buttonContainer.innerHTML = buttonHTML;
 }
