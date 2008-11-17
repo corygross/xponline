@@ -5,7 +5,7 @@ function Renderer()
 	this.renderLine = function ( paramLineText, paramCursorPosition ) {
 		if ( paramLineText == "" ) paramLineText = ' ';
 		if ( paramCursorPosition == undefined ) {
-			return paramLineText;
+			return replaceHTMLEntities( paramLineText );
 		}
 		else {
 			var tempCurrentLine = new Array();

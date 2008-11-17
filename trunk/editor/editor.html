@@ -274,16 +274,7 @@ function typeSpecial(paramKEYCODE, paramIsAlt, paramIsCtl, paramIsShift) {
 			// We need to insert a new line following the current line, which contains the current line's text starting from the cursor
 			XPODoc.insertLine( cursorLine+1, XPODoc.getLineText( cursorLine ).substring( cursorColumn ) );
 			XPODoc.setLineText( cursorLine, XPODoc.getLineText( cursorLine ).substring( 0, cursorColumn ) );
-			//XPODoc.insertText("\r\n", cursorLine, cursorColumn);
-
-			// TODO: FIXME: HACK:  Need to make the above change visible in the GUI
-			//clearFormatting( cursorLine );
-			//var myDoc = guiDoc;
-			//var addMe = myDoc.createElement('div');
-			//addMe.setAttribute('id', XPODoc.getLineId( cursorLine+1 ) );
-			//addMe.setAttribute('class', "line");
-			//myDoc.getElementById("entireDocument").insertBefore( addMe, myDoc.getElementById( XPODoc.getLineId( cursorLine+2 ) ) );
-				
+			// Update the cursor
 			cursorLine++;
 			cursorColumn = 0;
 			break;
