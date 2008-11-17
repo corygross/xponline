@@ -8,6 +8,10 @@ if($uID == ""){
 	return;
 }
 
+if(isset($_FILES['filename']['name']) == false){
+	return;
+}
+
 // Where on the server are we going to store these files?
 $filePath = "documents";
 
