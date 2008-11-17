@@ -121,7 +121,7 @@ function typeSpecial(paramKEYCODE, paramIsAlt, paramIsCtl, paramIsShift) {
 			if ( cursorColumn == 0 && cursorLine == 0 ) break;
 			if ( cursorColumn == 0 ) {
 				cursorLine--;
-				cursorColumn = XPODoc.getLineLength(cursorLine)-1;
+				cursorColumn = XPODoc.getLineLength(cursorLine);
 			}
 			else cursorColumn--;	
 			break;
@@ -257,14 +257,9 @@ function typeSpecial(paramKEYCODE, paramIsAlt, paramIsCtl, paramIsShift) {
 			// If we are at the last char of any other line, we remove the 'newline character', thus merging the current line with the next line
 			// Otherwise, we simply remove the char at the cursor position
 			if ( cursorColumn == XPODoc.getLineLength( XPODoc.getDocumentLength()-1 )-1 && cursorLine == XPODoc.getDocumentLength()-1 ) break;
-			if ( cursorColumn == XPODoc.getLineLength( cursorLine )-1 ) {
+			if ( cursorColumn == XPODoc.getLineLength( cursorLine ) ) {
 				// Merge the next line into the current line
 				XPODoc.setLineText( cursorLine, XPODoc.getLineText(cursorLine) + XPODoc.getLineText(cursorLine+1) );
-				
-				// FIXME: HACK:  BAD FORM!  The following lines promote tight coupling between GUI and backend!  ARRRGGGGHHHHH! 
-				//var removeMe = guiDoc.getElementById(XPODoc.getLineId( cursorLine+1 ));
-				//removeMe.parentNode.removeChild(removeMe);
-				
 				// Remove the line in question from our data structure
 				XPODoc.removeLine( cursorLine+1 );
 			} else {

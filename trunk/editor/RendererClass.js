@@ -3,6 +3,7 @@
 function Renderer()
 {
 	this.renderLine = function ( paramLineText, paramCursorPosition ) {
+		if ( paramLineText == "" ) paramLineText = ' ';
 		if ( paramCursorPosition == undefined ) {
 			return paramLineText;
 		}
@@ -11,6 +12,7 @@ function Renderer()
 	        tempCurrentLine.push( replaceHTMLEntities( paramLineText.substring(0,paramCursorPosition)) );
 	        tempCurrentLine.push(replaceHTMLEntities( paramLineText.substr(paramCursorPosition, 1)) );
 	        tempCurrentLine.push(replaceHTMLEntities( paramLineText.substring(paramCursorPosition+1)) );
+			if ( tempCurrentLine[1] == "" ) tempCurrentLine[1] = ' ';
 			tempCurrentLine[1] = "<span id='cursor'>" + tempCurrentLine[1] + "</span>";
 			return tempCurrentLine.join("");
 		}
