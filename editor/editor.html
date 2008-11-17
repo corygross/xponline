@@ -83,8 +83,6 @@ function getScrollOffsetY() {
 function insertBookmark( paramBMtext ) {
 	if( XPODoc.getLineText( cursorLine ).trim() == "" ){
 		XPODoc.setLineText( cursorLine, paramBMtext );
-		//clearFormatting( cursorLine );
-		//renderCursor();
 	}
 	else{
 		XPODoc.insertLine( cursorLine+1, XPODoc.getLineText( cursorLine ) );
@@ -101,8 +99,6 @@ function insertBookmark( paramBMtext ) {
 		
 		cursorLine++;
 		cursorColumn = 0;
-		
-		//renderCursor();
 	}
 }
 
@@ -236,11 +232,6 @@ function typeSpecial(paramKEYCODE, paramIsAlt, paramIsCtl, paramIsShift) {
 				cursorColumn = XPODoc.getLineLength( cursorLine-1 );	// Place cursor at end of prior line
 				// Perform text merge into prior line
 				XPODoc.setLineText( cursorLine-1, XPODoc.getLineText( cursorLine-1 ) + XPODoc.getLineText( cursorLine ) );
-				
-				// FIXME: HACK:  BAD FORM!  The following lines promote tight coupling between GUI and backend!  ARRRGGGGHHHHH! 
-				//var removeMe = guiDoc.getElementById(XPODoc.getLineId( cursorLine ));
-				//removeMe.parentNode.removeChild(removeMe);
-				
 				// Remove the line from our data structure
 				XPODoc.removeLine( cursorLine );
 				// Decrement cursorLine
@@ -766,6 +757,7 @@ onClickFunction = function( paramEvent ){
 		updateLineLock(cursorLine);
 	}
 	XPODoc.renderUpdates( cursorLine, cursorColumn );
+	displayCursorPos();
 }
 
 /* This function is the handler of the keydown event.  Mainly, this function will execute the typeSpecial function */
@@ -803,6 +795,7 @@ onKeyDownFunction = function( paramEvent ) {
 		updateLineLock(cursorLine);
 	}
 	XPODoc.renderUpdates( cursorLine, cursorColumn );
+	displayCursorPos();
 	return returnValue;	//  ... and if typeSpecial returns false, we don't want the event to bubble, so pass this return value along
 }
 
@@ -828,6 +821,7 @@ onKeyPressFunction = function( paramEvent ){
 		updateLineLock(cursorLine);
 	}
 	XPODoc.renderUpdates( cursorLine, cursorColumn );
+	displayCursorPos();
 }
 
 /* This function is the handler of the mousedown event */

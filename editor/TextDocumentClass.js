@@ -144,7 +144,7 @@ function TextDocument( paramHTMLDocumentPane )
 		newDiv.innerHTML = paramText;
 		// Try inserting the new div.  If it fails, we must be on the last line, so then just append it instead.
 		try {
-			this.htmlDocumentContent.insertBefore( newDiv, this.getLineHandle(paramLineNum+1) );
+			this.htmlDocumentContent.insertBefore( newDiv, this.getLineHandle(paramLineNum) );
 			//alert("not caught");
 		} catch (e) { //alert("caught");
 			this.htmlDocumentContent.appendChild( newDiv );
