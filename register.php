@@ -5,9 +5,9 @@ $error = "";
 
 if(isset($_POST['btnRegister']) == true)
 {
-	$fName = trim($_POST['fName']);
-	$lName = trim($_POST['lName']);
-	$email = trim($_POST['email']);
+	$fName = trim(addslashes($_POST['fName']));
+	$lName = trim(addslashes($_POST['lName']));
+	$email = trim(addslashes($_POST['email']));
 	$pass1 = trim($_POST['pass1']);
 	$pass2 = trim($_POST['pass2']);
 	
