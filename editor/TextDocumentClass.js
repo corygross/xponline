@@ -1,22 +1,35 @@
 // Data structure to hold unformatted document
-function TextDocument() 
+function TextDocument( paramHTMLDocumentPane ) 
 {
 	//////////////////////////////////////////////////
 	////////////// MEMBER VARIABLES ////////////////
 	
-	// Sub-data structure for each lineId,lineText pair
-	this.line = function( paramLineId, paramLineText )
+	// Sub-data structure for each lineHandle,lineText pair
+	this.line = function( paramDOMHandle, paramId, paramLineText )
 	{
-		this.id = paramLineId;
-		this.text = paramLineText;
+		this.id 	 = paramId;
+		this.handle  = paramDOMHandle
+		this.text 	 = paramLineText;
+		this.updated = 1;	// 1=true
 	}
-	this.document;					// This is to be an array of lines
-	this.uniqueNameCounter;			// This variable is used to provide unique id's to each line
-	this.documentID;
-	this.updateToServer;	//This whole system is kind of a hack
+	//this.blockTracker;				// TODO: This is to be an array of start/end coordinates for blocks of text (code blocks / comments / etc )
+	this.document;				// This is to be an array of lines
+	this.documentID;			//  Keep track of the document's unique ID
+	this.documentName;
+	this.documentExtension;
 	
-	//////////////////////////////////////////////////
-	////////////// MEMBER FUNCTIONS ///////////////
+	this.htmlDocumentPane;		// This is a container for the Document-pane in our iFrame
+	this.htmlDocumentContent;	// This is a container for the 'entireDocument' div in our iFrame's body
+	
+	this.uniqueNameCounter;		// This variable is used to provide unique id's to each line
+	this.updateTracker;			// This will be an array of lines which need to be updated
+	this.updateToServer;		// HACK: This whole system is kind of a hack
+	
+	this.renderer;				// This object will be this documents Renderer.  It determines how the text gets formatted, and is used
+								// to perform all HTML formatting of text in the document
+	
+	////////////////////////////////////////////////////////
+	////////////// TEXT-SPECIFIC FUNCTIONS ///////////////
 
 	// This function adds a line to the end of the document
 	this.appendLine = function( paramText ) {
@@ -25,6 +38,7 @@ function TextDocument()
 	
 	//  Clears the contents of the document
 	this.blankDocument = function() {
+		this.htmlDocumentContent.innerHTML = "";
 		this.document = new Array();
 		this.appendLine("");				// This avoids null-related errors in several places
 		this.uniqueNameCounter = 0;			// This variable is used to provide unique id's to each line
@@ -35,6 +49,12 @@ function TextDocument()
 	// Returns the length of the document in number of lines
 	this.getDocumentLength = function() {
 		return this.document.length;
+	}
+	
+	// Returns the HTML DOM handle associated with the specified line
+	this.getLineHandle = function( paramLineNum ) {
+		if ( !this.isLegalPosition( paramLineNum ) ) return false;
+		return this.document[paramLineNum].handle;
 	}
 	
 	// Returns the id of the specified line
@@ -51,8 +71,14 @@ function TextDocument()
 	
 	// Returns the text of the specified line
 	this.getLineText = function( paramLineNum ) {
-		if ( !this.isLegalPosition( paramLineNum ) && this.document[paramLineNum] == undefined ) return false;
+		if ( !this.isLegalPosition( paramLineNum ) ) return false;
 		return this.document[paramLineNum].text;
+	}
+	
+	this.getLineUpdated = function( paramLineNum ) {
+		if ( !this.isLegalPosition( paramLineNum ) ) return false;
+		if ( this.document[ paramLineNum ].updated == 1 ) return true;
+		else return false;
 	}
 	
 	// Returns the text within a specified range.  The range is defined by a starting Line/Column and an ending Line/Column value.  
@@ -110,8 +136,21 @@ function TextDocument()
 	// Insert a line with the given text into the document at the specified line number
 	this.insertLine = function( paramLineNum, paramText ) {
 		if ( paramLineNum > this.getDocumentLength() || paramLineNum < 0 ) return false;
-		this.document.splice( paramLineNum, 0, new this.line( "line"+this.uniqueNameCounter, paramText ) );
-		this.uniqueNameCounter++;
+		
+		// Create a new HTML div, insert it correctly in the existing HTML document, and provide the document line a handle on the div for rendering
+		var newDiv = this.htmlDocumentPane.createElement('div');
+		newDiv.setAttribute('class', "line");
+		//newDiv.setAttribute('id', "Line:"+this.uniqueNameCounter++);
+		newDiv.innerHTML = paramText;
+		// Try inserting the new div.  If it fails, we must be on the last line, so then just append it instead.
+		try {
+			this.htmlDocumentContent.insertBefore( newDiv, this.getLineHandle(paramLineNum+1) );
+			//alert("not caught");
+		} catch (e) { //alert("caught");
+			this.htmlDocumentContent.appendChild( newDiv );
+		}
+		
+		this.document.splice( paramLineNum, 0, new this.line( newDiv, "Line: "+this.uniqueNameCounter++, paramText ) );
 		
 		if(this.updateToServer == true){
 			updateDocument( "i", paramText, paramLineNum );
@@ -190,6 +229,11 @@ function TextDocument()
 	// Remove a line, specified by line number
 	this.removeLine = function( paramLineNum ) {
 		if ( !this.isLegalPosition( paramLineNum ) ) return false;
+		
+		// Remove the HTML div associated with the line
+		var removeMe = this.getLineHandle( paramLineNum );
+		removeMe.parentNode.removeChild( removeMe );
+		// Remove the document line
 		this.document.splice( paramLineNum, 1 );
 		
 		if(this.updateToServer == true){
@@ -201,14 +245,53 @@ function TextDocument()
 	// Set the text of a specified line to equal paramText
 	this.setLineText = function( paramLineNum, paramText ) {
 		if ( !this.isLegalPosition( paramLineNum ) ) return false;
-		this.document[paramLineNum].text = paramText;		
+		// Set the text
+		this.document[paramLineNum].text = paramText;
+		// Flag this line for update
+		this.setLineUpdated( paramLineNum );
 		
 		if(this.updateToServer == true){
 			updateDocument( "u", paramText, paramLineNum );
 		}
 	}
 	
+	this.setLineUpdated = function ( paramLineNum ) {
+		if ( !this.isLegalPosition( paramLineNum ) ) return false;
+		this.updateTracker.push( paramLineNum );
+	}
+	
+	
+	
+	
+	///////////////////////////////////////////////////////////
+	////////////// RENDERING-TYPE FUNCTIONS ///////////////
+	
+	this.renderEntireDocument = function () {
+		for(var l=0; l < this.document.length; l++ ){
+			this.renderLine( l );
+		}
+	}
+	
+	this.renderLine = function ( paramLineNum, paramCursorLine, paramCursorColumn ) {
+		if ( paramCursorLine == paramLineNum )
+			this.getLineHandle( paramLineNum ).innerHTML = this.renderer.renderLine( this.getLineText( paramLineNum ), paramCursorColumn );
+		else this.getLineHandle( paramLineNum ).innerHTML = this.renderer.renderLine( this.getLineText( paramLineNum ) );
+	}
+	
+	this.renderUpdates = function ( paramCursorLine, paramCursorColumn ) {
+		for(var l=0; l < this.updateTracker.length; l++ ){
+			if ( this.getLineUpdated( l ) ) {
+				this.renderLine( this.updateTracker.pop(), paramCursorLine, paramCursorColumn );
+			}
+		}
+	}
+	
 	/************************************************************/
 	/*********** INITIALIZATION OF THIS INSTANCE ************/
-	this.blankDocument();
+	this.uniqueNameCounter = 0;
+	this.updateTracker = new Array();
+	this.htmlDocumentPane = paramHTMLDocumentPane;
+	this.htmlDocumentContent = this.htmlDocumentPane.getElementById("entireDocument");
+	this.document = new Array();
+	this.renderer = new Renderer();	
 }
