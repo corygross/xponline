@@ -133,3 +133,95 @@ function findText(){
 		alert("Reached the end of the document.");
 	}
 }
+
+// This function is called by the Replace window when the user clicks Find Next
+function findTextToReplace(){
+	var text = document.getElementById('replaceTextToFind').value;
+	if(text == ""){
+		alert("Please enter something to search for!");
+		return;
+	}
+	
+	var matchCase = document.replaceForm.findMatchCase.checked;
+	
+	var result;
+	if(document.replaceForm.findType[0].checked){ // Search up
+		result = XPODoc.document.findPrev(text, matchCase);
+	}
+	else if(document.replaceForm.findType[1].checked){ // Search down
+		result = XPODoc.document.findNext(text, matchCase);
+	}	
+	
+	if(result != false){
+		gotoPosition(result.lineID, result.startIndex);
+	}
+	else{
+		alert("Reached the end of the document.");
+	}
+}
+
+function replaceSelected(){
+	var currentText = document.getElementById('replaceTextToFind').value;
+	if(currentText == ""){
+		alert("Please enter something to replace!");
+		return;
+	}
+	
+	var replacementText = document.getElementById('replacementText').value;	
+	var matchCase = document.replaceForm.findMatchCase.checked;
+	
+	var cursor = getCursor();
+	var lineText = XPODoc.getLineText( cursor[0] );
+	var matchCheck = lineText.substring(cursor[1], currentText.length+cursor[1]);
+	
+	var regEx;
+	if(matchCase) regEx = new RegExp(currentText, "g");
+	else regEx = new RegExp(currentText, "gi");
+	
+	if(regEx.test(matchCheck)){
+		var newLineText = lineText.substring(0, cursor[1]) + replacementText + lineText.substring(currentText.length+cursor[1]);
+		XPODoc.setLineText( cursor[0], newLineText );
+		renderCursor();
+	}
+	else{
+		findTextToReplace();
+	}
+}
+
+// This function searches the array of lines and returns an array of all matches
+Array.prototype.replaceAllMatches = function(searchStr, replacementText, matchCase, cursorLine) {
+	//var replaceCount = 0;
+	
+	var regEx;
+	if(matchCase) regEx = new RegExp(searchStr, "g");
+	else regEx = new RegExp(searchStr, "gi");
+	
+	for (i=0; i<this.length; i++) {
+		if(this[i].text != ""){
+			var newLineText = this[i].text.replace(regEx, replacementText);
+			XPODoc.setLineText( i, newLineText );
+			if(i==cursorLine) renderCursor();
+			else clearFormatting( i );
+		}
+    }
+	/*
+	if(replaceCount == 0){
+		alert('No matches were found to replace.');
+	}
+	else{
+		alert(replaceCount+' matches were replaced.');
+	}
+	*/
+	//return replaceCount;
+}
+
+function replaceAll(){
+	var currentText = document.getElementById('replaceTextToFind').value;
+	if(currentText == ""){
+		alert("Please enter something to replace!");
+		return;
+	}
+	var replacementText = document.getElementById('replacementText').value;	
+	
+	XPODoc.document.replaceAllMatches(currentText, replacementText, document.replaceForm.findMatchCase.checked, getCursorLine());
+}

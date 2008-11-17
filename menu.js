@@ -143,7 +143,7 @@ function replaceMenuClick()
 		alert("Please open a document to replace text in.");
 		return;
 	}
-	alert("replace");
+	openPopup('replace_text','Replace','replace_text');
 }
 
 function selectAllMenuClick()
