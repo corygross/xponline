@@ -16,10 +16,10 @@
 
 <td class="menu_item" onmouseover="showmenu('edit_menu')" onmouseout="hidemenu('edit_menu')">Edit&nbsp;<img src="images/arrow.gif"/><br />
    <table class="menu" id="edit_menu" width="160px">
-   <tr><td class="menu" onclick="findMenuClick();">Find...</td></tr>
-   <tr><td class="menu" onclick="replaceMenuClick();">Replace...</td></tr>
-   <tr><td class="menu" onclick="gotoMenuClick();">Go To...</td></tr>
-   <tr><td class="menu" onclick="selectAllMenuClick();">Select All</td></tr>
+   <tr><td class="menu" onclick="findMenuClick();"><u>F</u>ind...</td></tr>
+   <tr><td class="menu" onclick="replaceMenuClick();"><u>R</u>eplace...</td></tr>
+   <tr><td class="menu" onclick="gotoMenuClick();"><u>G</u>o To...</td></tr>
+   <tr><td class="menu" onclick="selectAllMenuClick();">Select <u>A</u>ll</td></tr>
    </table>
 </td>
 
