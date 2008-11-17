@@ -351,6 +351,34 @@ function typeSpecial(paramKEYCODE, paramIsAlt, paramIsCtl, paramIsShift) {
 					}
 				}
 				break;
+			case FINDKEY:
+				if( paramIsCtl ) { findMenuClick(); }
+				else{ return true; }
+				break;
+			case REPLACEKEY:
+				if( paramIsCtl ) { replaceMenuClick(); }
+				else{ return true; }
+				break;
+			case GOTOKEY:
+				if( paramIsCtl ) { gotoMenuClick(); }
+				else{ return true; }
+				break;
+			case SELECTALLKEY:
+				if( paramIsCtl ) { selectAllMenuClick(); }
+				else{ return true; }
+				break;
+			case CUTKEY:
+				if( paramIsCtl ) { cutIconClicked(); }
+				else{ return true; }
+				break;
+			case COPYKEY:
+				if( paramIsCtl ) { copyIconClicked(); }
+				else{ return true; }
+				break;
+			case PASTEKEY:
+				if( paramIsCtl ) { pasteIconClicked(); }
+				else{ return true; }
+				break;
 		default:
 			return true;		// Return  values are this way for the convenience of the onKeyDown event handler function
 	}
