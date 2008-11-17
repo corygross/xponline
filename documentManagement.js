@@ -171,14 +171,14 @@ function openDocument(dID, dName)
 {	
 	// Show the loading indicator
 	showLoadingIndicator();
-	
+
 	// Get the document from the server and display it!!!
 	new Ajax.Request('./handlers/getDocumentContents.php?dID=' + dID, {
 		method:'get',
 		onSuccess: function(transport) {
 			hideLoadingIndicator();
 			if(transport.responseText == "fail"){
-				alert('There was a problem opening the document.  Please try again.');
+				alert('There was a problem opening the document.  Please try again. failure 1');
 			}
 			else{
 				var docInfoArr = transport.responseText.split("&^*");
@@ -190,9 +190,10 @@ function openDocument(dID, dName)
 				loadNewDoc(dID, docInfoArr[1], docInfoArr[0]);
 			}
 		},		
-		onFailure: function()
+		onFailure: function(transport)
 		{
-			alert("There was a problem opening the document.  Please try again.");
+		alert(transport.responseText);
+			alert("There was a problem opening the document.  Please try again. failure 2");
 		}		
 	});
 }

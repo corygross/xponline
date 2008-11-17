@@ -1,5 +1,5 @@
 <?php
-require_once '../dbConnect.php';
+require_once 'dbConnect.php';
 
 $uID = $_SESSION['uID'];
 
@@ -37,7 +37,7 @@ $sql = "INSERT INTO access VALUES('$newID', '$uID', 'w', CURRENT_TIMESTAMP);";
 $response = runQuery($sql);
 
 // Our new unique document name
-$docNameOnFileSystem = "doc" . $newID;
+$docNameOnFileSystem = "documents/doc" . $newID;
 
 // Move the uploaded file to the directory of choice
 move_uploaded_file($_FILES['filename']['tmp_name'], $docNameOnFileSystem);
