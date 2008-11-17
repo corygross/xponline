@@ -234,6 +234,16 @@ function makeNewPopup(id, title, type)
 		newHTML += "<tr><td colspan='2'><input type='checkbox' id='findMatchCase' name='findMatchCase' value='matchCase' />&nbsp;Match case</td><td align='right'></td><td></td></tr>";
 		newHTML += "</table></form>";
 	}
+	else if(type == 'replace_text')
+	{
+		newHTML += "<br /><form name='replaceForm' onkeypress='callFunctionOnEnter(event, findTextToReplace);'><table style='width:100%;'><tr><td style='width:30%;'></td><td style='width:40%;'></td><td style='width:30%;'></td></tr>";
+		newHTML += "<tr><td>&nbsp;Find what:</td><td><input id='replaceTextToFind' name='replaceTextToFind' type='text' style='width:95%' /></td><td><input type='button' value='Find Next' style='width:100%' onClick='findTextToReplace();'/></td></tr>";
+		newHTML += "<tr><td>&nbsp;Replace with:</td><td><input id='replacementText' name='replacementText' type='text' style='width:95%' /></td><td><input type='button' value='Replace' style='width:100%' onClick='replaceSelected();'/></td></tr>";
+		newHTML += "<tr><td>&nbsp;</td><td><input type='radio' name='findType' value='up' />Up<br />";
+		newHTML += "<input type='radio' name='findType' value='down' checked='checked' />Down</td><td><input type='button' value='Replace All' style='width:100%' onClick='replaceAll();'/><br /><input type='button' value='Close' style='width:100%' onClick=\"hidePopup('"+popupID+"');\"/></td></tr>";
+		newHTML += "<tr><td colspan='2'><input type='checkbox' id='findMatchCase' name='findMatchCase' value='matchCase' />&nbsp;Match case</td><td align='right'></td><td></td></tr>";
+		newHTML += "</table></form>";
+	}
 	else if(type == 'goto_window')
 	{
 		newHTML += "<form onkeypress='callFunctionOnEnter(event, gotoLineGo);'>";
