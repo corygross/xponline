@@ -43,7 +43,8 @@ if(isset($_POST['btnRegister']) == true)
 			$result = runQuery($regSQL);
 			$newID = mysql_insert_id();
 			$_SESSION['uID'] = $newID;
-			$_SESSION['uName'] = $fName;
+			$_SESSION['uName'] = $fName." ".$lName;
+			$_SESSION['uColor'] = 'black';
 			header( "Location: index.php" );
 		}
 	}
