@@ -1,5 +1,6 @@
 <script type="text/javascript" charset="utf-8" src="tokensearch.js"></script>
 <script type="text/javascript" charset="utf-8" src="writeSpans.js"></script>
+<script type="text/javascript" charset="utf-8" src="editor/RendererClass.js"></script>
 <script type="text/javascript" charset="utf-8" src="editor/TextDocumentClass.js"></script>
 <script type="text/javascript" charset="utf-8" src="editor/userInputLogic.js"></script>
 <script type="text/javascript" src="jWords.js"></script>
@@ -82,8 +83,8 @@ function getScrollOffsetY() {
 function insertBookmark( paramBMtext ) {
 	if( XPODoc.getLineText( cursorLine ).trim() == "" ){
 		XPODoc.setLineText( cursorLine, paramBMtext );
-		clearFormatting( cursorLine );
-		renderCursor();
+		//clearFormatting( cursorLine );
+		//renderCursor();
 	}
 	else{
 		XPODoc.insertLine( cursorLine+1, XPODoc.getLineText( cursorLine ) );
@@ -91,7 +92,7 @@ function insertBookmark( paramBMtext ) {
 
 		// TODO: FIXME: HACK:  Need to make the above change visible in the GUI
 		// The following lines are very similar to the code in ENTER
-		clearFormatting( cursorLine );
+		//clearFormatting( cursorLine );
 		var myDoc = guiDoc;
 		var addMe = myDoc.createElement('div');
 		addMe.setAttribute('id', XPODoc.getLineId( cursorLine+1 ) );
@@ -101,7 +102,7 @@ function insertBookmark( paramBMtext ) {
 		cursorLine++;
 		cursorColumn = 0;
 		
-		renderCursor();
+		//renderCursor();
 	}
 }
 
@@ -237,8 +238,8 @@ function typeSpecial(paramKEYCODE, paramIsAlt, paramIsCtl, paramIsShift) {
 				XPODoc.setLineText( cursorLine-1, XPODoc.getLineText( cursorLine-1 ) + XPODoc.getLineText( cursorLine ) );
 				
 				// FIXME: HACK:  BAD FORM!  The following lines promote tight coupling between GUI and backend!  ARRRGGGGHHHHH! 
-				var removeMe = guiDoc.getElementById(XPODoc.getLineId( cursorLine ));
-				removeMe.parentNode.removeChild(removeMe);
+				//var removeMe = guiDoc.getElementById(XPODoc.getLineId( cursorLine ));
+				//removeMe.parentNode.removeChild(removeMe);
 				
 				// Remove the line from our data structure
 				XPODoc.removeLine( cursorLine );
@@ -261,8 +262,8 @@ function typeSpecial(paramKEYCODE, paramIsAlt, paramIsCtl, paramIsShift) {
 				XPODoc.setLineText( cursorLine, XPODoc.getLineText(cursorLine) + XPODoc.getLineText(cursorLine+1) );
 				
 				// FIXME: HACK:  BAD FORM!  The following lines promote tight coupling between GUI and backend!  ARRRGGGGHHHHH! 
-				var removeMe = guiDoc.getElementById(XPODoc.getLineId( cursorLine+1 ));
-				removeMe.parentNode.removeChild(removeMe);
+				//var removeMe = guiDoc.getElementById(XPODoc.getLineId( cursorLine+1 ));
+				//removeMe.parentNode.removeChild(removeMe);
 				
 				// Remove the line in question from our data structure
 				XPODoc.removeLine( cursorLine+1 );
@@ -281,12 +282,12 @@ function typeSpecial(paramKEYCODE, paramIsAlt, paramIsCtl, paramIsShift) {
 			//XPODoc.insertText("\r\n", cursorLine, cursorColumn);
 
 			// TODO: FIXME: HACK:  Need to make the above change visible in the GUI
-			clearFormatting( cursorLine );
-			var myDoc = guiDoc;
-			var addMe = myDoc.createElement('div');
-			addMe.setAttribute('id', XPODoc.getLineId( cursorLine+1 ) );
-			addMe.setAttribute('class', "line");
-			myDoc.getElementById("entireDocument").insertBefore( addMe, myDoc.getElementById( XPODoc.getLineId( cursorLine+2 ) ) );
+			//clearFormatting( cursorLine );
+			//var myDoc = guiDoc;
+			//var addMe = myDoc.createElement('div');
+			//addMe.setAttribute('id', XPODoc.getLineId( cursorLine+1 ) );
+			//addMe.setAttribute('class', "line");
+			//myDoc.getElementById("entireDocument").insertBefore( addMe, myDoc.getElementById( XPODoc.getLineId( cursorLine+2 ) ) );
 				
 			cursorLine++;
 			cursorColumn = 0;
@@ -409,19 +410,17 @@ function clearFormatting( paramLineNum ) {
 
 // This function clears the old cursor and moves to the line specified by paramLineNumber
 function gotoLine( paramLineNum ) {
-	clearFormatting(cursorLine);
+	//clearFormatting(cursorLine);
 	cursorLine = paramLineNum;
 	cursorColumn = 0;
-	renderCursor();
 	adjustScroll();
 }
 
 // This function clears the old cursor and moves to the line specified by paramLineNumber
 function gotoPosition( paramLineNum, paramColNum ) {
-	clearFormatting(cursorLine);
+	//clearFormatting(cursorLine);
 	cursorLine = paramLineNum;
 	cursorColumn = paramColNum;
-	renderCursor();
 	adjustScroll();
 }
 
@@ -526,7 +525,7 @@ function renderCursor()
 							{
 		                        guiDoc.getElementById( XPODoc.getLineId(cursorLine) ).innerHTML = newString;
 			                }
-			                catch (e) { alert("line not found!"); }
+			                catch (e) { alert("line not found!!!!!!!!11111"); }
 					}
 					else
 					{
@@ -541,7 +540,7 @@ function renderCursor()
 						{
                    			guiDoc.getElementById( XPODoc.getLineId(cursorLine) ).innerHTML = tempCurrentLine.join("");
                 		}
-	            		catch (e) { alert("line not found!"); }
+	            		catch (e) { alert("line not found!!!!!!!!!!11111"); }
 					}
 			
 	       // Update the GUI with the correct line and col
@@ -550,16 +549,16 @@ function renderCursor()
 }
 
 /* Replace some things like tabs, spaces, < and > */
-function replaceHTMLEntities( paramText ) {
-	paramText = paramText.replace(/&/g, "&amp;"); // Leave this one first.
-	paramText = paramText.replace(/>/g, "&gt;");
-	paramText = paramText.replace(/</g, "&lt;");
-	paramText = paramText.replace(/ /g, "&nbsp;");	
-	paramText = paramText.replace(/\//g, "&#47;");
-	paramText = paramText.replace(/\\/g, "&#92;");
-	paramText = paramText.replace(/\t/g,"&nbsp;&nbsp;&nbsp;&nbsp;");
-	return paramText;
-}
+//function replaceHTMLEntities( paramText ) {
+//	paramText = paramText.replace(/&/g, "&amp;"); // Leave this one first.
+//	paramText = paramText.replace(/>/g, "&gt;");
+//	paramText = paramText.replace(/</g, "&lt;");
+///	paramText = paramText.replace(/ /g, "&nbsp;");	
+//	paramText = paramText.replace(/\//g, "&#47;");
+//	paramText = paramText.replace(/\\/g, "&#92;");
+//	paramText = paramText.replace(/\t/g,"&nbsp;&nbsp;&nbsp;&nbsp;");
+//	return paramText;
+//}
 
 /* This function (re-)renders the entire document */
 function refreshDocument() {
@@ -573,8 +572,8 @@ function refreshDocument() {
 		newLine.setAttribute('id', XPODoc.getLineId(l) );
 		newLine.setAttribute('class', "line");		// RELATED TO FIX OF ISSUE #1 >> See DEVLOG.TXT is
 		myDoc.appendChild( newLine );				
-		if ( l == cursorLine ) {renderCursor();}
-		else clearFormatting( l );
+		if ( l == cursorLine ) {/*renderCursor();*/;}
+		else ;//clearFormatting( l );
 	}
 }
 
@@ -665,7 +664,7 @@ function sendDocumentUpdates(){
 			postBody: 'updateData='+pendingServerUpdates.toJSON(),
 			onSuccess: function(transport) {
 				if(transport.responseText != ""){
-					alert(transport.responseText);
+					//alert(transport.responseText);
 				}
 			}		
 		});
@@ -703,9 +702,13 @@ function init() {
 	/* Get browser-dependent handle on the iFrame and the iFrame's content document */
 	if(isIE == false) myIFrame = document.getElementById("myI");
 	else myIFrame = frames["myI"];
+	
+	/* Get handle on iFrame's content document */
+	if(isIE == true) guiDoc = myIFrame.document;
+	else guiDoc = myIFrame.contentWindow.document;
 		
 	/* Initialize our text document data structure */
-	XPODoc = new TextDocument();
+	XPODoc = new TextDocument( guiDoc );
 }
 
 /* This function is responsible for (re-)initializing the text data structure, given a document ID, text, and setting the access mode */
@@ -717,10 +720,6 @@ function loadNewDoc(docID, docText, accessMode) {
 	
 	/* Populate the XPODoc data structure */
 	XPODoc.insertText(docText);
-	
-	/* Get handle on iFrame's content document */
-	if(isIE == true) guiDoc = myIFrame.document;
-	else guiDoc = myIFrame.contentWindow.document;
 	
 	/* Set the access mode.  If not readonly, it shall be assume read-write */
 	readOnly = (accessMode == "r");
@@ -759,8 +758,9 @@ function loadNewDoc(docID, docText, accessMode) {
 	setCursor(0,0);
 	
 	/* Render the entire document */
-	refreshDocument();
-	renderCursor();
+	//refreshDocument();
+	//renderCursor();
+	XPODoc.renderEntireDocument();
 }
 
 
@@ -770,18 +770,23 @@ function loadNewDoc(docID, docText, accessMode) {
 
 /* This function is the handler for the onclick event. */
 onClickFunction = function( paramEvent ){
+	XPODoc.setLineUpdated( cursorLine );
 	var oldCursorLine = cursorLine;
-	clearFormatting(cursorLine);
+	//clearFormatting(cursorLine);
 	captureMousePos(paramEvent);
 	deriveCursorForDocument(mouseX,mouseY,XPODoc);
-	renderCursor();
-	if(oldCursorLine != cursorLine) updateLineLock(cursorLine);
+	if(oldCursorLine != cursorLine) {
+		XPODoc.setLineUpdated( cursorLine );
+		updateLineLock(cursorLine);
+	}
+	XPODoc.renderUpdates( cursorLine, cursorColumn );
 }
 
 /* This function is the handler of the keydown event.  Mainly, this function will execute the typeSpecial function */
 onKeyDownFunction = function( paramEvent ) {
+	XPODoc.setLineUpdated( cursorLine );
 	var oldCursorLine = cursorLine;
-	clearFormatting(cursorLine);
+	//clearFormatting(cursorLine);
 	
 	// Determine the keyCode of the pressed key (browser-dependent implementation)
 	var key;
@@ -804,11 +809,14 @@ onKeyDownFunction = function( paramEvent ) {
 	// if typeSpecial actually did something, it returns false...
 	var returnValue = typeSpecial( key, isAlt, isCtl, isShift );
 	//var returnValue = typeSpecial( key );
-	
-	renderCursor();
-	adjustScroll();
-	if(oldCursorLine != cursorLine) updateLineLock(cursorLine);
-	
+
+	XPODoc.setLineUpdated( cursorLine );
+	//adjustScroll();
+	if(oldCursorLine != cursorLine) {
+		XPODoc.setLineUpdated( cursorLine );
+		updateLineLock(cursorLine);
+	}
+	XPODoc.renderUpdates( cursorLine, cursorColumn );
 	return returnValue;	//  ... and if typeSpecial returns false, we don't want the event to bubble, so pass this return value along
 }
 
@@ -816,7 +824,7 @@ onKeyDownFunction = function( paramEvent ) {
 /* This function is the handler for the keypress event.  Mainly, this function will execute the typeCharacter function, if applicable */
 onKeyPressFunction = function( paramEvent ){
 	var oldCursorLine = cursorLine;
-	clearFormatting(cursorLine);
+	//clearFormatting(cursorLine);
 	
 	// Determine the ASCII code of the to-be-typed character (browser-dependent implementation)
 	var key;
@@ -828,9 +836,12 @@ onKeyPressFunction = function( paramEvent ){
 	// If a valid character (nonzero), then type it
 	if ( key != 0 ) typeCharacter( key );
 	
-	renderCursor();
 	adjustScroll();
-	if(oldCursorLine != cursorLine) updateLineLock(cursorLine);
+	
+	if(oldCursorLine != cursorLine) {
+		updateLineLock(cursorLine);
+	}
+	XPODoc.renderUpdates( cursorLine, cursorColumn );
 }
 
 /* This function is the handler of the mousedown event */
