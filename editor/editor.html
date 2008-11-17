@@ -312,7 +312,45 @@ function typeSpecial(paramKEYCODE, paramIsAlt, paramIsCtl, paramIsShift) {
 			if( paramIsCtl ) { hideChatShortcut(); }
 			else{ return true; }
 			break;
-			
+			//For autobracketing
+		case LEFTBRACKET:
+			if(isFF == true)
+				{
+					var origCursorCol = this.getCursorColumn();
+					this.setCursor(this.getCursorLine(), origCursorCol+1);
+					typeCharacter("}".charCodeAt(0), XPODoc);
+					this.setCursor(this.getCursorLine(), origCursorCol);
+				}
+			else
+			{
+				var curChar = XPODoc.getLineText(cursorLine).substring(cursorColumn, cursorColumn+1);
+				if(curChar != '{')
+				{
+					typeCharacter("{".charCodeAt(0), XPODoc);
+					typeCharacter("}".charCodeAt(0), XPODoc);
+					this.setCursor(this.getCursorLine(), this.getCursorColumn()-1);
+				}
+			}
+			break;
+			case LEFTPAREN:
+				if(isFF == true)
+					{
+						var origCursorCol = this.getCursorColumn();
+						this.setCursor(this.getCursorLine(), origCursorCol+1);
+						typeCharacter(")".charCodeAt(0), XPODoc);
+						this.setCursor(this.getCursorLine(), origCursorCol);
+					}
+				else
+				{
+					var curChar = XPODoc.getLineText(cursorLine).substring(cursorColumn, cursorColumn+1);
+					if(curChar != '(')
+					{
+						typeCharacter("(".charCodeAt(0), XPODoc);
+						typeCharacter(")".charCodeAt(0), XPODoc);
+						this.setCursor(this.getCursorLine(), this.getCursorColumn()-1);
+					}
+				}
+				break;
 		default:
 			return true;		// Return  values are this way for the convenience of the onKeyDown event handler function
 	}
