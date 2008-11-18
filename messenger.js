@@ -327,6 +327,9 @@ function sendMessage(toID){
 	var recBox = document.getElementById('rec'+toID);
 	var sendBox = document.getElementById('send'+toID);
 	var textToSend = sendBox.value;
+	if(textToSend.trim() == ""){
+		return;
+	}
 	recBox.value += "Me" + ":\n" + textToSend;
 	recBox.scrollTop = recBox.scrollHeight;
 	sendBox.value = "";

@@ -57,17 +57,6 @@ function downloadMenuClick()
 	alert("download");
 }
 
-function syntaxHighlightingToggle()
-{
-	//This should just be a general on/off toggle switch
-	//The current file type should dictate the type of 
-	//syntax highlighting applied
-//	document.getElementById('ss');
-	//testFunction();
-	var testVar = document.getElementById('SS');
-	alert(testVar);
-	toggleSyntaxHighlight();
-}
 function exitMenuClick()
 {
 	window.location = "logout.php";
