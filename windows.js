@@ -109,9 +109,10 @@ function makeNewPopup(id, title, type)
 
 	if(type == 'chat')
 	{
+		newHTML += "<form style='margin: 0px; padding: 0px;' onkeydown='closeOnEscape(event, \""+popupID+"\");'>";
 		newHTML += "<textarea id='rec"+popupID+"' name='rec"+popupID+"' style='width: 98%;' rows='12' readonly='readonly'></textarea>";
 		newHTML += "<br/>";
-		newHTML += "<textarea id='send"+popupID+"' name='send"+popupID+"' style='width:98%;' rows='4' onkeyup=\"checkEnter(event,'"+popupID+"');\"></textarea>";
+		newHTML += "<textarea id='send"+popupID+"' name='send"+popupID+"' style='width:98%;' rows='4' onkeyup=\"checkEnter(event,'"+popupID+"');\"></textarea></form>";
 	}
 	else if(type == 'upload')
 	{
@@ -127,7 +128,7 @@ function makeNewPopup(id, title, type)
 	}
 	else if(type == 'add_bm')
 	{
-		newHTML += "<form name='addBMForm' id='addBMForm' onkeypress='callFunctionOnEnter(event, addBM);'><table style='width:100%;'><tr><td style='width:10%;'></td><td style='width:80%;'>Select a bookmark type:</td><td style='width:10%;'></td></tr>";
+		newHTML += "<form name='addBMForm' id='addBMForm' onkeypress='callFunctionOnEnter(event, addBM);' onkeydown='closeOnEscape(event, \""+popupID+"\");'><table style='width:100%;'><tr><td style='width:10%;'></td><td style='width:80%;'>Select a bookmark type:</td><td style='width:10%;'></td></tr>";
 		newHTML += "<tr><td></td><td><input type='radio' name='bmType' value='TODO' checked='checked'/>TODO</td><td></td></tr>";
 		newHTML += "<tr><td></td><td><input type='radio' name='bmType' value='FIXME'/>FIXME</td><td></td></tr>";
 		newHTML += "<tr><td></td><td><input type='radio' name='bmType' value='HACK'/>HACK</td><td></td></tr>";
@@ -139,7 +140,7 @@ function makeNewPopup(id, title, type)
 	}
 	else if(type == 'find_bm')
 	{
-		newHTML += "<form onkeypress='callFunctionOnEnter(event, goToBM);'>";
+		newHTML += "<form onkeypress='callFunctionOnEnter(event, goToBM);' onkeydown='closeOnEscape(event, \""+popupID+"\");'>";
 		newHTML += "<table style='width:100%;'><tr><td style='width:10%;'></td><td style='width:80%;'>Current bookmarks:</td><td style='width:10%;'></td></tr>";
 		newHTML += "<tr><td>&nbsp;</td><td>";
 		newHTML += "<div style='overflow:auto;background-color:white;margin-left:5px;margin-right:5px;height:250px;'>";
@@ -158,7 +159,7 @@ function makeNewPopup(id, title, type)
 	}
 	else if(type == 'color_pick')
 	{
-		newHTML += "<form name='changeColorForm' id='changeColorForm' onkeypress='callFunctionOnEnter(event, changeColorScheme);'><table style='width:100%;'><tr><td style='width:10%;'></td><td style='width:80%;'>Select a color scheme:</td><td style='width:10%;'></td></tr>";
+		newHTML += "<form name='changeColorForm' id='changeColorForm' onkeypress='callFunctionOnEnter(event, changeColorScheme);' onkeydown='closeOnEscape(event, \""+popupID+"\");'><table style='width:100%;'><tr><td style='width:10%;'></td><td style='width:80%;'>Select a color scheme:</td><td style='width:10%;'></td></tr>";
 		newHTML += "<tr><td></td><td><input type='radio' name='color' value='black' checked='checked'/>Black</td><td></td></tr>";
 		newHTML += "<tr><td></td><td><input type='radio' name='color' value='blue'/>Blue</td><td></td></tr>";
 		newHTML += "<tr><td></td><td><input type='radio' name='color' value='gray'/>Gray</td><td></td></tr>";
@@ -169,7 +170,7 @@ function makeNewPopup(id, title, type)
 	}
 	else if(type == 'syntax_lang')
 	{
-		newHTML += "<form name='changeSyntaxLangForm' id='changeSyntaxLangForm' onkeypress='callFunctionOnEnter(event, changeLiteLanguage);'><table style='width:100%;'><tr><td style='width:10%;'></td><td style='width:80%;'>Select a syntax highlighting type:</td><td style='width:10%;'></td></tr>";
+		newHTML += "<form name='changeSyntaxLangForm' id='changeSyntaxLangForm' onkeypress='callFunctionOnEnter(event, changeLiteLanguage);' onkeydown='closeOnEscape(event, \""+popupID+"\");'><table style='width:100%;'><tr><td style='width:10%;'></td><td style='width:80%;'>Select a syntax highlighting type:</td><td style='width:10%;'></td></tr>";
 		newHTML += "<tr><td></td><td><input type='radio' name='synLang' value='java' checked='checked'/>Java</td><td></td></tr>";
 		newHTML += "<tr><td></td><td><input type='radio' name='synLang' value='...'/>...</td><td></td></tr>";
 		newHTML += "<tr><td></td><td><input type='radio' name='synLang' value='...'/>...</td><td></td></tr>";
@@ -193,11 +194,11 @@ function makeNewPopup(id, title, type)
 	}
 	else if(type == 'confirmContact')
 	{
-		newHTML += "<form name='confirmForm'><div id='pendingContainer' name='pendingContainer'>Retrieving...</div></form>";
+		newHTML += "<form name='confirmForm' onkeydown='closeOnEscape(event, \""+popupID+"\");'><div id='pendingContainer' name='pendingContainer'><img src='images/red-loading-sm.gif' alt='loading...' />&nbsp;Retrieving...</div></form>";
 	}
 	else if(type == 'new_blank')
 	{
-		newHTML += "<form onkeypress='callFunctionOnEnter(event, newBlankDocument);'>";
+		newHTML += "<form onkeypress='callFunctionOnEnter(event, newBlankDocument);' onkeydown='closeOnEscape(event, \""+popupID+"\");'>";
 		newHTML += "<table style='width:100%;'><tr><td style='width:10%;'></td><td style='width:80%;'>Enter a name for the new file:</td><td style='width:10%;'></td></tr>";
 		newHTML += "<tr><td>&nbsp;</td><td><input id='newDocName' name='newDocName' type='text' style='width:100%' /></td><td></td></tr>";
 		newHTML += "<tr><td>&nbsp;</td><td></td><td></td></tr>";
@@ -206,7 +207,7 @@ function makeNewPopup(id, title, type)
 	}
 	else if(type == 'open_doc')
 	{
-		newHTML += "<div id='openDocContainer' name='openDocContainer'>Retrieving...</div>";
+		newHTML += "<div id='openDocContainer' name='openDocContainer'><img src='images/red-loading-sm.gif' alt='loading...' />&nbsp;Retrieving...</div>";
 	}
 	else if(type == 'grantAccess')
 	{
@@ -218,7 +219,7 @@ function makeNewPopup(id, title, type)
 		newHTML += "</td><td></td></tr>";
 		newHTML += "<tr><td>&nbsp;</td><td></td><td></td></tr>";
 		newHTML += "<tr><td>&nbsp;</td><td>Select a document:</td><td></td></tr>";
-		newHTML += "<tr><td>&nbsp;</td><td><div id='accessDocContainer' name='accessDocContainer'>Retrieving document list...</div></td><td></td></tr>";
+		newHTML += "<tr><td>&nbsp;</td><td><div id='accessDocContainer' name='accessDocContainer'><img src='images/red-loading-sm.gif' alt='loading...' />&nbsp;Retrieving document list...</div></td><td></td></tr>";
 		newHTML += "<tr><td>&nbsp;</td><td><form name='grantForm'><input type='radio' name='aLevel' value='r' checked='checked'/>Read<br />";
 		newHTML += "<input type='radio' name='aLevel' value='w'/>Write<br />";
 		newHTML += "<input type='radio' name='aLevel' value='n'/>None</form></td><td></td></tr>";
@@ -227,7 +228,7 @@ function makeNewPopup(id, title, type)
 	}
 	else if(type == 'find_text')
 	{
-		newHTML += "<br /><form name='findForm' onkeypress='callFunctionOnEnter(event, findText);'><table style='width:100%;'><tr><td style='width:25%;'></td><td style='width:50%;'></td><td style='width:25%;'></td></tr>";
+		newHTML += "<br /><form name='findForm' onkeypress='callFunctionOnEnter(event, findText);' onkeydown='closeOnEscape(event, \""+popupID+"\");'><table style='width:100%;'><tr><td style='width:25%;'></td><td style='width:50%;'></td><td style='width:25%;'></td></tr>";
 		newHTML += "<tr><td>&nbsp;Find what:</td><td><input id='textToFind' name='textToFind' type='text' style='width:95%' /></td><td><input type='button' value='Find Next' style='width:100%' onClick='findText();'/></td></tr>";
 		newHTML += "<tr><td>&nbsp;</td><td><input type='radio' name='findType' value='up' />Up<br />";
 		newHTML += "<input type='radio' name='findType' value='down' checked='checked' />Down</td><td><input type='button' value='Find All' style='width:100%' onClick='findAll();'/><br /><input type='button' value='Close' style='width:100%' onClick=\"hidePopup('"+popupID+"');\"/></td></tr>";
@@ -236,7 +237,7 @@ function makeNewPopup(id, title, type)
 	}
 	else if(type == 'replace_text')
 	{
-		newHTML += "<br /><form name='replaceForm' onkeypress='callFunctionOnEnter(event, findTextToReplace);'><table style='width:100%;'><tr><td style='width:30%;'></td><td style='width:40%;'></td><td style='width:30%;'></td></tr>";
+		newHTML += "<br /><form name='replaceForm' onkeypress='callFunctionOnEnter(event, findTextToReplace);' onkeydown='closeOnEscape(event, \""+popupID+"\");'><table style='width:100%;'><tr><td style='width:30%;'></td><td style='width:40%;'></td><td style='width:30%;'></td></tr>";
 		newHTML += "<tr><td>&nbsp;Find what:</td><td><input id='replaceTextToFind' name='replaceTextToFind' type='text' style='width:95%' /></td><td><input type='button' value='Find Next' style='width:100%' onClick='findTextToReplace();'/></td></tr>";
 		newHTML += "<tr><td>&nbsp;Replace with:</td><td><input id='replacementText' name='replacementText' type='text' style='width:95%' /></td><td><input type='button' value='Replace' style='width:100%' onClick='replaceSelected();'/></td></tr>";
 		newHTML += "<tr><td>&nbsp;</td><td><input type='radio' name='findType' value='up' />Up<br />";
@@ -246,7 +247,7 @@ function makeNewPopup(id, title, type)
 	}
 	else if(type == 'goto_window')
 	{
-		newHTML += "<form onkeypress='callFunctionOnEnter(event, gotoLineGo);'>";
+		newHTML += "<form onkeypress='callFunctionOnEnter(event, gotoLineGo);' onkeydown='closeOnEscape(event, \""+popupID+"\");'>";
 		newHTML += "<table style='width:100%;'><tr><td style='width:10%;'></td><td style='width:80%;'>Line number:</td><td style='width:10%;'></td></tr>";
 		newHTML += "<tr><td>&nbsp;</td><td><input id='gotoLineInput' name='gotoLineInput' type='text' style='width:100%' /></td><td></td></tr>";
 		newHTML += "<tr><td>&nbsp;</td><td></td><td></td></tr>";
@@ -255,9 +256,9 @@ function makeNewPopup(id, title, type)
 	}
 	else if(type == 'delete_doc')
 	{
-		newHTML += "<form onkeypress='callFunctionOnEnter(event, deleteDocument);'>";
+		newHTML += "<form onkeypress='callFunctionOnEnter(event, deleteDocument);' onkeydown='closeOnEscape(event, \""+popupID+"\");'>";
 		newHTML += "<table style='width:100%;'><tr><td style='width:10%;'></td><td style='width:80%;'>Select a document to delete:</td><td style='width:10%;'></td></tr>";
-		newHTML += "<tr><td>&nbsp;</td><td><div id='deleteDocContainer' name='deleteDocContainer'>Retrieving document list...</div></td><td></td></tr>";
+		newHTML += "<tr><td>&nbsp;</td><td><div id='deleteDocContainer' name='deleteDocContainer'><img src='images/red-loading-sm.gif' alt='loading...' />&nbsp;Retrieving document list...</div></td><td></td></tr>";
 		newHTML += "<tr><td></td><td align='right'><input type='button' value='Delete' onClick='deleteDocument();'/><input type='button' value='Cancel' onClick=\"destroyPopup('"+popupID+"');\"/></td><td></td></tr>";
 		newHTML += "</table></form>";
 	}
@@ -282,10 +283,31 @@ function callFunctionOnEnter(ev, callFunction, param){
 	if(myEvt.keyCode == 13 && element.type != 'button'){
 		if(param == null) callFunction();
 		else callFunction(param);
+		// Overkill on the event suppression
+		myEvt.returnValue=false;
+		myEvt.cancel = true;
+		myEvt.cancelBubble  = true;
+		if (myEvt.preventDefault) myEvt.preventDefault();
+		if (myEvt.stopPropagation) myEvt.stopPropagation();
+		return false;
+	}
+}
 
-		// cancel the default submit (THIS IS OVERKILL)
-	    myEvt.returnValue=false;
-	    myEvt.cancel = true;
+function closeOnEscape( ev, paramID ){
+	var myEvt;
+	if(window.event == null) myEvt = ev;
+	else myEvt = window.event;
+	
+	if(myEvt.keyCode == 27){
+		if(paramID.indexOf("chat") == -1){
+			destroyPopup(paramID);
+		}
+		else{
+			hidePopup(paramID);
+		}
+		// Overkill on the event suppression
+		myEvt.returnValue=false;
+		myEvt.cancel = true;
 		myEvt.cancelBubble  = true;
 		if (myEvt.preventDefault) myEvt.preventDefault();
 		if (myEvt.stopPropagation) myEvt.stopPropagation();

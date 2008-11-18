@@ -401,8 +401,9 @@ function gotoPosition( paramLineNum, paramColNum ) {
 	XPODoc.setLineUpdated( cursorLine );
 	XPODoc.setLineUpdated( paramLineNum );
 	cursorLine = paramLineNum;
-	cursorColumn = paramColNum;
+	cursorColumn = paramColNum;	
 	XPODoc.renderUpdates( cursorLine, cursorColumn );
+	displayCursorPos();
 	adjustScroll();
 }
 
