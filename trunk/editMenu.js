@@ -181,7 +181,7 @@ function replaceSelected(){
 	if(regEx.test(matchCheck)){
 		var newLineText = lineText.substring(0, cursor[1]) + replacementText + lineText.substring(currentText.length+cursor[1]);
 		XPODoc.setLineText( cursor[0], newLineText );
-		renderCursor();
+		XPODoc.renderUpdates( cursorLine, cursorColumn );
 	}
 	else{
 		findTextToReplace();
@@ -190,29 +190,19 @@ function replaceSelected(){
 
 // This function searches the array of lines and returns an array of all matches
 Array.prototype.replaceAllMatches = function(searchStr, replacementText, matchCase, cursorLine) {
-	//var replaceCount = 0;
-	
 	var regEx;
 	if(matchCase) regEx = new RegExp(searchStr, "g");
 	else regEx = new RegExp(searchStr, "gi");
 	
 	for (i=0; i<this.length; i++) {
 		if(this[i].text != ""){
-			var newLineText = this[i].text.replace(regEx, replacementText);
-			XPODoc.setLineText( i, newLineText );
-			if(i==cursorLine) renderCursor();
-			else clearFormatting( i );
+			if(regEx.test(this[i].text)){
+				var newLineText = this[i].text.replace(regEx, replacementText);
+				XPODoc.setLineText( i, newLineText );
+				XPODoc.renderUpdates( cursorLine, cursorColumn );
+			}
 		}
     }
-	/*
-	if(replaceCount == 0){
-		alert('No matches were found to replace.');
-	}
-	else{
-		alert(replaceCount+' matches were replaced.');
-	}
-	*/
-	//return replaceCount;
 }
 
 function replaceAll(){
@@ -223,5 +213,12 @@ function replaceAll(){
 	}
 	var replacementText = document.getElementById('replacementText').value;	
 	
-	XPODoc.document.replaceAllMatches(currentText, replacementText, document.replaceForm.findMatchCase.checked, getCursorLine());
+	var allFoundMatches = XPODoc.document.findAllMatches(currentText, document.replaceForm.findMatchCase.checked);
+	if(allFoundMatches == false){
+		alert('0 matches found');
+	}
+	else{
+		XPODoc.document.replaceAllMatches(currentText, replacementText, document.replaceForm.findMatchCase.checked, getCursorLine());
+		alert(allFoundMatches.length + ' matches replaced.');
+	}	
 }

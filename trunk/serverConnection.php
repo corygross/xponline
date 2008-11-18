@@ -227,16 +227,22 @@ function updatePendingContactsButton($interval){
 
 // Update the contact list every $interval seconds (approx)
 function updateContactList($interval){
-	if( isset($_SESSION['updateContactListTime']) == false || $_SESSION['updateContactListTime'] < time() ){
+	$returnImmediately = false;
+	if( isset($_SESSION['updateContactListTime']) == false ){
+		$_SESSION['updateContactListTime'] = time() + $interval;
+		$returnImmediately = true;
+	}
+	else if( $_SESSION['updateContactListTime'] < time() ){
 		$_SESSION['updateContactListTime'] = time() + $interval;
 	}
 	else{
-		return "";
+		return false;
 	}
 	// The button HTML must be enclosed by the CDATA tag, otherwise the HTML will be chopped up by the XML parser
 	echo "<contactList><![CDATA[";
 	require_once "handlers/updateContactList.php";
 	echo "]]></contactList>";
+	return $returnImmediately;
 }
 
 // Loop for awhile... waiting for something interesting to happen...
@@ -255,9 +261,9 @@ for ($i = 0; $i<100; $i++)
 	$pendingContactsUpdate = updatePendingContactsButton(30);
 	
 	// Update the contact list
-	updateContactList(15);
+	$isDataToSend = updateContactList(15);
 	
-	$isDataToSend = false;
+	//$isDataToSend = false;
 	
 	if ($messageToSend != ""){
 		$isDataToSend = true;

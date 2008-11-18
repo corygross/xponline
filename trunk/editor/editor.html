@@ -357,6 +357,26 @@ function typeSpecial(paramKEYCODE, paramIsAlt, paramIsCtl, paramIsShift) {
 				if( paramIsCtl ) { pasteIconClicked(); }
 				else{ return true; }
 				break;
+			case NEWKEY:
+				if( paramIsCtl ) { newMenuClick(); }
+				else{ return true; }
+				break;
+			case OPENKEY:
+				if( paramIsCtl ) { openMenuClick(); }
+				else{ return true; }
+				break;
+			case UPLOADKEY:
+				if( paramIsCtl ) { uploadMenuClick(); }
+				else{ return true; }
+				break;
+			case COLORKEY:
+				if( paramIsCtl ) { colorMenuClick(); }
+				else{ return true; }
+				break;
+			case HIGHLIGHTKEY:
+				if( paramIsCtl ) { highlighMenuClick(); }
+				else{ return true; }
+				break;
 		default:
 			return true;		// Return  values are this way for the convenience of the onKeyDown event handler function
 	}

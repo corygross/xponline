@@ -3,9 +3,9 @@
 <tr>
 <td class="menu_item" onmouseover="showmenu('file_menu')" onmouseout="hidemenu('file_menu')">File&nbsp;<img src="images/arrow.gif"/><br />
    <table class="menu" id="file_menu" width="160px">
-   <tr><td class="menu" onclick="newMenuClick();">New...</td></tr>
-   <tr><td class="menu" onclick="openMenuClick();">Open...</td></tr>
-   <tr><td class="menu" onclick="uploadMenuClick();">Upload New...</td></tr>
+   <tr><td class="menu" onclick="newMenuClick();"><u>N</u>ew...</td></tr>
+   <tr><td class="menu" onclick="openMenuClick();"><u>O</u>pen...</td></tr>
+   <tr><td class="menu" onclick="uploadMenuClick();"><u>U</u>pload New...</td></tr>
    <tr><td class="menu" onclick="downloadMenuClick();">Download</td></tr>
    <tr><td class="menu" onclick="accessMenuClick();">Grant Access...</td></tr>
    <tr><td class="menu" onclick="deleteMenuClick();">Delete...</td></tr>
@@ -25,8 +25,8 @@
 
 <td class="menu_item" onmouseover="showmenu('view_menu')" onmouseout="hidemenu('view_menu')">View&nbsp;<img src="images/arrow.gif"/><br />
    <table class="menu" id="view_menu" width="160px">
-   <tr><td class="menu" onclick="colorMenuClick();">Color Scheme...</td></tr>
-   <tr><td class="menu" onclick="highlighMenuClick();">Highlight Language...</td></tr>
+   <tr><td class="menu" onclick="colorMenuClick();">Color <u>S</u>cheme...</td></tr>
+   <tr><td class="menu" onclick="highlighMenuClick();">Toggle <u>H</u>ighlight</td></tr>
    </table>
 </td>
 <td class="menu_item" onclick="addBookmarkMenuClick();">+Bookmark</td>
