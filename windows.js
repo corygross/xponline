@@ -297,9 +297,11 @@ function destroyPopup(id){
 	var pop = document.getElementById(id);
 	pop.parentNode.removeChild(pop);
 	curOpenWindow = null;
+	giveDocumentFocus();
 }
 
 function hidePopup(id){
+	giveDocumentFocus();
 	//if the window being closed is not a chat window, we do not want to blank the current open window.
 	if(id.indexOf("chat") == -1){
 		curOpenWindow = null;

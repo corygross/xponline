@@ -86,6 +86,7 @@ if($error != ""){
 <br />
 <input type="submit" name="btnRegister" id="btnRegister" value="Submit" />
 </form>
+<script>document.getElementById('fName').focus();</script>
 
 </body>
 </html>

@@ -28,7 +28,7 @@ Loading...
 </tr>
 <tr>
 <td>
-<div class="messenger_button" onClick="openPopup('addContact','Add a Contact','addContact');">
+<div class="messenger_button" onClick="addContactClick();">
 +Contact
 </div>
 </td>
