@@ -385,19 +385,24 @@ function clearFormatting( paramLineNum ) {
 	}
 }
 
+// This function gives the document focus.  This is called when the document is loaded and when popup windows are closed
+function giveDocumentFocus(){
+	if(isIE == true) myIFrame.focus();
+	else myIFrame.contentWindow.focus();
+}
+
 // This function clears the old cursor and moves to the line specified by paramLineNumber
 function gotoLine( paramLineNum ) {
-	//clearFormatting(cursorLine);
-	cursorLine = paramLineNum;
-	cursorColumn = 0;
-	adjustScroll();
+	gotoPosition( paramLineNum, 0 );
 }
 
 // This function clears the old cursor and moves to the line specified by paramLineNumber
 function gotoPosition( paramLineNum, paramColNum ) {
-	//clearFormatting(cursorLine);
+	XPODoc.setLineUpdated( cursorLine );
+	XPODoc.setLineUpdated( paramLineNum );
 	cursorLine = paramLineNum;
 	cursorColumn = paramColNum;
+	XPODoc.renderUpdates( cursorLine, cursorColumn );
 	adjustScroll();
 }
 
@@ -728,8 +733,7 @@ function loadNewDoc(docID, docText, accessMode) {
 	}
 	
 	/* Ensure that the text 'window' has the focus, thus allowing immediate editing (if eventListeners are active, of course) */
-	if(isIE == true) myIFrame.focus();
-	else myIFrame.contentWindow.focus();
+	giveDocumentFocus();
 	
 	/* Initialize the cursor to the starting position */
 	setCursor(0,0);

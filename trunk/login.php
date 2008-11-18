@@ -30,6 +30,6 @@ session_start();
 		<h2>Project Description</h2>
 		<p>A description of our project goes here...</p>
 	</form>
-
+	<script>document.getElementById('email').focus();</script>
 </body>
 </html>

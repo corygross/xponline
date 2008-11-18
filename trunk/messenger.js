@@ -198,6 +198,11 @@ function addContact(){
 	
 }
 
+function addContactClick(){
+	openPopup('addContact','Add a Contact','addContact');
+	document.getElementById('search-q').focus();
+}
+
 function checkEnter(e, toID){
 	e=e?e:window.event;
 	if(e.keyCode==13){

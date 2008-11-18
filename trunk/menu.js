@@ -2,6 +2,7 @@ function accessMenuClick()
 {
 	openPopup('grantAccess','Grant User Access','grantAccess');
 	getWritableDocs();
+	document.getElementById('search-q').focus();
 }
 
 function addBookmarkMenuClick()
@@ -90,6 +91,7 @@ function findMenuClick()
 		return;
 	}
 	openPopup('find_text','Find','find_text');
+	document.getElementById('textToFind').focus();
 }
 
 function gotoMenuClick()
@@ -99,6 +101,7 @@ function gotoMenuClick()
 		return;
 	}
 	openPopup('goto_window','Go To Line','goto_window');
+	document.getElementById('gotoLineInput').focus();	
 }
 
 function hidemenu(elmnt)
@@ -124,6 +127,7 @@ function highlighMenuClick()
 function newMenuClick()
 {
 	openPopup('new_blank','New Document','new_blank');
+	document.getElementById('newDocName').focus();
 }
 
 function openMenuClick()
@@ -144,6 +148,7 @@ function replaceMenuClick()
 		return;
 	}
 	openPopup('replace_text','Replace','replace_text');
+	document.getElementById('replaceTextToFind').focus();
 }
 
 function selectAllMenuClick()
@@ -172,5 +177,5 @@ function updateLineCol(line, col)
 function uploadMenuClick()
 {
 	//Show the form that will allow for file upload
-	openPopup('upload', 'Upload File ', 'upload');
+	openPopup('upload', 'Upload File ', 'upload');	
 }
