@@ -279,7 +279,9 @@ function TextDocument( paramHTMLDocumentPane )
 	}
 	
 	this.renderUpdates = function ( paramCursorLine, paramCursorColumn ) {
-		for(var l=0; l < this.updateTracker.length; l++ ){
+		var numUpdates = this.updateTracker.length;
+		//for(var l=0; l < this.updateTracker.length; l++ ){
+		for(var l=0; l < numUpdates; l++ ){
 			if ( this.getLineUpdated( l ) ) {
 				this.renderLine( this.updateTracker.pop(), paramCursorLine, paramCursorColumn );
 			}
