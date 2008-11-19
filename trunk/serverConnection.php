@@ -191,7 +191,7 @@ function getPeerUpdates($uID, $dID){
 		if($checkForUpdates == true){
 			//$_SESSION["$lastModifyKey"] = $fileModifyTime;
 			$updateXML = "";
-			$pending_updates = "SELECT * FROM updatequeue, updates WHERE updatequeue.userID='$uID' AND updatequeue.updateID=updates.updateID AND updates.docID='$dID' ORDER BY updateTime ASC;";
+			$pending_updates = "SELECT * FROM updatequeue, updates WHERE updatequeue.userID='$uID' AND updatequeue.updateID=updates.updateID AND updates.docID='$dID' ORDER BY updates.updateID ASC;";
 			$pendingResult = runQuery($pending_updates);
 			if(mysql_num_rows($pendingResult) > 0){
 				while ($row = mysql_fetch_array($pendingResult))
@@ -203,7 +203,7 @@ function getPeerUpdates($uID, $dID){
 				}
 			}
 			if($updateXML != ""){
-				return "<docUpdates>".$updateXML."<docUpdates>";
+				return "<docUpdates>".$updateXML."</docUpdates>";
 			}
 		}		
 	}

@@ -1,5 +1,4 @@
 <script type="text/javascript" src="prototype.js"></script>
-<script language="javascript" src="messenger.js"></script>
 	
 <table style="width:100%;margin-bottom:auto;margin-top:0px;">
 <tr>

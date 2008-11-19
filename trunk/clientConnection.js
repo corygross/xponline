@@ -39,18 +39,16 @@ function handleUpdateResponse( updateArray ){
 		// Its a line update
 		if(updateArray.contents[i].contents[1].contents[0].value == "u"){
 			XPODoc.updateToServer = false;
-			XPODoc.setLineText(lineNum, lineText);			
+			XPODoc.setLineText(lineNum, lineText);
+			XPODoc.renderUpdates( cursorLine, cursorColumn );			
 			XPODoc.updateToServer = true;
-			
-			/*
-			this part was working before the Renderer
-			clearFormatting(lineNum);
-			*/
 		}
 		// A line insert
 		else if(updateArray.contents[i].contents[1].contents[0].value == "i"){
 			XPODoc.updateToServer = false;
 			XPODoc.insertLine(lineNum, lineText);
+			// If we insert a new line, do we need to bump the cursor line by one and make sure we render the old and new cursor lines?
+			XPODoc.renderUpdates( cursorLine, cursorColumn );
 			XPODoc.updateToServer = true;
 			
 			/*
@@ -66,19 +64,13 @@ function handleUpdateResponse( updateArray ){
 		}
 		// A line delete
 		else if(updateArray.contents[i].contents[1].contents[0].value == "d"){
-			/*
-			this part was working before the Renderer
-			var removeMe = guiDoc.getElementById(XPODoc.getLineId( lineNum ));
-			removeMe.parentNode.removeChild(removeMe);
-			*/
-			
 			XPODoc.updateToServer = false;
 			XPODoc.removeLine( lineNum );
+			// If we remove line, do we need to decrement the cursor line by one and make sure we render the old and new cursor lines?
+			XPODoc.renderUpdates( cursorLine, cursorColumn );
 			XPODoc.updateToServer = true;				
 		}
 	}
-	XPODoc.renderUpdates( cursorLine, cursorColumn );	
-
 }
 
 // Take the array of line locks and get the document to lock them
