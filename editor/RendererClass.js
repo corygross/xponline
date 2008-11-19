@@ -2,8 +2,13 @@
 
 function Renderer()
 {
+	/* This function is the main rendering function.  It renders a single line, taking all factors into consideration (at least, it should...) */
 	this.renderLine = function ( paramLineText, paramCursorPosition ) {
+		/* If the line we are rendering is empty, we must add a space so that it will actually be rendered in HTML.  
+		 * The space is temporary, and thus is not actually written to the document. */
 		if ( paramLineText == "" ) paramLineText = ' ';
+		
+		/* If the cursor position parameter is set, this implies that the cursor is at this line and must be rendered.  If not, it's business as usual. */
 		if ( paramCursorPosition == undefined ) {
 			return replaceHTMLEntities( paramLineText );
 		}
