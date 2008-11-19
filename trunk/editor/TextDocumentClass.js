@@ -388,9 +388,11 @@ function TextDocument( paramHTMLDocumentPane )
 	}
 	
 	this.renderLine = function ( paramLineNum, paramCursorLine, paramCursorColumn ) {
-		if ( paramCursorLine == paramLineNum )
-			this.getLineHandle( paramLineNum ).innerHTML = this.renderer.renderLine( this.getLineText( paramLineNum ), paramCursorColumn );
-		else this.getLineHandle( paramLineNum ).innerHTML = this.renderer.renderLine( this.getLineText( paramLineNum ) );
+		if( this.getLineLockingUser( paramLineNum ) != null ) 
+			this.getLineHandle( paramLineNum ).innerHTML = this.renderer.renderLine( this.getLineText( paramLineNum ), this.renderer.LOCKED, this.getLineLockingUser( paramLineNum ), paramLineNum );
+		else if ( paramCursorLine == paramLineNum )
+			this.getLineHandle( paramLineNum ).innerHTML = this.renderer.renderLine( this.getLineText( paramLineNum ), this.renderer.CURSOR, paramCursorColumn );
+		else this.getLineHandle( paramLineNum ).innerHTML = this.renderer.renderLine( this.getLineText( paramLineNum ), this.renderer.NORMAL );
 	}
 	
 	this.renderUpdates = function ( paramCursorLine, paramCursorColumn ) {

@@ -75,13 +75,10 @@ function deriveCursorForDocument(paramMouseX, paramMouseY, paramDocument) {
 		if ( curcol > paramDocument.getLineLength(currow) ) curcol = paramDocument.getLineLength(currow);
 	}
 	
-	// Loop through the locked lines and make sure we aren't trying to move to it.
-	for(var l=0; l < lockedLines.length; l++ )
-	{
-		if(lockedLines[l].lineID == currow){
-			alert("Another user is currently on that line, and it is locked.");
-			return;
-		}
+	// Before we move the cursor there, make sure that the line isn't locked
+	if( paramDocument.getLineLockingUser( currow ) != null ){
+		alert("Another user is currently on line "+currow+", and it is locked.");
+		return;
 	}
 	
 	// Store the calculated values
@@ -199,6 +196,10 @@ function typeSpecial(paramDoc, paramKEYCODE, paramIsAlt, paramIsCtl, paramIsShif
 			// Otherwise, simply move left
 			if ( cursorColumn == 0 && cursorLine == 0 ) break;
 			if ( cursorColumn == 0 ) {
+				if ( paramDoc.getLineLockingUser( cursorLine-1 ) != null ) { 
+					alert("Another user is currently on line "+(cursorLine-1)+", and it is locked.");
+					break;
+				}
 				cursorLine--;
 				cursorColumn = paramDoc.getLineLength(cursorLine);
 			}
@@ -214,6 +215,10 @@ function typeSpecial(paramDoc, paramKEYCODE, paramIsAlt, paramIsCtl, paramIsShif
 			// Otherwise, simply move right
 			if ( cursorColumn == paramDoc.getLineLength(cursorLine) && cursorLine == paramDoc.getDocumentLength()-1 ) break;
 			if ( cursorColumn == paramDoc.getLineLength(cursorLine) ) {
+				if ( paramDoc.getLineLockingUser( cursorLine+1 ) != null ) { 
+					alert("Another user is currently on line "+(cursorLine+1)+", and it is locked.");
+					break;
+				}
 				cursorLine++;
 				cursorColumn = 0;
 			}
@@ -225,18 +230,22 @@ function typeSpecial(paramDoc, paramKEYCODE, paramIsAlt, paramIsCtl, paramIsShif
 			if ( paramIsShift ) if ( !isSelectMode ) setSelectMode(cursorLine, cursorColumn);
 			
 			// If we are on the first line, move to first char of line.
+			// If we are not on the first line, see if the line is locked and alert the user if it is
 			// Otherwise, move up. If we end up out of range of the line, move to the last char of the line
 			if ( cursorLine == 0 ) cursorColumn = 0;
+			else if ( paramDoc.getLineLockingUser( cursorLine-1 ) != null ) alert("Another user is currently on line "+(cursorLine-1)+", and it is locked.");
 			else if ( cursorColumn > paramDoc.getLineLength(--cursorLine) ) cursorColumn = paramDoc.getLineLength(cursorLine);
 			break;
 			
 		case DOWNARROWKEY:
 			/* If we are holding shift, moving the cursor actually selects text, so we need to ensure we are in select mode */
-			if ( paramIsShift ) if ( !isSelectMode ) setSelectMode(cursorLine, cursorColumn);
+			if ( paramIsShift ) if ( !isSelectMode ) setSelectMode(cursorLine, cursorColumn);			
 			
 			// If we are on the last line, move to last char of line.
+			// If we are not on the last line, see if the line is locked and alert the user if it is
 			// Otherwise, move down. If we end up out of range of the line, move to the last char of the line
 			if ( cursorLine == paramDoc.getDocumentLength()-1 ) cursorColumn = paramDoc.getLineLength(cursorLine);
+			else if ( paramDoc.getLineLockingUser( cursorLine+1 ) != null ) alert("Another user is currently on line "+(cursorLine+1)+", and it is locked.");
 			else if ( cursorColumn > paramDoc.getLineLength(++cursorLine) ) cursorColumn = paramDoc.getLineLength(cursorLine);
 			break;
 			

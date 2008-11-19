@@ -23,6 +23,7 @@ function changeMessengerArrow(id){
 // This function is called periodically with new HTML for the contact list
 function contactListUpdate(contactListHTML){
 	var contactListContainer = document.getElementById('contactList');
+	if(contactListContainer == null) return;
 	contactListContainer.innerHTML = contactListHTML;
 	fixHilites();
 	fixGroupStates();
@@ -156,6 +157,7 @@ function showMessenger(){
 
 function updatePendingContactButton(buttonHTML){
 	var buttonContainer = document.getElementById('pendingButton');
+	if(buttonContainer == null) return;
 	buttonContainer.innerHTML = buttonHTML;
 }
 
