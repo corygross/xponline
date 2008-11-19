@@ -84,7 +84,7 @@ function TextDocument( paramHTMLDocumentPane )
 	// Returns the text within a specified range.  The range is defined by a starting Line/Column and an ending Line/Column value.  
 	// This function returns an ARRAY of lines of text.  The first and last lines in the array will be 'partial' lines, based on the given range.
 	// This function is responsible for getting the range correct whether or not the 'start' and 'end' are given in the correct order.
-	this.getTextInRange = function(paramStartLine,paramStartColumn,paramEndLine,paramEndColumn) {
+	this.getTextInRange = function(paramStartLine,paramStartColumn,paramEndLine,paramEndColumn, paramArrayOrPlaintext) {
 		// Validate the input.  If the input is not valid, return with an error.
 		if ( !this.isLegalPosition( paramStartLine, paramStartColumn ) || !this.isLegalPosition( paramEndLine, paramEndColumn ) ) return false;
 		
@@ -130,7 +130,11 @@ function TextDocument( paramHTMLDocumentPane )
 			}
 			returnText.push( this.getLineText(endLine).substring(0, endColumn) );
 		}
-		return returnText;
+		
+		// Format output according to optional paramArrayOrPlaintext value;  0 is default (Array), 1 is for plaintext.
+		if ( paramArrayOrPlaintext == 1 ) return returnText.join("\n");
+		else return returnText;
+		
 	}
 	
 	// Insert a line with the given text into the document at the specified line number
@@ -145,8 +149,7 @@ function TextDocument( paramHTMLDocumentPane )
 		// Try inserting the new div.  If it fails, we must be on the last line, so then just append it instead.
 		try {
 			this.htmlDocumentContent.insertBefore( newDiv, this.getLineHandle(paramLineNum) );
-			//alert("not caught");
-		} catch (e) { //alert("caught");
+		} catch (e) {
 			this.htmlDocumentContent.appendChild( newDiv );
 		}
 		
@@ -159,7 +162,7 @@ function TextDocument( paramHTMLDocumentPane )
 	
 	// Insert some arbitrary text into the document at the specified position in the document.  This function is designed to accept any textual input, including an array of text.
 	// Array elements will be treated as candidates of new lines, and text will be parsed by newline characters and split into lines from there as well.  This function should be able
-	// to check for invalid input, and reject it if necessary
+	// to check for invalid input, and reject it if necessary.  This function returns the would-be coordinates of the cursor.
 	this.insertText = function( paramTextObject, paramLineNum, paramColumnNum ) {
 		// Validate coordinate of insertion
 		if ( !this.isLegalPosition( paramLineNum, paramColumnNum ) ) return false;
@@ -187,6 +190,9 @@ function TextDocument( paramHTMLDocumentPane )
 		this.setLineText( paramLineNum+insertArray.length-1, this.getLineText( paramLineNum+insertArray.length-1 ) + targetLineSecondHalf );
 		
 		this.updateToServer = true;
+		
+		// Return the coordinates of the character following the end of the inserted text
+		return [paramLineNum+insertArray.length-1, insertArray[insertArray.length-1].length ];
 	}
 	
 	// This function takes a lineNumber and an optional columnNumber and determines if their values are within bounds of the document
@@ -241,6 +247,62 @@ function TextDocument( paramHTMLDocumentPane )
 		}
 	}
 	
+	// This function removes the text within a specified range, and optionally inserts the given text in it's place.  The function returns the would-be coordinates of the cursor.
+	this.replaceTextInRange = function( paramStartLine, paramStartColumn, paramEndLine, paramEndColumn, paramText ) {
+		// Validate the input.  If the input is not valid, return with an error.
+		if ( !this.isLegalPosition( paramStartLine, paramStartColumn ) || !this.isLegalPosition( paramEndLine, paramEndColumn ) ) return false;
+		
+		// Declare local variables
+		var startLine, startColumn;
+		var endLine, endColumn;
+		
+		// Determine the correct order of the ordered pairs:
+		// if paramStartLine < paramEndLine, then they are correct
+		if ( paramStartLine < paramEndLine ) { 
+			startLine = paramStartLine;	startColumn = paramStartColumn;
+			endLine = paramEndLine;	endColumn = paramEndColumn;
+		}
+		// If paramStartLine > paramEndLine, then they are backwards
+		else if ( paramStartLine > paramEndLine ) {
+			startLine = paramEndLine; startColumn = paramEndColumn;
+			endLine = paramStartLine; endColumn = paramStartColumn;
+		}
+		// else, they must be on the same line...
+		else {
+			// If paramStartColumn <= paramEndColumn, it is correct
+			if ( paramStartColumn <= paramEndColumn ) {
+				startLine = paramStartLine; startColumn = paramStartColumn;
+				endLine = paramEndLine; endColumn = paramEndColumn;
+			}
+			// Otherwise, they are backwards
+			else {
+				startLine = paramEndLine; startColumn = paramEndColumn; 
+				endLine = paramStartLine; endColumn = paramStartColumn;
+			}
+		}
+		
+		// Remove all appropriate text, leaving only... the appropriate text
+		var numLinesSpanned = endLine - startLine;
+		if ( numLinesSpanned == 0 ) {
+			this.setLineText( startLine, this.getLineText(startLine).substring(0, startColumn) + this.getLineText(startLine).substring(endColumn) );
+		}
+		else {
+			this.setLineText( startLine, this.getLineText(startLine).substring(0, startColumn) );
+			for (i=0;i<numLinesSpanned-1;i++) {
+				this.removeLine( startLine+i );
+			}
+			this.setLineText( endLine, this.getLineText(endLine).substring(endColumn) );
+		}
+		
+		// Depending on whether we are inserting text in place of that which we just deleted, perform the appropriate action and return the correct coordinates
+		if ( paramText == undefined || paramText == "" ) {
+			// Return the coordinates of the start posiiton of the selection which was deleted
+			return [startLine, startColumn];
+		}
+		// Calling insertText returns what we want...
+		else return insertText( paramText, startLine, startColumn );
+	}
+	
 	/* NOTE: setLineId is deliberately omitted.  Id's shall be handled internally by the document structure during line creation only */
 	// Set the text of a specified line to equal paramText
 	this.setLineText = function( paramLineNum, paramText ) {
@@ -282,7 +344,6 @@ function TextDocument( paramHTMLDocumentPane )
 	
 	this.renderUpdates = function ( paramCursorLine, paramCursorColumn ) {
 		var numUpdates = this.updateTracker.length;
-		//for(var l=0; l < this.updateTracker.length; l++ ){
 		for(var l=0; l < numUpdates; l++ ){
 			if ( this.getLineUpdated( l ) ) {
 				this.renderLine( this.updateTracker.pop(), paramCursorLine, paramCursorColumn );

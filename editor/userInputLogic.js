@@ -102,6 +102,13 @@ function setCursor(paramLine, paramColumn) {
 	cursorLine = paramLine;
 	cursorColumn = paramColumn;
 }
+function setCursorCoords( paramCoordinates ) {
+	// Ensure we are being given correct type of input
+	if ( paramCoordinates.join ) {
+		cursorLine = paramCoordinates[0];
+		cursorColumn = paramCoordinates[1];
+	} else return false;
+}
 
 
 
