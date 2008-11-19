@@ -178,6 +178,7 @@ function lockLines( newLineLocks ) {
 	for( var j=0; j < newLineLocks.length; j++ )
 	{		
 		// Below is the old way to render locks
+		//XPODoc.setLineText(newLineLocks[j].lineID, "<span class='lock' onMouseOver=\"makeNewLockPopup(event,'lock"+j+"','"+newLineLocks[j].userName+"')\" onMouseOut=\"closeLockPopup('lock"+j+"')\">" + XPODoc.getLineText(newLineLocks[j].lineID) + "</span>");
 		//guiDoc.getElementById( XPODoc.getLineId(newLineLocks[j].lineID) ).innerHTML = "<span class='lock' onMouseOver=\"makeNewLockPopup(event,'lock"+j+"','"+newLineLocks[j].userName+"')\" onMouseOut=\"closeLockPopup('lock"+j+"')\">" + XPODoc.getLineText(newLineLocks[j].lineID) + "</span>";		
 	}
 	lockedLines = newLineLocks;
