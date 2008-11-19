@@ -3,7 +3,7 @@
 function Renderer()
 {
 	/* Constants representing valid values for paramMODE in the renderLine function */
-	this.NORMAL = 0;					// Normal rendering.  Does not require additional arguments.
+	this.NORMAL = 0;				// Normal rendering.  Does not require additional arguments.
 	this.CURSOR = 1;					// Rendering with the cursor in the line.  Requires paramArg1 to represent the position of the cursor in the line.
 	this.SELECTION_LINE = 2;		// Rendering with the entire line being part of the current selection.  Does not require additional arguments.
 	this.SELECTION_HEAD = 3;			// Rendering with the line being the START of a selection.  Requires paramArg1 to be the endpoint of the selection in this line.  
