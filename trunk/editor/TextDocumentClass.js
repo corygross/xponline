@@ -11,8 +11,17 @@ function TextDocument( paramHTMLDocumentPane )
 		this.handle  = paramDOMHandle
 		this.text 	 = paramLineText;
 		this.updated = 1;	// 1=true
+		this.isLockedBy = null;
 	}
-	//this.blockTracker;				// TODO: This is to be an array of start/end coordinates for blocks of text (code blocks / comments / etc )
+	// Sub-data structure defining the bounds of a text block
+	this.block = function( paramStartLine, paramStartColumn, paramEndLine, paramEndColumn )
+	{
+		this.startLine = paramStartLine;
+		this.startColumn = paramStartColumn;
+		this.endLine = paramEndLine;
+		this.endColumn = paramEndColumn;
+	}
+	this.currentSelection;		// This is to be a block, or null if nothing is selected
 	this.document;				// This is to be an array of lines
 	this.documentID;			//  Keep track of the document's unique ID
 	this.documentName;
@@ -69,6 +78,12 @@ function TextDocument( paramHTMLDocumentPane )
 		return this.getLineText( paramLineNum ).length;
 	}
 	
+	// Returns the user who is currently locking the line.  NOTE:  will return null if no user is locking the line
+	this.getLineLockingUser = function( paramLineNum ) {
+		if ( !this.isLegalPosition( paramLineNum ) ) return false;
+		return this.document[paramLineNum].isLockedBy;
+	}
+	
 	// Returns the text of the specified line
 	this.getLineText = function( paramLineNum ) {
 		if ( !this.isLegalPosition( paramLineNum ) ) return false;
@@ -79,6 +94,12 @@ function TextDocument( paramHTMLDocumentPane )
 		if ( !this.isLegalPosition( paramLineNum ) ) return false;
 		if ( this.document[ paramLineNum ].updated == 1 ) return true;
 		else return false;
+	}
+	
+	// This function returns the block object defining the current selection within the document.  If nothing is selected, this method returns false;
+	this.getCurrentSelection = function( ) {
+		if ( typeof this.currentSelection != 'block' ) return false;
+		return this.currentSelection;
 	}
 	
 	// Returns the text within a specified range.  The range is defined by a starting Line/Column and an ending Line/Column value.  
@@ -160,6 +181,7 @@ function TextDocument( paramHTMLDocumentPane )
 		if(this.updateToServer == true){
 			updateDocument( "i", paramText, paramLineNum );
 		}
+		return true;
 	}
 	
 	// Insert some arbitrary text into the document at the specified position in the document.  This function is designed to accept any textual input, including an array of text.
@@ -205,10 +227,20 @@ function TextDocument( paramHTMLDocumentPane )
 		else return true;
 	}
 	
+	// This function locks a line for the specified user.  The function takes as parameters the line # and the name of the user locking the line.  The function returns true on success and false on failure.
+	this.lockLine = function( paramLineNum, paramLockingUser ) {
+		// Ensure legality of selected line and that the user has a name
+		if ( !this.isLegalPosition( paramLineNum ) ) return false;
+		if ( paramLockingUser == undefined || paramLockingUser == null ) return false;
+		
+		// Set the isLockedBy field of the selected line, thus locking the line.  NOTE: CURRENTLY, THE TEXTDOCUMENTCLASS DOES NOT ENFORCE LOCKING.
+		this.document[paramLineNum].isLockedBy = paramLockingUser;
+		return true;
+	}
+	
 	// This function is a utility function which processes input such that it is legal ready for use in the document
 	// It accepts strings or arrays as input, and will return an array as output such that each element represents a line, or returns false otherwise
 	this.processInput = function( paramInput ) {
-	
 		// Declare local variables
 		var inputType;
 		
@@ -247,6 +279,7 @@ function TextDocument( paramHTMLDocumentPane )
 		if(this.updateToServer == true){
 			updateDocument( "d", "", paramLineNum );
 		}
+		return true;
 	}
 	
 	// This function removes the text within a specified range, and optionally inserts the given text in it's place.  The function returns the would-be coordinates of the cursor.
@@ -317,11 +350,27 @@ function TextDocument( paramHTMLDocumentPane )
 		if(this.updateToServer == true){
 			updateDocument( "u", paramText, paramLineNum );
 		}
+		return true;
 	}
 	
 	this.setLineUpdated = function ( paramLineNum ) {
 		if ( !this.isLegalPosition( paramLineNum ) ) return false;
 		this.updateTracker.push( paramLineNum );
+		return true;
+	}
+	
+	// This function sets the current selection.  Currently, it is not forgiving of invalid line/column numbers.  This may change in the future
+	this.setCurrentSelection = function( paramStartLine, paramStartColumn, paramEndLine, paramEndColumn ) {
+		if ( !this.isLegalPosition( paramStartLine, paramStartColumn ) || !this.isLegalPosition( paramEndLine, paramEndColumn ) ) return false;
+		this.currentSelection = new this.block( paramStartLine, paramStartColumn, paramEndLine, paramEndColumn );
+		return true;
+	}
+	
+	// This function unlocks the specified line.  It is the counterpart of this.lockLine.
+	this.unlockLine = function( paramLineNum ) {
+		if ( !this.isLegalPosition( paramLineNum ) ) return false;
+		this.document[paramLineNum].isLockedBy = null;
+		return true;
 	}
 	
 	

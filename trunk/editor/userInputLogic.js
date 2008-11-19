@@ -144,6 +144,8 @@ function setSelectMode(paramLine, paramColumn) {
 // This function sets selection mode 'off'.
 function resetSelectMode() {
 	isSelectMode = false;
+	selectionAnchorColumn = null;	// could do -1 too...
+	selectionAnchorLine = null;
 }
 
 
