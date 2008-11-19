@@ -92,291 +92,6 @@ function insertBookmark( paramBMtext ) {
 	XPODoc.renderUpdates( cursorLine, cursorColumn );
 }
 
-/* This function provides functionality to so-called "special keys".  Basically, any non-character related keyboard input. (kindof) */
-function typeSpecial(paramKEYCODE, paramIsAlt, paramIsCtl, paramIsShift) {
-
-	switch ( paramKEYCODE ) {
-	
-		case LEFTARROWKEY: 
-			/* If we are holding shift, moving the cursor actually selects text, so we need to ensure we are in select mode */
-			if ( paramIsShift ) if ( !isSelectMode ) setSelectMode();
-			
-			// If we are at the first char of the first line do nothing
-			// If we are at the first char of any other line, wrap to the last char of the previous line
-			// Otherwise, simply move left
-			if ( cursorColumn == 0 && cursorLine == 0 ) break;
-			if ( cursorColumn == 0 ) {
-				cursorLine--;
-				cursorColumn = XPODoc.getLineLength(cursorLine);
-			}
-			else cursorColumn--;	
-			break;
-			
-		case RIGHTARROWKEY:
-			/* If we are holding shift, moving the cursor actually selects text, so we need to ensure we are in select mode */
-			if ( paramIsShift ) if ( !isSelectMode ) setSelectMode();
-			
-			// If we are at the last char of the last line, do nothing
-			// If we are at the last char of any other line, wrap to the first char of the next line
-			// Otherwise, simply move right
-			if ( cursorColumn == XPODoc.getLineLength(cursorLine) && cursorLine == XPODoc.getDocumentLength()-1 ) break;
-			if ( cursorColumn == XPODoc.getLineLength(cursorLine) ) {
-				cursorLine++;
-				cursorColumn = 0;
-			}
-			else cursorColumn++;
-			break;
-			
-		case UPARROWKEY:
-			/* If we are holding shift, moving the cursor actually selects text, so we need to ensure we are in select mode */
-			if ( paramIsShift ) if ( !isSelectMode ) setSelectMode();
-			
-			// If we are on the first line, move to first char of line.
-			// Otherwise, move up. If we end up out of range of the line, move to the last char of the line
-			if ( cursorLine == 0 ) cursorColumn = 0;
-			else if ( cursorColumn > XPODoc.getLineLength(--cursorLine) ) cursorColumn = XPODoc.getLineLength(cursorLine);
-			break;
-			
-		case DOWNARROWKEY:
-			/* If we are holding shift, moving the cursor actually selects text, so we need to ensure we are in select mode */
-			if ( paramIsShift ) if ( !isSelectMode ) setSelectMode();
-			
-			// If we are on the last line, move to last char of line.
-			// Otherwise, move down. If we end up out of range of the line, move to the last char of the line
-			if ( cursorLine == XPODoc.getDocumentLength()-1 ) cursorColumn = XPODoc.getLineLength(cursorLine);
-			else if ( cursorColumn > XPODoc.getLineLength(++cursorLine) ) cursorColumn = XPODoc.getLineLength(cursorLine);
-			break;
-			
-		case ENDKEY:
-			/* If we are holding shift, moving the cursor actually selects text, so we need to ensure we are in select mode */
-			if ( paramIsShift ) if ( !isSelectMode ) setSelectMode();
-			
-			// Move to the last char of the current line
-			cursorColumn = XPODoc.getLineLength(cursorLine);
-			break;
-			
-		case HOMEKEY:
-			/* If we are holding shift, moving the cursor actually selects text, so we need to ensure we are in select mode */
-			if ( paramIsShift ) if ( !isSelectMode ) setSelectMode();
-			
-			// Move to the first char of the current line
-			cursorColumn = 0;
-			break;
-			
-		case PAGEUPKEY:
-			/* If we are holding shift, moving the cursor actually selects text, so we need to ensure we are in select mode */
-			if ( paramIsShift ) if ( !isSelectMode ) setSelectMode();
-			
-			// Move the cursor up a number of time relative to the current editing window's height			
-			if(isIE == true){
-				cursorLine -= Math.floor(guiDoc.body.clientHeight / FONT_HEIGHT);
-			}
-			else{
-				cursorLine -= Math.floor(myIFrame.contentWindow.innerHeight / FONT_HEIGHT);
-			}
-			// Do out-of-bounds checks
-			if ( cursorLine < 0 ) {
-				cursorLine = 0;
-				cursorColumn = 0;
-			} else if ( cursorColumn >= XPODoc.getLineLength( cursorLine ) ) cursorColumn = XPODoc.getLineLength(cursorLine);
-			if(isIE == true){
-				myIFrame.scrollBy(0,-guiDoc.body.clientHeight+PADDING_TOP);
-			}
-			else{
-				myIFrame.contentWindow.scrollBy(0,-myIFrame.contentWindow.innerHeight+PADDING_TOP);
-			}
-			break;
-					
-		case PAGEDOWNKEY:
-			/* If we are holding shift, moving the cursor actually selects text, so we need to ensure we are in select mode */
-			if ( paramIsShift ) if ( !isSelectMode ) setSelectMode();
-			
-			// Move the cursor down a number of times relative to the current editing window's height
-			if(isIE == true){
-				cursorLine += Math.floor(guiDoc.body.clientHeight / FONT_HEIGHT);
-			}
-			else{
-				cursorLine += Math.floor(myIFrame.contentWindow.innerHeight / FONT_HEIGHT);
-			}
-			// Do out-of-bounds checks
-			if ( cursorLine > XPODoc.getDocumentLength()-1 ) {
-				cursorLine = XPODoc.getDocumentLength()-1;
-				cursorColumn = XPODoc.getLineLength( cursorLine )-1;
-				if( cursorColumn < 0 ) cursorColumn = 0;
-			} else if ( cursorColumn >= XPODoc.getLineLength( cursorLine ) ) cursorColumn = XPODoc.getLineLength(cursorLine);
-			if(isIE == true){
-				myIFrame.scrollBy(0,guiDoc.body.clientHeight-PADDING_TOP);
-			}
-			else{
-				myIFrame.contentWindow.scrollBy(0,myIFrame.contentWindow.innerHeight-PADDING_TOP);
-			}
-			break;
-			
-		case BACKSPACEKEY:
-			// If we are on the first char of the first line, do nothing.
-			// If we are on the first char of any other line, backspace removes the "newline character"
-			// -- which doesn't exist in our implementation.  We simulate this removal by merging lines.
-			// Otherwise, we simply remove the previous char in the current line
-			if ( cursorLine == 0 && cursorColumn == 0 ) break;
-			if ( cursorColumn == 0 ) {
-				// Merge the two lines, and remove the original line
-				cursorColumn = XPODoc.getLineLength( cursorLine-1 );	// Place cursor at end of prior line
-				// Perform text merge into prior line
-				XPODoc.setLineText( cursorLine-1, XPODoc.getLineText( cursorLine-1 ) + XPODoc.getLineText( cursorLine ) );
-				// Remove the line from our data structure
-				XPODoc.removeLine( cursorLine );
-				// Decrement cursorLine
-				cursorLine--;
-			} else {
-				// "Remove" the character prior to cursorColumn, and decrement cursorColumn
-				var tempText = XPODoc.getLineText( cursorLine );
-				XPODoc.setLineText( cursorLine, tempText.substring(0,cursorColumn-1) + tempText.substring(cursorColumn--) );
-			}
-			break;
-			
-		case DELETEKEY:
-			// If we are at the last char of the last line, do nothing
-			// If we are at the last char of any other line, we remove the 'newline character', thus merging the current line with the next line
-			// Otherwise, we simply remove the char at the cursor position
-			if ( cursorColumn == XPODoc.getLineLength( XPODoc.getDocumentLength()-1 )-1 && cursorLine == XPODoc.getDocumentLength()-1 ) break;
-			if ( cursorColumn == XPODoc.getLineLength( cursorLine ) ) {
-				// Merge the next line into the current line
-				XPODoc.setLineText( cursorLine, XPODoc.getLineText(cursorLine) + XPODoc.getLineText(cursorLine+1) );
-				// Remove the line in question from our data structure
-				XPODoc.removeLine( cursorLine+1 );
-			} else {
-				// "Remove" the character at the cursorColumn position
-				var tempText = XPODoc.getLineText( cursorLine );
-				XPODoc.setLineText( cursorLine, tempText.substring(0,cursorColumn) + tempText.substring(cursorColumn+1) );
-			}
-			break;
-			
-		case ENTERKEY:
-			// When we press the enter key, we need to insert a new line into the document
-			// We need to insert a new line following the current line, which contains the current line's text starting from the cursor
-			XPODoc.insertLine( cursorLine+1, XPODoc.getLineText( cursorLine ).substring( cursorColumn ) );
-			XPODoc.setLineText( cursorLine, XPODoc.getLineText( cursorLine ).substring( 0, cursorColumn ) );
-			// Update the cursor
-			cursorLine++;
-			cursorColumn = 0;
-			break;
-			
-		case TABKEY:
-			// Insert 4 spaces at current cursor position
-			//  SUPER HACK:  Need to redesign functions a bit to eliminate redundancy and make it cleaner and more readable.  
-			// We eventually want this to call an "insertText()" function, but for now....
-			typeCharacter(" ".charCodeAt(0), XPODoc );
-			typeCharacter(" ".charCodeAt(0), XPODoc );
-			typeCharacter(" ".charCodeAt(0), XPODoc );
-			typeCharacter(" ".charCodeAt(0), XPODoc );
-			break;
-			
-		case SHIFTKEY:
-			break;
-			
-		case CAPSLOCKKEY:
-			break;
-			
-		case HIDECHATWINDOWSKEY:
-			if( paramIsCtl ) { hideChatShortcut(); }
-			else{ return true; }
-			break;
-			
-		//For autobracketing
-		case LEFTBRACKET:
-			if( !paramIsShift ) { return true; }
-			if(isFF == true)
-				{
-					var origCursorCol = this.getCursorColumn();
-					this.setCursor(this.getCursorLine(), origCursorCol+1);
-					typeCharacter("}".charCodeAt(0), XPODoc);
-					this.setCursor(this.getCursorLine(), origCursorCol);
-				}
-			else
-			{
-				var curChar = XPODoc.getLineText(cursorLine).substring(cursorColumn, cursorColumn+1);
-				if(curChar != '{')
-				{
-					typeCharacter("{".charCodeAt(0), XPODoc);
-					typeCharacter("}".charCodeAt(0), XPODoc);
-					this.setCursor(this.getCursorLine(), this.getCursorColumn()-1);
-				}
-			}
-			break;
-		case LEFTPAREN:
-			if( !paramIsShift ) { return true; }
-			if(isFF == true)
-				{
-					var origCursorCol = this.getCursorColumn();
-					this.setCursor(this.getCursorLine(), origCursorCol+1);
-					typeCharacter(")".charCodeAt(0), XPODoc);
-					this.setCursor(this.getCursorLine(), origCursorCol);
-				}
-			else
-			{
-				var curChar = XPODoc.getLineText(cursorLine).substring(cursorColumn, cursorColumn+1);
-				if(curChar != '(')
-				{
-					typeCharacter("(".charCodeAt(0), XPODoc);
-					typeCharacter(")".charCodeAt(0), XPODoc);
-					this.setCursor(this.getCursorLine(), this.getCursorColumn()-1);
-				}
-			}
-			break;
-		case FINDKEY:
-			if( paramIsCtl ) { findMenuClick(); }
-			else{ return true; }
-			break;
-		case REPLACEKEY:
-			if( paramIsCtl ) { replaceMenuClick(); }
-			else{ return true; }
-			break;
-		case GOTOKEY:
-			if( paramIsCtl ) { gotoMenuClick(); }
-			else{ return true; }
-			break;
-		case SELECTALLKEY:
-			if( paramIsCtl ) { selectAllMenuClick(); }
-			else{ return true; }
-			break;
-		case CUTKEY:
-			if( paramIsCtl ) { cutIconClicked(); }
-			else{ return true; }
-			break;
-		case COPYKEY:
-			if( paramIsCtl ) { copyIconClicked(); }
-			else{ return true; }
-			break;
-		case PASTEKEY:
-			if( paramIsCtl ) { pasteIconClicked(); }
-			else{ return true; }
-			break;
-		case NEWKEY:
-			if( paramIsCtl ) { newMenuClick(); }
-			else{ return true; }
-			break;
-		case OPENKEY:
-			if( paramIsCtl ) { openMenuClick(); }
-			else{ return true; }
-			break;
-		case UPLOADKEY:
-			if( paramIsCtl ) { uploadMenuClick(); }
-			else{ return true; }
-			break;
-		case COLORKEY:
-			if( paramIsCtl ) { colorMenuClick(); }
-			else{ return true; }
-			break;
-		case HIGHLIGHTKEY:
-			if( paramIsCtl ) { highlighMenuClick(); }
-			else{ return true; }
-			break;
-		default:
-			return true;		// Return  values are this way for the convenience of the onKeyDown event handler function
-	}
-	return false;	// Return  values are this way for the convenience of the onKeyDown event handler function
-} // END typeSpecial(paramKEY)
-
 
 
 /*************************************************/
@@ -760,8 +475,6 @@ function loadNewDoc(docID, docText, accessMode) {
 	setCursor(0,0);
 	
 	/* Render the entire document */
-	//refreshDocument();
-	//renderCursor();
 	XPODoc.renderEntireDocument();
 }
 
@@ -774,7 +487,7 @@ function loadNewDoc(docID, docText, accessMode) {
 onClickFunction = function( paramEvent ){
 	XPODoc.setLineUpdated( cursorLine );
 	var oldCursorLine = cursorLine;
-	//clearFormatting(cursorLine);
+
 	captureMousePos(paramEvent);
 	deriveCursorForDocument(mouseX,mouseY,XPODoc);
 	if(oldCursorLine != cursorLine) {
@@ -782,14 +495,12 @@ onClickFunction = function( paramEvent ){
 		updateLineLock(cursorLine);
 	}
 	XPODoc.renderUpdates( cursorLine, cursorColumn );
-	displayCursorPos();
 }
 
 /* This function is the handler of the keydown event.  Mainly, this function will execute the typeSpecial function */
 onKeyDownFunction = function( paramEvent ) {
 	XPODoc.setLineUpdated( cursorLine );
 	var oldCursorLine = cursorLine;
-	//clearFormatting(cursorLine);
 	
 	// Determine the keyCode of the pressed key (browser-dependent implementation)
 	var key;
@@ -809,18 +520,19 @@ onKeyDownFunction = function( paramEvent ) {
 		isCtl = paramEvent.ctrlKey;
 	}
 
-	// if typeSpecial actually did something, it returns false...
-	var returnValue = typeSpecial( key, isAlt, isCtl, isShift );
-	//var returnValue = typeSpecial( key );
+	// if typeSpecial actually does something, it returns false...
+	var returnValue = typeSpecial( XPODoc, key, isAlt, isCtl, isShift );
 
 	XPODoc.setLineUpdated( cursorLine );
-	//adjustScroll();
+	
 	if(oldCursorLine != cursorLine) {
 		XPODoc.setLineUpdated( cursorLine );
 		updateLineLock(cursorLine);
 	}
 	XPODoc.renderUpdates( cursorLine, cursorColumn );
-	displayCursorPos();
+	
+	adjustScroll();
+	
 	return returnValue;	//  ... and if typeSpecial returns false, we don't want the event to bubble, so pass this return value along
 }
 
@@ -828,7 +540,6 @@ onKeyDownFunction = function( paramEvent ) {
 /* This function is the handler for the keypress event.  Mainly, this function will execute the typeCharacter function, if applicable */
 onKeyPressFunction = function( paramEvent ){
 	var oldCursorLine = cursorLine;
-	//clearFormatting(cursorLine);
 	
 	// Determine the ASCII code of the to-be-typed character (browser-dependent implementation)
 	var key;
@@ -838,20 +549,68 @@ onKeyPressFunction = function( paramEvent ){
 	else alert('an unknown browser... editing may not work.');
 
 	// If a valid character (nonzero), then type it
-	if ( key != 0 ) typeCharacter( key );
-	
-	adjustScroll();
+	if ( key != 0 ) typeCharacter( XPODoc, key );
 	
 	if(oldCursorLine != cursorLine) {
 		updateLineLock(cursorLine);
 	}
 	XPODoc.renderUpdates( cursorLine, cursorColumn );
-	//displayCursorPos();
 }
 
 /* This function is the handler of the mousedown event */
 onMouseDownFunction = function( paramEvent ) {
-
+	if(isIE == true || isChrome == true || isSafari == true){
+		guiDoc.onmousemove = onMouseMoveFunction;
+	}
+	else{
+		guiDoc.addEventListener("mousemove", onMouseMoveFunction, true);
+	}
+	
+	
+}
+/* This function is the handler of the mouseup event */
+onMouseUpFunction = function( paramEvent ) {
+	// Remove the onMouseMove event listener to avoid performance death...
+	if(isIE == true || isChrome == true || isSafari == true){
+		guiDoc.onmousemove = null;
+	}
+	else{
+		guiDoc.removeEventListener("mousemove", onClickFunction, true);
+	}
+}
+/* This function is the handler of the mousemove event */
+/* NOTE:  THE HANDLER FOR THIS FUNCTION SHOULD NOT BE */
+/* REGISTERED UNLESS NEEDED!!  THIS FUNCTION KILLS PERFORMANCE OTHERWISE */
+onMouseMoveFunction = function( paramEvent ) {
+	// Remember original cursor position
+	var oldCursorLine = cursorLine;
+	var oldCursorColumn = cursorColumn;
+	
+	// Determine which position the mouse is in
+	captureMousePos(paramEvent);
+	deriveCursorForDocument(mouseX,mouseY,XPODoc);
+	
+	// Check if we are already in select mode or not:
+	// If we are already in select-mode...
+	if ( isSelectMode ) {
+		// Determine if the mouse has moved enough to require re-rendering of the line
+		// If so, flag the line(s) for rendering.  Otherwise, do nothing.
+		if ( oldCursorLine != cursorLine ) {
+			XPODoc.setLineUpdated( oldCursorLine );
+			XPODoc.setLineUpdated( cursorLine );
+		}
+		else if ( oldCursorColumn != cursorColumn ) {
+			XPODoc.setLineUpdated( cursorLine );
+		}
+	}
+	// If not already in select-mode...
+	else {
+		// Determine if the mouse has moved enough to start a selection
+		// If so, enable selection mode.  (Otherwise, do nothing)
+		if ( oldCursorLine != cursorLine || oldCursorColumn != cursorColumn ) {
+			setSelectMode( oldCursorLine, oldCursorColumn );
+		}
+	}
 }
 </script>
 <iframe id="myI" name="myI" src="./editor/editableContent.html" style="width:100%;height:100%;"></iframe>

@@ -166,14 +166,12 @@ function setInputMode( paramMODE ) {
 /************************************************************/
 /********** TEXT MODIFICATION RELATED FUNCTIONS ********/
 
-/* NOTE: THE typeSpecial FUNCTION IS LOCATED IN THE MAIN editor.html FILE */
-
 // This function is responsible for text input
-function typeCharacter( paramCharCode ) {	
+function typeCharacter( paramDoc, paramCharCode ) {	
 	var tempCurrentLine = new Array();
-	tempCurrentLine.push(XPODoc.getLineText(cursorLine).substring(0,cursorColumn));
-	tempCurrentLine.push(XPODoc.getLineText(cursorLine).substr(cursorColumn, 1));
-	tempCurrentLine.push(XPODoc.getLineText(cursorLine).substring(cursorColumn+1));
+	tempCurrentLine.push(paramDoc.getLineText(cursorLine).substring(0,cursorColumn));
+	tempCurrentLine.push(paramDoc.getLineText(cursorLine).substr(cursorColumn, 1));
+	tempCurrentLine.push(paramDoc.getLineText(cursorLine).substring(cursorColumn+1));
 
 	// Insert character
 	tempCurrentLine[1]=String.fromCharCode(paramCharCode) + tempCurrentLine[1];
@@ -182,5 +180,300 @@ function typeCharacter( paramCharCode ) {
 	cursorColumn++;
 	
 	// Commit changes
-	XPODoc.setLineText( cursorLine, tempCurrentLine.join("") );
+	paramDoc.setLineText( cursorLine, tempCurrentLine.join("") );
 }
+
+/* This function provides functionality to so-called "special keys".  Basically, any non-character related keyboard input. (kindof) */
+function typeSpecial(paramDoc, paramKEYCODE, paramIsAlt, paramIsCtl, paramIsShift) {
+
+	switch ( paramKEYCODE ) {
+	
+		case LEFTARROWKEY: 
+			/* If we are holding shift, moving the cursor actually selects text, so we need to ensure we are in select mode */
+			if ( paramIsShift ) if ( !isSelectMode ) setSelectMode(cursorLine, cursorColumn);
+			
+			// If we are at the first char of the first line do nothing
+			// If we are at the first char of any other line, wrap to the last char of the previous line
+			// Otherwise, simply move left
+			if ( cursorColumn == 0 && cursorLine == 0 ) break;
+			if ( cursorColumn == 0 ) {
+				cursorLine--;
+				cursorColumn = paramDoc.getLineLength(cursorLine);
+			}
+			else cursorColumn--;	
+			break;
+			
+		case RIGHTARROWKEY:
+			/* If we are holding shift, moving the cursor actually selects text, so we need to ensure we are in select mode */
+			if ( paramIsShift ) if ( !isSelectMode ) setSelectMode(cursorLine, cursorColumn);
+			
+			// If we are at the last char of the last line, do nothing
+			// If we are at the last char of any other line, wrap to the first char of the next line
+			// Otherwise, simply move right
+			if ( cursorColumn == paramDoc.getLineLength(cursorLine) && cursorLine == paramDoc.getDocumentLength()-1 ) break;
+			if ( cursorColumn == paramDoc.getLineLength(cursorLine) ) {
+				cursorLine++;
+				cursorColumn = 0;
+			}
+			else cursorColumn++;
+			break;
+			
+		case UPARROWKEY:
+			/* If we are holding shift, moving the cursor actually selects text, so we need to ensure we are in select mode */
+			if ( paramIsShift ) if ( !isSelectMode ) setSelectMode(cursorLine, cursorColumn);
+			
+			// If we are on the first line, move to first char of line.
+			// Otherwise, move up. If we end up out of range of the line, move to the last char of the line
+			if ( cursorLine == 0 ) cursorColumn = 0;
+			else if ( cursorColumn > paramDoc.getLineLength(--cursorLine) ) cursorColumn = paramDoc.getLineLength(cursorLine);
+			break;
+			
+		case DOWNARROWKEY:
+			/* If we are holding shift, moving the cursor actually selects text, so we need to ensure we are in select mode */
+			if ( paramIsShift ) if ( !isSelectMode ) setSelectMode(cursorLine, cursorColumn);
+			
+			// If we are on the last line, move to last char of line.
+			// Otherwise, move down. If we end up out of range of the line, move to the last char of the line
+			if ( cursorLine == paramDoc.getDocumentLength()-1 ) cursorColumn = paramDoc.getLineLength(cursorLine);
+			else if ( cursorColumn > paramDoc.getLineLength(++cursorLine) ) cursorColumn = paramDoc.getLineLength(cursorLine);
+			break;
+			
+		case ENDKEY:
+			/* If we are holding shift, moving the cursor actually selects text, so we need to ensure we are in select mode */
+			if ( paramIsShift ) if ( !isSelectMode ) setSelectMode(cursorLine, cursorColumn);
+			
+			/* If we are holding CTL, then we want to go to the very last char of the document.  Otherwise, of just the current line */
+			if ( paramIsCtl ) setCursor( paramDoc.getDocumentLength()-1, paramDoc.getLineLength( paramDoc.getDocumentLength()-1 ) );
+			else cursorColumn = paramDoc.getLineLength(cursorLine);
+
+			break;
+			
+		case HOMEKEY:
+			/* If we are holding shift, moving the cursor actually selects text, so we need to ensure we are in select mode */
+			if ( paramIsShift ) if ( !isSelectMode ) setSelectMode();
+			
+			/* If we are holding CTL, then we want to go to the very first char of the document.  Otherwise, of just the current line */
+			if ( paramIsCtl ) setCursor( 0, 0 );
+			else cursorColumn = 0;
+			
+			break;
+			
+		case PAGEUPKEY:
+			/* If we are holding shift, moving the cursor actually selects text, so we need to ensure we are in select mode */
+			if ( paramIsShift ) if ( !isSelectMode ) setSelectMode(cursorLine, cursorColumn);
+			
+			/* If we are holding CTL, Notepadd++ and a variety of other programs perform no function in this case.  Do the same */
+			if ( paramIsCtl ) break;
+			
+			// Move the cursor up a number of time relative to the current editing window's height			
+			if(isIE == true){
+				cursorLine -= Math.floor(guiDoc.body.clientHeight / FONT_HEIGHT);
+			}
+			else{
+				cursorLine -= Math.floor(myIFrame.contentWindow.innerHeight / FONT_HEIGHT);
+			}
+			// Do out-of-bounds checks
+			if ( cursorLine < 0 ) {
+				cursorLine = 0;
+				cursorColumn = 0;
+			} else if ( cursorColumn >= paramDoc.getLineLength( cursorLine ) ) cursorColumn = paramDoc.getLineLength(cursorLine);
+			if(isIE == true){
+				myIFrame.scrollBy(0,-guiDoc.body.clientHeight+PADDING_TOP);
+			}
+			else{
+				myIFrame.contentWindow.scrollBy(0,-myIFrame.contentWindow.innerHeight+PADDING_TOP);
+			}
+			break;
+					
+		case PAGEDOWNKEY:
+			/* If we are holding shift, moving the cursor actually selects text, so we need to ensure we are in select mode */
+			if ( paramIsShift ) if ( !isSelectMode ) setSelectMode(cursorLine, cursorColumn);
+			
+			/* If we are holding CTL, Notepadd++ and a variety of other programs perform no function in this case.  Do the same */
+			if ( paramIsCtl ) break;
+			
+			// Move the cursor down a number of times relative to the current editing window's height
+			if(isIE == true){
+				cursorLine += Math.floor(guiDoc.body.clientHeight / FONT_HEIGHT);
+			}
+			else{
+				cursorLine += Math.floor(myIFrame.contentWindow.innerHeight / FONT_HEIGHT);
+			}
+			// Do out-of-bounds checks
+			if ( cursorLine > paramDoc.getDocumentLength()-1 ) {
+				cursorLine = paramDoc.getDocumentLength()-1;
+				cursorColumn = paramDoc.getLineLength( cursorLine )-1;
+				if( cursorColumn < 0 ) cursorColumn = 0;
+			} else if ( cursorColumn >= paramDoc.getLineLength( cursorLine ) ) cursorColumn = paramDoc.getLineLength(cursorLine);
+			if(isIE == true){
+				myIFrame.scrollBy(0,guiDoc.body.clientHeight-PADDING_TOP);
+			}
+			else{
+				myIFrame.contentWindow.scrollBy(0,myIFrame.contentWindow.innerHeight-PADDING_TOP);
+			}
+			break;
+			
+		case BACKSPACEKEY:
+			// If we are on the first char of the first line, do nothing.
+			// If we are on the first char of any other line, backspace removes the "newline character"
+			// -- which doesn't exist in our implementation.  We simulate this removal by merging lines.
+			// Otherwise, we simply remove the previous char in the current line
+			if ( cursorLine == 0 && cursorColumn == 0 ) break;
+			if ( cursorColumn == 0 ) {
+				// Merge the two lines, and remove the original line
+				cursorColumn = paramDoc.getLineLength( cursorLine-1 );	// Place cursor at end of prior line
+				// Perform text merge into prior line
+				paramDoc.setLineText( cursorLine-1, paramDoc.getLineText( cursorLine-1 ) + paramDoc.getLineText( cursorLine ) );
+				// Remove the line from our data structure
+				paramDoc.removeLine( cursorLine );
+				// Decrement cursorLine
+				cursorLine--;
+			} else {
+				// "Remove" the character prior to cursorColumn, and decrement cursorColumn
+				var tempText = paramDoc.getLineText( cursorLine );
+				paramDoc.setLineText( cursorLine, tempText.substring(0,cursorColumn-1) + tempText.substring(cursorColumn--) );
+			}
+			break;
+			
+		case DELETEKEY:
+			// If we are at the last char of the last line, do nothing
+			// If we are at the last char of any other line, we remove the 'newline character', thus merging the current line with the next line
+			// Otherwise, we simply remove the char at the cursor position
+			if ( cursorColumn == paramDoc.getLineLength( paramDoc.getDocumentLength()-1 )-1 && cursorLine == paramDoc.getDocumentLength()-1 ) break;
+			if ( cursorColumn == paramDoc.getLineLength( cursorLine ) ) {
+				// Merge the next line into the current line
+				paramDoc.setLineText( cursorLine, paramDoc.getLineText(cursorLine) + paramDoc.getLineText(cursorLine+1) );
+				// Remove the line in question from our data structure
+				paramDoc.removeLine( cursorLine+1 );
+			} else {
+				// "Remove" the character at the cursorColumn position
+				var tempText = paramDoc.getLineText( cursorLine );
+				paramDoc.setLineText( cursorLine, tempText.substring(0,cursorColumn) + tempText.substring(cursorColumn+1) );
+			}
+			break;
+			
+		case ENTERKEY:
+			// When we press the enter key, we need to insert a new line into the document
+			// We need to insert a new line following the current line, which contains the current line's text starting from the cursor
+			paramDoc.insertLine( cursorLine+1, paramDoc.getLineText( cursorLine ).substring( cursorColumn ) );
+			paramDoc.setLineText( cursorLine, paramDoc.getLineText( cursorLine ).substring( 0, cursorColumn ) );
+			// Update the cursor
+			cursorLine++;
+			cursorColumn = 0;
+			break;
+			
+		case TABKEY:
+			// Insert 4 spaces at current cursor position
+			//  SUPER HACK:  Need to redesign functions a bit to eliminate redundancy and make it cleaner and more readable.  
+			// We eventually want this to call an "insertText()" function, but for now....
+			typeCharacter( paramDoc, " ".charCodeAt(0) );
+			typeCharacter( paramDoc, " ".charCodeAt(0) );
+			typeCharacter( paramDoc, " ".charCodeAt(0) );
+			typeCharacter( paramDoc, " ".charCodeAt(0) );
+			break;
+			
+		case SHIFTKEY:
+			break;
+			
+		case CAPSLOCKKEY:
+			break;
+			
+		case HIDECHATWINDOWSKEY:
+			if( paramIsCtl ) { hideChatShortcut(); }
+			else{ return true; }
+			break;
+			
+		//For autobracketing
+		case LEFTBRACKET:
+			if( !paramIsShift ) { return true; }
+			if(isFF == true)
+				{
+					var origCursorCol = this.getCursorColumn();
+					this.setCursor(this.getCursorLine(), origCursorCol+1);
+					typeCharacter( paramDoc, "}".charCodeAt(0) );
+					this.setCursor(this.getCursorLine(), origCursorCol);
+				}
+			else
+			{
+				var curChar = paramDoc.getLineText(cursorLine).substring(cursorColumn, cursorColumn+1);
+				if(curChar != '{')
+				{
+					typeCharacter( paramDoc, "{".charCodeAt(0) );
+					typeCharacter( paramDoc, "}".charCodeAt(0) );
+					this.setCursor(this.getCursorLine(), this.getCursorColumn()-1);
+				}
+			}
+			break;
+		case LEFTPAREN:
+			if( !paramIsShift ) { return true; }
+			if(isFF == true)
+				{
+					var origCursorCol = this.getCursorColumn();
+					this.setCursor(this.getCursorLine(), origCursorCol+1);
+					typeCharacter( paramDoc, ")".charCodeAt(0) );
+					this.setCursor(this.getCursorLine(), origCursorCol);
+				}
+			else
+			{
+				var curChar = paramDoc.getLineText(cursorLine).substring(cursorColumn, cursorColumn+1);
+				if(curChar != '(')
+				{
+					typeCharacter( paramDoc, "(".charCodeAt(0) );
+					typeCharacter( paramDoc, ")".charCodeAt(0) );
+					this.setCursor(this.getCursorLine(), this.getCursorColumn()-1);
+				}
+			}
+			break;
+		case FINDKEY:
+			if( paramIsCtl ) { findMenuClick(); }
+			else{ return true; }
+			break;
+		case REPLACEKEY:
+			if( paramIsCtl ) { replaceMenuClick(); }
+			else{ return true; }
+			break;
+		case GOTOKEY:
+			if( paramIsCtl ) { gotoMenuClick(); }
+			else{ return true; }
+			break;
+		case SELECTALLKEY:
+			if( paramIsCtl ) { selectAllMenuClick(); }
+			else{ return true; }
+			break;
+		case CUTKEY:
+			if( paramIsCtl ) { cutIconClicked(); }
+			else{ return true; }
+			break;
+		case COPYKEY:
+			if( paramIsCtl ) { copyIconClicked(); }
+			else{ return true; }
+			break;
+		case PASTEKEY:
+			if( paramIsCtl ) { pasteIconClicked(); }
+			else{ return true; }
+			break;
+		case NEWKEY:
+			if( paramIsCtl ) { newMenuClick(); }
+			else{ return true; }
+			break;
+		case OPENKEY:
+			if( paramIsCtl ) { openMenuClick(); }
+			else{ return true; }
+			break;
+		case UPLOADKEY:
+			if( paramIsCtl ) { uploadMenuClick(); }
+			else{ return true; }
+			break;
+		case COLORKEY:
+			if( paramIsCtl ) { colorMenuClick(); }
+			else{ return true; }
+			break;
+		case HIGHLIGHTKEY:
+			if( paramIsCtl ) { highlighMenuClick(); }
+			else{ return true; }
+			break;
+		default:
+			return true;		// Return  values are this way for the convenience of the onKeyDown event handler function
+	}
+	return false;	// Return  values are this way for the convenience of the onKeyDown event handler function
+} // END typeSpecial(paramKEY)
