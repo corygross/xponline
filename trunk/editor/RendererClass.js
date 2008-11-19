@@ -11,7 +11,7 @@ function Renderer()
 	var SELECTION_TAIL = 5;			// Rendering with the line being the END of a selection.  Requires paramArg1 to be the endpoint of the selection in the line.
 	var SELECTION_TAIL_CURSOR = 6;	// Rendering with the line being the END of a selection, with the endpoint at the cursor position. Requires paramArg1 to be the cursor position.
 	var SELECTION_ENTIRE = 7;		// Rendering with the line containing a whole selection.  Requires paramArg1 to be the endpoint of selection and paramArg2 to be the position of the cursor.
-	var SELECTION_LOCKED = 8;		// Rendering with the line being locked.  
+	var LOCKED = 8;		// Rendering with the line being locked.  
 
 	/* This function is the main rendering function.  It renders a single line, taking all factors into consideration (at least, it should...) */
 	/* Parameters:  paramLineText ==> Text for the line which is being rendered
