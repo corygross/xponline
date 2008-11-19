@@ -154,6 +154,8 @@ function TextDocument( paramHTMLDocumentPane )
 		}
 		
 		this.document.splice( paramLineNum, 0, new this.line( newDiv, "Line: "+this.uniqueNameCounter++, paramText ) );
+
+		this.setLineUpdated(paramLineNum);
 		
 		if(this.updateToServer == true){
 			updateDocument( "i", paramText, paramLineNum );
