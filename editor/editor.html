@@ -449,11 +449,15 @@ function loadNewDoc(docID, docText, accessMode) {
 			guiDoc.onclick = onClickFunction;
 			guiDoc.onkeypress = onKeyPressFunction;
 			guiDoc.onkeydown = onKeyDownFunction;
+			guiDoc.onmousedown = onMouseDownFunction;
+			guiDoc.onmouseup = onMouseUpFunction;
 		}
 		else{
 			guiDoc.addEventListener("click", onClickFunction, true);
 			guiDoc.addEventListener("keydown", onKeyDownFunction, true);
 			guiDoc.addEventListener("keypress", onKeyPressFunction, true);
+			guiDoc.addEventListener("mousedown", onMouseDownFunction, true);
+			guiDoc.addEventListener("mouseup", onMouseUpFunction, true);
 		}
 	}
 	else{ // Remove event listeners because we are in readOnly mode
@@ -461,11 +465,15 @@ function loadNewDoc(docID, docText, accessMode) {
 			guiDoc.onclick = null;
 			guiDoc.onkeydown = null;
 			guiDoc.onkeypress = null;
+			guiDoc.onmousedown = null;
+			guiDoc.onmouseup = null;
 		}
 		else{
 			guiDoc.removeEventListener("click", onClickFunction, true);
 			guiDoc.removeEventListener("keydown", onKeyDownFunction, true);
 			guiDoc.removeEventListener("keypress", onKeyPressFunction, true);
+			guiDoc.removeEventListener("mousedown", onMouseDownFunction, true);
+			guiDoc.removeEventListener("mouseup", onMouseUpFunction, true);
 		}
 	}
 	
@@ -486,21 +494,12 @@ function loadNewDoc(docID, docText, accessMode) {
 
 /* This function is the handler for the onclick event. */
 onClickFunction = function( paramEvent ){
-	XPODoc.setLineUpdated( cursorLine );
-	var oldCursorLine = cursorLine;
-
-	captureMousePos(paramEvent);
-	deriveCursorForDocument(mouseX,mouseY,XPODoc);
-	if(oldCursorLine != cursorLine) {
-		XPODoc.setLineUpdated( cursorLine );
-		updateLineLock(cursorLine);
-	}
-	XPODoc.renderUpdates( cursorLine, cursorColumn );
+	// All functionality has been deferred to the mousedown function
 }
 
 /* This function is the handler of the keydown event.  Mainly, this function will execute the typeSpecial function */
 onKeyDownFunction = function( paramEvent ) {
-	XPODoc.setLineUpdated( cursorLine );
+	// Remember the prior cursor line position
 	var oldCursorLine = cursorLine;
 	
 	// Determine the keyCode of the pressed key (browser-dependent implementation)
@@ -521,25 +520,30 @@ onKeyDownFunction = function( paramEvent ) {
 		isCtl = paramEvent.ctrlKey;
 	}
 
-	// if typeSpecial actually does something, it returns false...
+	// if typeSpecial actually does something, it returns false.  Capture this value: it will be our return value at the end of the function
 	var returnValue = typeSpecial( XPODoc, key, isAlt, isCtl, isShift );
 
-	XPODoc.setLineUpdated( cursorLine );
-	
+	// Flag old line as needing re-rendering.
+	XPODoc.setLineUpdated( oldCursorLine );
+	// If the cursor jumped lines, flag the new line as needing re-rendering also.  Also, update the line lock...
 	if(oldCursorLine != cursorLine) {
-		XPODoc.setLineUpdated( cursorLine );
+		XPODoc.setLineUpdated( cursorline );
 		updateLineLock(cursorLine);
 	}
+	// Render the updates
 	XPODoc.renderUpdates( cursorLine, cursorColumn );
 	
+	// Ensure we can see the cursor
 	adjustScroll();
 	
-	return returnValue;	//  ... and if typeSpecial returns false, we don't want the event to bubble, so pass this return value along
+	// Return the result of typeSpecial.  By returning false, the event bubble will stop, which we want in that case.
+	return returnValue;
 }
 
 
 /* This function is the handler for the keypress event.  Mainly, this function will execute the typeCharacter function, if applicable */
 onKeyPressFunction = function( paramEvent ){
+	// Remember the prior cursor line position
 	var oldCursorLine = cursorLine;
 	
 	// Determine the ASCII code of the to-be-typed character (browser-dependent implementation)
@@ -552,33 +556,42 @@ onKeyPressFunction = function( paramEvent ){
 	// If a valid character (nonzero), then type it
 	if ( key != 0 ) typeCharacter( XPODoc, key );
 	
-	if(oldCursorLine != cursorLine) {
-		updateLineLock(cursorLine);
-	}
+	// Render any line updates (presumably, showing the newly typed character)
 	XPODoc.renderUpdates( cursorLine, cursorColumn );
 }
 
 /* This function is the handler of the mousedown event */
 onMouseDownFunction = function( paramEvent ) {
-	if(isIE == true || isChrome == true || isSafari == true){
-		guiDoc.onmousemove = onMouseMoveFunction;
-	}
-	else{
-		guiDoc.addEventListener("mousemove", onMouseMoveFunction, true);
-	}
+	// Keep track of prior cursor position
+	var oldCursorLine = cursorLine;
+
+	// Calculate new cursor position
+	captureMousePos(paramEvent);
+	deriveCursorForDocument(mouseX,mouseY,XPODoc);
 	
+	// Flag the old line as needing re-rendering
+	XPODoc.setLineUpdated( oldCursorLine );
+	// If the cursor jumped lines, flag that line for re-rendering also.  Also, update the line lock...
+	if(oldCursorLine != cursorLine) {
+		XPODoc.setLineUpdated( cursorLine );
+		updateLineLock(cursorLine);
+	}
+	// Re-render the affected lines
+	XPODoc.renderUpdates( cursorLine, cursorColumn );
 	
-}
-/* This function is the handler of the mouseup event */
-onMouseUpFunction = function( paramEvent ) {
-	// Remove the onMouseMove event listener to avoid performance death...
-	if(isIE == true || isChrome == true || isSafari == true){
-		guiDoc.onmousemove = null;
+	// If selection-mode is not enabled, then enable it
+	// If selection-mode is enabled, then another mouse click normally would end the selection...
+	if ( isSelectMode ) resetSelectMode();
+	else {
+		// Set the selection mode to enable rendering of the selection
+		setSelectMode( cursorLine, cursorColumn );
+		
+		// Enable event listener for mouse movement.  This allows us to dynamically render the selection.
+		if(isIE == true || isChrome == true || isSafari == true) guiDoc.onmousemove = onMouseMoveFunction;
+		else guiDoc.addEventListener("mousemove", onMouseMoveFunction, true);
 	}
-	else{
-		guiDoc.removeEventListener("mousemove", onClickFunction, true);
-	}
 }
+
 /* This function is the handler of the mousemove event */
 /* NOTE:  THE HANDLER FOR THIS FUNCTION SHOULD NOT BE */
 /* REGISTERED UNLESS NEEDED!!  THIS FUNCTION KILLS PERFORMANCE OTHERWISE */
@@ -591,27 +604,43 @@ onMouseMoveFunction = function( paramEvent ) {
 	captureMousePos(paramEvent);
 	deriveCursorForDocument(mouseX,mouseY,XPODoc);
 	
-	// Check if we are already in select mode or not:
-	// If we are already in select-mode...
+	// Check if we are in select mode or not:
+	// If we are not in select-mode...
 	if ( isSelectMode ) {
 		// Determine if the mouse has moved enough to require re-rendering of the line
 		// If so, flag the line(s) for rendering.  Otherwise, do nothing.
 		if ( oldCursorLine != cursorLine ) {
 			XPODoc.setLineUpdated( oldCursorLine );
 			XPODoc.setLineUpdated( cursorLine );
+			// TODO: FIXME: I expect there to be rendering artifacts when the mouse is moved rapidly.  We will most likely need to flag all lines BETWEEN the old and new cursor as well
 		}
 		else if ( oldCursorColumn != cursorColumn ) {
 			XPODoc.setLineUpdated( cursorLine );
 		}
 	}
-	// If not already in select-mode...
+	// If we are not in select mode, we need to remove this event listener, and ensure that the cursor maintains it's position
 	else {
-		// Determine if the mouse has moved enough to start a selection
-		// If so, enable selection mode.  (Otherwise, do nothing)
-		if ( oldCursorLine != cursorLine || oldCursorColumn != cursorColumn ) {
-			setSelectMode( oldCursorLine, oldCursorColumn );
-		}
+		// Remove the event listener:
+		if(isIE == true || isChrome == true || isSafari == true) guiDoc.onmousemove = null;
+		else guiDoc.removeEventListener("mousemove", onMouseMoveFunction, true);
+		
+		// Revert cursor
+		setCursor( oldCursorLine, oldCursorColumn );
 	}
+	
+	// Render any changes
+	XPODoc.renderUpdates( cursorLine, cursorColumn );
+}
+
+/* This function is the handler of the mouseup event */
+onMouseUpFunction = function( paramEvent ) {
+	// No need to do any cursor capture, etc.  The onMouseMoveFunction should have kept it up to date.
+	// We want to determine if a selection was made or not, and if so, store the endpoints in the document for use
+	if ( selectionAnchorLine != cursorLine ||selectionAnchorColumn != cursorColumn )
+		XPODoc.setCurrentSelection( selectionAnchorLine, selectionAnchorColumn, cursorLine, cursorColumn );
+	
+	// Disable select-mode
+	resetSelectMode();
 }
 </script>
 <iframe id="myI" name="myI" src="./editor/editableContent.html" style="width:100%;height:100%;"></iframe>
