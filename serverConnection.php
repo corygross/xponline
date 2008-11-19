@@ -2,13 +2,17 @@
 session_start();
 require_once "dbConnect.php";
 
-//$browser = getBrowser();
-
 //Validate login
 $currentUserID = $_SESSION['uID'];
-//if($currentUserID == ''){echo 'error 003: User not logged in.'; return;}
+if($currentUserID == ""){
+	echo "User not logged in."; 
+	return;
+}
 
 $currentDocumentID = $_GET['dID'];
+if($currentDocumentID == "undefined"){
+	$currentDocumentID = "";
+}
 
 //UPDATE when the last connection was made
 $sqlUpdateTime = "UPDATE users SET uLastActivity=CURRENT_TIMESTAMP WHERE uID='$currentUserID';";
@@ -22,71 +26,6 @@ if($currentDocumentID != ""){
 
 if (ob_get_level() == 0) ob_start();
 
-function getBrowser()
-{
-	$browserInfo = strtolower($_SERVER['HTTP_USER_AGENT']);
-	//echo $browserInfo;
-	if( strstr($browserInfo, "firefox") != "" ){
-		return "firefox";
-	}
-	else if( strstr($browserInfo, "msie") != "" ){
-		return "ie";
-	}
-	else if( strstr($browserInfo, "chrome") != "" ){
-		return "chrome";
-	}
-	else if( strstr($browserInfo, "safari") != "" ){
-		return "safari";
-	}
-	return "";
-}
-
-/*
- * Check for a message on the server
- *
- *
- *
- */
-function checkMessage()
-{
-	$output_query = "SELECT * FROM msgqueue,users WHERE msgqueue.toID = '$currentUserID' AND (msgqueue.delivTryTime IS NULL OR msgqueue.delivTryTime<DATE_SUB(CURRENT_TIMESTAMP,INTERVAL 5 SECOND)) AND msgqueue.fromID=users.uID ORDER BY sentTime ASC;";
-	$resultSet = runQuery($output_query);
-	$row = null;
-	$row = mysql_fetch_array($resultSet);
-	return $row;
-//	if(($row = mysql_fetch_array($resultSet)) != null){return $row;} return "";
-}
-
-/*
- * Send a message 
- * 
- *
- *
- */
-function sendMessage($row)
-{
-		echo $row['fromID']."&^*".$row['uFName']." ".$row['uLName']."&^*".$row['msg']."&^*".$row['mID']."&^*";
-		$mID = $row['mID'];
-		//echo "</body>"; //This is key to have this here, at least for Safari
-		//Update the attempted send time
-		$updateSQL = "UPDATE msgqueue SET delivTryTime=CURRENT_TIMESTAMP WHERE mID='$mID';";
-		runQuery($updateSQL);
-	
-		ob_flush();
-	    flush();
-	
-}
-
-function updateCheckTime($row)
-{
-//	echo "here update time";
-	$mID = $row['mID'];
-	//Update the attempted send time
-	$updateSQL = "UPDATE msgqueue SET delivTryTime=CURRENT_TIMESTAMP WHERE mID='$mID';";
-	runQuery($updateSQL);
-	
-}
-
 /*
  * Retrieves a message from the message queue
  *
@@ -96,7 +35,7 @@ function updateCheckTime($row)
  */
 function getMessage($currentUserID)
 {
-	$output_query = "SELECT * FROM msgqueue,users WHERE msgqueue.toID = '$currentUserID' AND (msgqueue.delivTryTime IS NULL OR msgqueue.delivTryTime<DATE_SUB(CURRENT_TIMESTAMP,INTERVAL 5 SECOND)) AND msgqueue.fromID=users.uID ORDER BY sentTime ASC;";
+	$output_query = "SELECT * FROM msgqueue,users WHERE msgqueue.toID = '$currentUserID' AND (msgqueue.delivTryTime IS NULL OR msgqueue.delivTryTime<DATE_SUB(CURRENT_TIMESTAMP,INTERVAL 5 SECOND)) AND msgqueue.fromID=users.uID ORDER BY msgqueue.mID ASC;";
 	$resultSet = runQuery($output_query);
 	
 	$xmlToSend = "";
@@ -104,12 +43,10 @@ function getMessage($currentUserID)
 	while ($row = mysql_fetch_array($resultSet))
 	{
 		$xmlToSend .= "<newMsg>";
- 		//echo str_pad('',4096)."\n";  //Safari need xx characters to first recognize pushed content.
-		//echo $row['fromID']."&^*".$row['uFName']." ".$row['uLName']."&^*".$row['msg']."&^*".$row['mID']."&^*";
 		$xmlToSend .= "<fromID>".$row['fromID']."</fromID>";
-		$xmlToSend .= "<uFName>".$row['uFName']."</uFName>";
-		$xmlToSend .= "<uLName>".$row['uLName']."</uLName>";
-		$xmlToSend .= "<msg>".stripslashes($row['msg'])."</msg>";
+		$xmlToSend .= "<uFName><![CDATA[".$row['uFName']."]]></uFName>";
+		$xmlToSend .= "<uLName><![CDATA[".$row['uLName']."]]></uLName>";
+		$xmlToSend .= "<msg><![CDATA[".stripslashes($row['msg'])."]]></msg>";
 		$xmlToSend .= "<mID>".$row['mID']."</mID>";
 		$xmlToSend .= "</newMsg>";
 		
@@ -137,7 +74,8 @@ function getCollisionInfo($uID, $dID){
 	if(file_exists($fileName)){
 		$fileModifyTime = filemtime($fileName);
 		$lastModifyKey = 'lastLockFileModify'.$dID;
-		if($fileModifyTime != $_SESSION["$lastModifyKey"]){
+		if($fileModifyTime != $_SESSION["$lastModifyKey"] || $_SESSION['newFileInit'] == "true"){
+			$_SESSION['newFileInit'] = "false";
 			$_SESSION["$lastModifyKey"] = $fileModifyTime;
 			
 			$fileHandle = fopen($fileName, 'r') or die("can't open file");
@@ -151,10 +89,9 @@ function getCollisionInfo($uID, $dID){
 				if($line == ""){
 					continue;
 				}
-				$pos = strpos($line, "$uID");
-				if($pos === false || $pos != 0){
-					$lockInfo = explode(",", $line);
-					$locksToReturn .= "<lineLock><userID>$lockInfo[0]</userID><lineNum>$lockInfo[1]</lineNum><userName>$lockInfo[2]</userName></lineLock>";
+				$lockInfo = explode(",", $line);
+				if($lockInfo[0] != $uID){
+					$locksToReturn .= "<lineLock><userID>$lockInfo[0]</userID><lineNum>$lockInfo[1]</lineNum><userName><![CDATA[".$lockInfo[2]."]]></userName></lineLock>";
 				}
 			}
 			if($locksToReturn != ""){
@@ -180,16 +117,15 @@ function getPeerUpdates($uID, $dID){
 		$checkForUpdates = false;
 		if($fileModifyTime != $_SESSION["$lastModifyKey"]){
 			$_SESSION["$lastModifyKey"] = $fileModifyTime;
-			$_SESSION["$checkedAgainKey"] = "false";
+			$_SESSION["$checkedAgainKey"] = $fileModifyTime + 2;
 			$checkForUpdates = true;
 		}
-		else if($_SESSION["$checkedAgainKey"] == "false"){
-			$_SESSION["$checkedAgainKey"] = "true";
+		else if($_SESSION["$checkedAgainKey"] != "false" && $_SESSION["$checkedAgainKey"] <= $fileModifyTime){
+			$_SESSION["$checkedAgainKey"] = "false";
 			$checkForUpdates = true;
 		}
 		
 		if($checkForUpdates == true){
-			//$_SESSION["$lastModifyKey"] = $fileModifyTime;
 			$updateXML = "";
 			$pending_updates = "SELECT * FROM updatequeue, updates WHERE updatequeue.userID='$uID' AND updatequeue.updateID=updates.updateID AND updates.docID='$dID' ORDER BY updates.updateID ASC;";
 			$pendingResult = runQuery($pending_updates);
@@ -212,7 +148,7 @@ function getPeerUpdates($uID, $dID){
 
 // Update the pending contacts button every $interval seconds (approx)
 function updatePendingContactsButton($interval){
-	if( isset($_SESSION['updateContactButtonTime']) == false || $_SESSION['updateContactButtonTime'] < time() ){
+	if( isset($_SESSION['updateContactButtonTime']) == false || $_SESSION['updateContactButtonTime'] < time() || $_GET['init'] == "true" ){
 		$_SESSION['updateContactButtonTime'] = time() + $interval;
 	}
 	else{
@@ -228,7 +164,7 @@ function updatePendingContactsButton($interval){
 // Update the contact list every $interval seconds (approx)
 function updateContactList($interval){
 	$returnImmediately = false;
-	if( isset($_SESSION['updateContactListTime']) == false ){
+	if( isset($_SESSION['updateContactListTime']) == false || $_GET['init'] == "true" ){
 		$_SESSION['updateContactListTime'] = time() + $interval;
 		$returnImmediately = true;
 	}
@@ -288,31 +224,14 @@ for ($i = 0; $i<100; $i++)
 	if($isDataToSend == true){
 		echo "</body>"; //This is key to have this here, at least for Safari
 		ob_flush();
-		flush();
+		flush();		
 		
-		// Take this out if trying to do interactive with firefox
 		ob_end_flush(); //necessary
 		break;
 	}
-	/*
-	if($messageToSend != "" && $browser != "firefox"){
-		ob_end_flush(); //necessary
-		break;
-	}
-	*/
+
 	usleep(50000);
 	//usleep(100000);
 }
-
-//$message = checkMessage($currentUser);
-//while(($message = checkMessage($currentUser) == null)
-//{
-//	updateCheckTime($message);
-//	sleep(1);
-//}
-//sendMessage($message);
-//updateCheckTime($message);
-
-//ob_end_flush(); //necessary
 
 ?>

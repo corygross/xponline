@@ -32,4 +32,8 @@ else{
 }
 fclose($fh);
 echo $row['accessLvl']."&^*".$theData;
+
+// Set a session variable so we know that a new file was loaded
+$_SESSION['newFileInit'] = "true";
+
 ?>

@@ -82,6 +82,9 @@ function lockItem(paramLineID, paramUserName)
 //Create the Comet "object"
 var Comet = Class.create();
 
+// If this is the first one, set the init flag so the server knows
+var isInit = true;
+
 //Set the properties and methods of the class
 Comet.prototype = {
 	url:'serverConnection.php',
@@ -90,9 +93,10 @@ Comet.prototype = {
 	//Define the connection function
 	connect:function()
 		{
-			var params = "";
+			var params = "?init="+isInit;
+			isInit = false;
 			if( typeof(XPODoc) != "undefined" ){
-				params = "?dID="+XPODoc.documentID;
+				params += "&dID="+XPODoc.documentID;
 			}
 			//Create the AJAX object that inititiate the ajax connection
 			this.ajax = new Ajax.Request(this.url+params, 
@@ -101,7 +105,6 @@ Comet.prototype = {
 					//On a successful response 
 					onSuccess:function(transport)
 					{		
-						//if(isFF == false && transport.responseText != "")
 						if(transport.responseText != "")
 						{
 							//alert(transport.responseText);
@@ -114,17 +117,6 @@ Comet.prototype = {
 					{
 						//Immediately reconnect
 						this.comet.connect();  //Connect immeidietly after disconnect (e.g. long polling!)
-					},
-					//Make sure we are printing messages as they come from the server
-					onInteractive:function(transport)
-					{
-						/*
-						if(isFF == true && transport.responseText != "")
-						{
-							//alert("interactive"+transport.responseText);
-							handleXMLResponse(transport.responseText);
-							transport.responseText = "";
-						}*/
 					},
 					//If there is an error along the way
 					onError:function()
