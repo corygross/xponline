@@ -3,15 +3,15 @@
 function Renderer()
 {
 	/* Constants representing valid values for paramMODE in the renderLine function */
-	var NORMAL = 0;					// Normal rendering.  Does not require additional arguments.
-	var CURSOR = 1;					// Rendering with the cursor in the line.  Requires paramArg1 to represent the position of the cursor in the line.
-	var SELECTION_LINE = 2;		// Rendering with the entire line being part of the current selection.  Does not require additional arguments.
-	var SELECTION_HEAD = 3;			// Rendering with the line being the START of a selection.  Requires paramArg1 to be the endpoint of the selection in this line.  
-	var SELECTION_HEAD_CURSOR = 4;	// Rendering with the line being the start of a selection AND the selection is started at the cursor position.  Requires paramArg1 to be the position of the cursor.
-	var SELECTION_TAIL = 5;			// Rendering with the line being the END of a selection.  Requires paramArg1 to be the endpoint of the selection in the line.
-	var SELECTION_TAIL_CURSOR = 6;	// Rendering with the line being the END of a selection, with the endpoint at the cursor position. Requires paramArg1 to be the cursor position.
-	var SELECTION_ENTIRE = 7;		// Rendering with the line containing a whole selection.  Requires paramArg1 to be the endpoint of selection and paramArg2 to be the position of the cursor.
-	var LOCKED = 8;		// Rendering with the line being locked.  
+	this.NORMAL = 0;					// Normal rendering.  Does not require additional arguments.
+	this.CURSOR = 1;					// Rendering with the cursor in the line.  Requires paramArg1 to represent the position of the cursor in the line.
+	this.SELECTION_LINE = 2;		// Rendering with the entire line being part of the current selection.  Does not require additional arguments.
+	this.SELECTION_HEAD = 3;			// Rendering with the line being the START of a selection.  Requires paramArg1 to be the endpoint of the selection in this line.  
+	this.SELECTION_HEAD_CURSOR = 4;	// Rendering with the line being the start of a selection AND the selection is started at the cursor position.  Requires paramArg1 to be the position of the cursor.
+	this.SELECTION_TAIL = 5;			// Rendering with the line being the END of a selection.  Requires paramArg1 to be the endpoint of the selection in the line.
+	this.SELECTION_TAIL_CURSOR = 6;	// Rendering with the line being the END of a selection, with the endpoint at the cursor position. Requires paramArg1 to be the cursor position.
+	this.SELECTION_ENTIRE = 7;		// Rendering with the line containing a whole selection.  Requires paramArg1 to be the endpoint of selection and paramArg2 to be the position of the cursor.
+	this.LOCKED = 8;		// Rendering with the line being locked.  
 
 	/* This function is the main rendering function.  It renders a single line, taking all factors into consideration (at least, it should...) */
 	/* Parameters:  paramLineText ==> Text for the line which is being rendered
@@ -24,10 +24,17 @@ function Renderer()
 		if ( paramLineText == "" ) paramLineText = ' ';
 		
 		/* If the cursor position parameter is set, this implies that the cursor is at this line and must be rendered.  If not, it's business as usual. */
-		if ( paramCursorPosition == undefined ) {
+		if ( paramMODE == this.LOCKED ) {
+			// paramArg1 = the name of the user that locked the line
+			// paramArg2 = the current line number
+			return "<span class='lock' onMouseOver=\"makeNewLockPopup(event,'lock"+paramArg2+"','"+paramArg1+"')\" onMouseOut=\"closeLockPopup('lock"+paramArg2+"')\">" + replaceHTMLEntities( paramLineText ) + "</span>";
+		}
+		else if ( paramMODE == this.NORMAL ) {
 			return replaceHTMLEntities( paramLineText );
 		}
-		else {
+		else if ( paramMODE == this.CURSOR ) {
+			// temp fix
+			var paramCursorPosition = paramArg1;
 			var tempCurrentLine = new Array();
 	        tempCurrentLine.push( replaceHTMLEntities( paramLineText.substring(0,paramCursorPosition)) );
 	        tempCurrentLine.push(replaceHTMLEntities( paramLineText.substr(paramCursorPosition, 1)) );

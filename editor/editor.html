@@ -127,6 +127,8 @@ function gotoLine( paramLineNum ) {
 
 // This function clears the old cursor and moves to the line specified by paramLineNumber
 function gotoPosition( paramLineNum, paramColNum ) {
+	// Before we move the cursor there, make sure that the line isn't locked
+	if( XPODoc.getLineLockingUser( paramLineNum ) != null ){ alert("Another user is currently on line "+paramLineNum+", and it is locked."); return; }
 	XPODoc.setLineUpdated( cursorLine );
 	XPODoc.setLineUpdated( paramLineNum );
 	setCursor( paramLineNum, paramColNum );
@@ -171,16 +173,16 @@ function lockLines( newLineLocks ) {
 	// Clear the old line locks
 	for( var i=0; i < lockedLines.length; i++ )
 	{
+		XPODoc.unlockLine( lockedLines[i].lineID );
 		XPODoc.setLineUpdated( lockedLines[i].lineID );
-		//clearFormatting( lockedLines[i].lineID );
 	}
 	// Add the new line locks
 	for( var j=0; j < newLineLocks.length; j++ )
 	{		
-		// Below is the old way to render locks
-		//XPODoc.setLineText(newLineLocks[j].lineID, "<span class='lock' onMouseOver=\"makeNewLockPopup(event,'lock"+j+"','"+newLineLocks[j].userName+"')\" onMouseOut=\"closeLockPopup('lock"+j+"')\">" + XPODoc.getLineText(newLineLocks[j].lineID) + "</span>");
-		//guiDoc.getElementById( XPODoc.getLineId(newLineLocks[j].lineID) ).innerHTML = "<span class='lock' onMouseOver=\"makeNewLockPopup(event,'lock"+j+"','"+newLineLocks[j].userName+"')\" onMouseOut=\"closeLockPopup('lock"+j+"')\">" + XPODoc.getLineText(newLineLocks[j].lineID) + "</span>";		
+		XPODoc.lockLine( newLineLocks[j].lineID, newLineLocks[j].userName );
+		XPODoc.setLineUpdated( newLineLocks[j].lineID );	
 	}
+	XPODoc.renderUpdates( cursorLine, cursorColumn );
 	lockedLines = newLineLocks;
 }
 
@@ -527,7 +529,7 @@ onKeyDownFunction = function( paramEvent ) {
 	XPODoc.setLineUpdated( oldCursorLine );
 	// If the cursor jumped lines, flag the new line as needing re-rendering also.  Also, update the line lock...
 	if(oldCursorLine != cursorLine) {
-		XPODoc.setLineUpdated( cursorline );
+		XPODoc.setLineUpdated( cursorLine );
 		updateLineLock(cursorLine);
 	}
 	// Render the updates
