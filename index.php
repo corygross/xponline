@@ -23,8 +23,9 @@ if(isset($_SESSION['homeDir']) == false){
 <script language="javascript" src="menu.js"></script>
 <script language="javascript" src="windows.js"></script>
 <script language="javascript" src="bm.js"></script>
-<script language="javascript" src="clientConnection.js"></script>
 <script language="javascript" src="controls/contact_search/suggest_script.js"></script>
+<script language="javascript" src="messenger.js"></script>
+<script language="javascript" src="clientConnection.js"></script>
 <script	type="text/javascript" src="editor/toggleSH.js"></script>
 <script type="text/javascript" src = "jWords.js"></script>
 </head>
