@@ -199,10 +199,10 @@ Array.prototype.replaceAllMatches = function(searchStr, replacementText, matchCa
 			if(regEx.test(this[i].text)){
 				var newLineText = this[i].text.replace(regEx, replacementText);
 				XPODoc.setLineText( i, newLineText );
-				XPODoc.renderUpdates( cursorLine, cursorColumn );
 			}
 		}
     }
+	XPODoc.renderUpdates( cursorLine, cursorColumn );
 }
 
 function replaceAll(){

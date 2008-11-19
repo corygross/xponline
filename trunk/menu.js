@@ -156,7 +156,7 @@ function updateLineCol(line, col)
 	if(lineCol == null){
 		lineCol = document.getElementById('curLineCol');
 	}
-	if(line == "" && col == ""){
+	if(line === "" && col === ""){
 		lineCol.innerHTML = "";
 		return;
 	}
