@@ -281,7 +281,8 @@ function typeSpecial(paramKEYCODE, paramIsAlt, paramIsCtl, paramIsShift) {
 			if( paramIsCtl ) { hideChatShortcut(); }
 			else{ return true; }
 			break;
-			//For autobracketing
+			
+		//For autobracketing
 		case LEFTBRACKET:
 			if( !paramIsShift ) { return true; }
 			if(isFF == true)
@@ -387,16 +388,16 @@ function displayCursorPos() {
 }
 
 // This function clears the formatting of the line specified by paramLineNumber
-function clearFormatting( paramLineNum ) {
-	if(guiDoc.getElementById( XPODoc.getLineId(paramLineNum) ) != null){
-		//guiDoc.getElementById( XPODoc.getLineId(paramLineNum) ).innerHTML = XPODoc.getLineText(paramLineNum);
-
-		//RT - NOT SURE WHAT THIS DOES....
-		//Parses the contents of each line for syntax hightlighting.
+//function clearFormatting( paramLineNum ) {
+//	if(guiDoc.getElementById( XPODoc.getLineId(paramLineNum) ) != null){
+//		//guiDoc.getElementById( XPODoc.getLineId(paramLineNum) ).innerHTML = XPODoc.getLineText(paramLineNum)
+//
+//		//RT - NOT SURE WHAT THIS DOES....
+//		//Parses the contents of each line for syntax hightlighting.
 //		guiDoc.getElementById( XPODoc.getLineId(paramLineNum) ).innerHTML = indexLineText(replaceHTMLEntities(XPODoc.getLineText(paramLineNum)));
-		guiDoc.getElementById( XPODoc.getLineId(paramLineNum) ).innerHTML = indexLineText(XPODoc.getLineText(paramLineNum));
-	}
-}
+//		guiDoc.getElementById( XPODoc.getLineId(paramLineNum) ).innerHTML = indexLineText(XPODoc.getLineText(paramLineNum));
+//	}
+//}
 
 // This function gives the document focus.  This is called when the document is loaded and when popup windows are closed
 function giveDocumentFocus(){

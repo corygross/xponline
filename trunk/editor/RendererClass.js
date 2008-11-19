@@ -31,7 +31,7 @@ function Renderer()
 	
 	/* Replace some things like tabs, spaces, < and > */
 	function replaceHTMLEntities( paramText ) {
-		paramText = paramText.replace(/&/g, "&amp;"); // Leave this one first.
+		paramText = paramText.replace(/&/g, "&amp;"); // This one must be first
 		paramText = paramText.replace(/>/g, "&gt;");
 		paramText = paramText.replace(/</g, "&lt;");
 		paramText = paramText.replace(/ /g, "&nbsp;");	
