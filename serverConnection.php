@@ -196,7 +196,7 @@ function getPeerUpdates($uID, $dID){
 			if(mysql_num_rows($pendingResult) > 0){
 				while ($row = mysql_fetch_array($pendingResult))
 				{
-					$updateXML .= "<docUpdate><updateID>".$row['updateID']."</updateID><action>".$row['action']."</action><line>".$row['lineID']."</line><text>".stripslashes($row['text'])."</text></docUpdate>";
+					$updateXML .= "<docUpdate><updateID>".$row['updateID']."</updateID><action>".$row['action']."</action><line>".$row['lineID']."</line><text><![CDATA[".$row['text']."]]></text></docUpdate>";
 					// Should this be done with an ACK?
 					$clear_update = "DELETE FROM updatequeue WHERE userID='$uID' AND updateID='".$row['updateID']."';";
 					$clearResult = runQuery($clear_update);

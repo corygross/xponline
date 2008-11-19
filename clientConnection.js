@@ -27,14 +27,8 @@ function handleUpdateResponse( updateArray ){
 	{
 		//this isn't the update id I really want... I want the document specific one
 		var updateID = updateArray.contents[i].contents[0].contents[0].value;
-
 		var lineNum = updateArray.contents[i].contents[2].contents[0].value;
-		var lineTextObj = updateArray.contents[i].contents[3].contents[0];
-		var lineText = "";
-		if( typeof(lineTextObj) != "undefined" ){
-				lineText = lineTextObj.value;
-		}
-		//var lineText = updateArray.contents[i].contents[2].contents[0].value;
+		var lineText = updateArray.contents[i].contents[3].contents[0].value;
 
 		// Its a line update
 		if(updateArray.contents[i].contents[1].contents[0].value == "u"){
@@ -47,26 +41,17 @@ function handleUpdateResponse( updateArray ){
 		else if(updateArray.contents[i].contents[1].contents[0].value == "i"){
 			XPODoc.updateToServer = false;
 			XPODoc.insertLine(lineNum, lineText);
-			// If we insert a new line, do we need to bump the cursor line by one and make sure we render the old and new cursor lines?
+			// If a new line is inserted above our cursor, we need to move the cursor down
+			if(lineNum < cursorLine){ cursorLine++; }
 			XPODoc.renderUpdates( cursorLine, cursorColumn );
 			XPODoc.updateToServer = true;
-			
-			/*
-			this part was working before the Renderer
-			var addMe = guiDoc.createElement('div');
-			addMe.setAttribute('id', XPODoc.getLineId( lineNum ) );
-			addMe.setAttribute('class', "line");
-			lineNum = parseInt(lineNum);
-			lineNum++;
-			guiDoc.getElementById("entireDocument").insertBefore( addMe, guiDoc.getElementById( XPODoc.getLineId( lineNum ) ) );
-			clearFormatting( lineNum );
-			*/
 		}
 		// A line delete
 		else if(updateArray.contents[i].contents[1].contents[0].value == "d"){
 			XPODoc.updateToServer = false;
 			XPODoc.removeLine( lineNum );
-			// If we remove line, do we need to decrement the cursor line by one and make sure we render the old and new cursor lines?
+			// If a line is deleted above our cursor, we need to move the cursor up
+			if(lineNum < cursorLine){ cursorLine--; }
 			XPODoc.renderUpdates( cursorLine, cursorColumn );
 			XPODoc.updateToServer = true;				
 		}

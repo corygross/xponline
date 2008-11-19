@@ -640,8 +640,9 @@ function updateDocument( paramAction, paramText, paramLineNum ) {
 		}
 	}
 	
-	// Replace any ampersands...	
+	// Replace any ampersands or plus signs for transmission...	
 	paramText = paramText.replace(/&/g, "aMPerSand");
+	paramText = paramText.replace(/\+/g, "pLUsSign");
 	
 	// If we have multiple updates to the same line in a row, just use the latest one.
 	var arrayLength = pendingServerUpdates.length;
@@ -660,12 +661,13 @@ setTimeout('sendDocumentUpdates()',5000);
 function sendDocumentUpdates(){
 
 	if(pendingServerUpdates.length > 0){
+	//alert(pendingServerUpdates.toJSON());
 		new Ajax.Request('./handlers/documentUpdate.php?', {
 			method:'post',
 			postBody: 'updateData='+pendingServerUpdates.toJSON(),
 			onSuccess: function(transport) {
 				if(transport.responseText != ""){
-					alert(transport.responseText);
+					//alert(transport.responseText);
 				}
 			}		
 		});

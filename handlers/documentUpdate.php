@@ -3,22 +3,27 @@ session_start();
 require_once "../dbConnect.php";
 
 $uID = $_SESSION['uID'];
-//$updateArray = json_decode($_POST['updateData'],true);
-$updateArray = json_decode(preg_replace('/aMPerSand/',"&",$_POST['updateData']),true);
 
+// Both '+' and '&' have to be put back in.  They were taken out for transmission.
+$updateArray = json_decode(preg_replace('/pLUsSign/',"+", preg_replace('/aMPerSand/',"&",$_POST['updateData'])),true);
+//echo preg_replace('/pLUsSign/',"+", preg_replace('/aMPerSand/',"&",$_POST['updateData']));
 $lastDocID;
 $lastAction;
 $lastLineNum;
+//$masterFileHandle = null;
+
 foreach ($updateArray as $updateObject){
 	$dID = $updateObject["documentID"];
 	$action = $updateObject["action"];
 	$lineNum = $updateObject["lineNum"];
 	$text = $updateObject["text"];
 	
-	// This will ignore continuous updates to the same line, taking only the last (most current) one
-	//if(!($action == "u" && $lastAction == "u" && $lastLineNum == $lineNum && $lastDocID == $dID)){
-		doUpdate($uID, $dID, $action, $lineNum, $text);
-	//}
+	//if($masterFileHandle == null || $lastDocID != $dID){
+	
+	//}	
+	
+	doUpdate($uID, $dID, $action, $lineNum, $text);
+
 	
 	$lastDocID = $dID;
 	$lastAction = $action;
