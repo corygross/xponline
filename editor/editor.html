@@ -212,6 +212,7 @@ function typeSpecial(paramKEYCODE, paramIsAlt, paramIsCtl, paramIsShift) {
 			if ( cursorLine > XPODoc.getDocumentLength()-1 ) {
 				cursorLine = XPODoc.getDocumentLength()-1;
 				cursorColumn = XPODoc.getLineLength( cursorLine )-1;
+				if( cursorColumn < 0 ) cursorColumn = 0;
 			} else if ( cursorColumn >= XPODoc.getLineLength( cursorLine ) ) cursorColumn = XPODoc.getLineLength(cursorLine);
 			if(isIE == true){
 				myIFrame.scrollBy(0,guiDoc.body.clientHeight-PADDING_TOP);
@@ -420,8 +421,7 @@ function gotoLine( paramLineNum ) {
 function gotoPosition( paramLineNum, paramColNum ) {
 	XPODoc.setLineUpdated( cursorLine );
 	XPODoc.setLineUpdated( paramLineNum );
-	cursorLine = paramLineNum;
-	cursorColumn = paramColNum;	
+	setCursor( paramLineNum, paramColNum );
 	XPODoc.renderUpdates( cursorLine, cursorColumn );
 	displayCursorPos();
 	adjustScroll();
@@ -463,12 +463,14 @@ function lockLines( newLineLocks ) {
 	// Clear the old line locks
 	for( var i=0; i < lockedLines.length; i++ )
 	{
-		clearFormatting( lockedLines[i].lineID );
+		XPODoc.setLineUpdated( lockedLines[i].lineID );
+		//clearFormatting( lockedLines[i].lineID );
 	}
 	// Add the new line locks
 	for( var j=0; j < newLineLocks.length; j++ )
 	{		
-		guiDoc.getElementById( XPODoc.getLineId(newLineLocks[j].lineID) ).innerHTML = "<span class='lock' onMouseOver=\"makeNewLockPopup(event,'lock"+j+"','"+newLineLocks[j].userName+"')\" onMouseOut=\"closeLockPopup('lock"+j+"')\">" + XPODoc.getLineText(newLineLocks[j].lineID) + "</span>";		
+		// Below is the old way to render locks
+		//guiDoc.getElementById( XPODoc.getLineId(newLineLocks[j].lineID) ).innerHTML = "<span class='lock' onMouseOver=\"makeNewLockPopup(event,'lock"+j+"','"+newLineLocks[j].userName+"')\" onMouseOut=\"closeLockPopup('lock"+j+"')\">" + XPODoc.getLineText(newLineLocks[j].lineID) + "</span>";		
 	}
 	lockedLines = newLineLocks;
 }
@@ -644,6 +646,9 @@ function updateDocument( paramAction, paramText, paramLineNum ) {
 			}
 		}
 	}
+	
+	// Replace any ampersands...	
+	paramText = paramText.replace(/&/g, "aMPerSand");
 	
 	// If we have multiple updates to the same line in a row, just use the latest one.
 	var arrayLength = pendingServerUpdates.length;

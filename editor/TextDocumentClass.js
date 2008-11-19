@@ -268,8 +268,10 @@ function TextDocument( paramHTMLDocumentPane )
 	
 	this.renderEntireDocument = function () {
 		for(var l=0; l < this.document.length; l++ ){
-			this.renderLine( l );
+			this.renderLine( l );			
 		}
+		// Dave, for some reason there are updates in the updateTracker after a full render.  (for example, the cursor doesn't get rendered on document load without this)
+		this.renderUpdates( cursorLine, cursorColumn );
 	}
 	
 	this.renderLine = function ( paramLineNum, paramCursorLine, paramCursorColumn ) {

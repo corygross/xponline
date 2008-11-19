@@ -27,7 +27,7 @@ function handleUpdateResponse( updateArray ){
 	{
 		//this isn't the update id I really want... I want the document specific one
 		var updateID = updateArray.contents[i].contents[0].contents[0].value;
-//alert(updateID);
+
 		var lineNum = updateArray.contents[i].contents[2].contents[0].value;
 		var lineTextObj = updateArray.contents[i].contents[3].contents[0];
 		var lineText = "";
@@ -41,14 +41,20 @@ function handleUpdateResponse( updateArray ){
 			XPODoc.updateToServer = false;
 			XPODoc.setLineText(lineNum, lineText);			
 			XPODoc.updateToServer = true;
+			
+			/*
+			this part was working before the Renderer
 			clearFormatting(lineNum);
+			*/
 		}
 		// A line insert
 		else if(updateArray.contents[i].contents[1].contents[0].value == "i"){
 			XPODoc.updateToServer = false;
 			XPODoc.insertLine(lineNum, lineText);
 			XPODoc.updateToServer = true;
-
+			
+			/*
+			this part was working before the Renderer
 			var addMe = guiDoc.createElement('div');
 			addMe.setAttribute('id', XPODoc.getLineId( lineNum ) );
 			addMe.setAttribute('class', "line");
@@ -56,17 +62,22 @@ function handleUpdateResponse( updateArray ){
 			lineNum++;
 			guiDoc.getElementById("entireDocument").insertBefore( addMe, guiDoc.getElementById( XPODoc.getLineId( lineNum ) ) );
 			clearFormatting( lineNum );
+			*/
 		}
 		// A line delete
 		else if(updateArray.contents[i].contents[1].contents[0].value == "d"){
+			/*
+			this part was working before the Renderer
 			var removeMe = guiDoc.getElementById(XPODoc.getLineId( lineNum ));
 			removeMe.parentNode.removeChild(removeMe);
+			*/
 			
 			XPODoc.updateToServer = false;
 			XPODoc.removeLine( lineNum );
 			XPODoc.updateToServer = true;				
 		}
-	}	
+	}
+	XPODoc.renderUpdates( cursorLine, cursorColumn );	
 
 }
 

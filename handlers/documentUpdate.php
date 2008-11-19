@@ -3,16 +3,12 @@ session_start();
 require_once "../dbConnect.php";
 
 $uID = $_SESSION['uID'];
-$updateArray = json_decode($_POST['updateData'],true);
-//$decoded = json_decode($_POST['updateData'],true);
-//echo $decoded[0]["action"];
-
-//echo $updateArray[0]["action"];
+//$updateArray = json_decode($_POST['updateData'],true);
+$updateArray = json_decode(preg_replace('/aMPerSand/',"&",$_POST['updateData']),true);
 
 $lastDocID;
 $lastAction;
 $lastLineNum;
-
 foreach ($updateArray as $updateObject){
 	$dID = $updateObject["documentID"];
 	$action = $updateObject["action"];
@@ -27,23 +23,8 @@ foreach ($updateArray as $updateObject){
 	$lastDocID = $dID;
 	$lastAction = $action;
 	$lastLineNum = $lineNum;
-	
-	//echo $updateObject["text"];
-	//doUpdate($uID, $updateObject["documentID"], $updateObject["action"], $updateObject["lineNum"], $updateObject["text"]);
 }
 
-/*
-$dID = $_GET['docID'];
-
-// The action is whether it is an update, insert, or delete
-$action = $_GET['action'];
-
-// The text is what text we want to change our line to
-$text = $_GET['text'];
-
-// The ID of the line we want to manipulate
-$lineNum = $_GET['lNum'];
-*/
 
 function doUpdate($uID, $dID, $action, $lineNum, $text){
 
