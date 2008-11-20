@@ -3,14 +3,14 @@
 -- http://www.phpmyadmin.net
 -- 
 -- Host: localhost
--- Generation Time: Nov 02, 2008 at 11:42 PM
+-- Generation Time: Nov 20, 2008 at 12:06 PM
 -- Server version: 5.0.45
 -- PHP Version: 5.2.5
 
 -- 
 -- Database: `xponline`
 -- 
--- CREATE DATABASE `xponline` DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci;
+CREATE DATABASE `xponline` DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci;
 USE xponline;
 
 -- --------------------------------------------------------
@@ -20,7 +20,7 @@ USE xponline;
 -- 
 
 DROP TABLE IF EXISTS `access`;
-CREATE TABLE IF NOT EXISTS `access` (
+CREATE TABLE `access` (
   `dID` int(11) NOT NULL,
   `uID` int(11) NOT NULL,
   `accessLvl` enum('r','w') collate utf8_unicode_ci NOT NULL default 'r',
@@ -41,7 +41,7 @@ CREATE TABLE IF NOT EXISTS `access` (
 -- 
 
 DROP TABLE IF EXISTS `contacts`;
-CREATE TABLE IF NOT EXISTS `contacts` (
+CREATE TABLE `contacts` (
   `uID1` int(11) NOT NULL,
   `uID2` int(11) NOT NULL,
   `u1accept` tinyint(1) NOT NULL default '0',
@@ -62,7 +62,7 @@ CREATE TABLE IF NOT EXISTS `contacts` (
 -- 
 
 DROP TABLE IF EXISTS `documents`;
-CREATE TABLE IF NOT EXISTS `documents` (
+CREATE TABLE `documents` (
   `dID` int(11) NOT NULL auto_increment,
   `dName` varchar(32) collate utf8_unicode_ci default NULL,
   `dLocation` varchar(128) collate utf8_unicode_ci default NULL,
@@ -81,7 +81,7 @@ CREATE TABLE IF NOT EXISTS `documents` (
 -- 
 
 DROP TABLE IF EXISTS `msgqueue`;
-CREATE TABLE IF NOT EXISTS `msgqueue` (
+CREATE TABLE `msgqueue` (
   `mID` int(11) NOT NULL auto_increment,
   `fromID` int(11) NOT NULL,
   `toID` int(11) NOT NULL,
@@ -105,7 +105,7 @@ CREATE TABLE IF NOT EXISTS `msgqueue` (
 -- 
 
 DROP TABLE IF EXISTS `updatequeue`;
-CREATE TABLE IF NOT EXISTS `updatequeue` (
+CREATE TABLE `updatequeue` (
   `updateID` int(11) NOT NULL,
   `userID` int(11) NOT NULL,
   PRIMARY KEY  (`updateID`,`userID`),
@@ -124,7 +124,7 @@ CREATE TABLE IF NOT EXISTS `updatequeue` (
 -- 
 
 DROP TABLE IF EXISTS `updates`;
-CREATE TABLE IF NOT EXISTS `updates` (
+CREATE TABLE `updates` (
   `updateID` int(11) NOT NULL auto_increment,
   `docID` int(11) NOT NULL,
   `changeByUser` int(11) NOT NULL,
@@ -149,7 +149,7 @@ CREATE TABLE IF NOT EXISTS `updates` (
 -- 
 
 DROP TABLE IF EXISTS `users`;
-CREATE TABLE IF NOT EXISTS `users` (
+CREATE TABLE `users` (
   `uID` int(11) NOT NULL auto_increment,
   `uFName` varchar(32) collate utf8_unicode_ci NOT NULL,
   `uLName` varchar(32) collate utf8_unicode_ci NOT NULL,
@@ -159,20 +159,21 @@ CREATE TABLE IF NOT EXISTS `users` (
   `uLastActivity` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
   PRIMARY KEY  (`uID`),
   UNIQUE KEY `uEmail` (`uEmail`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=15 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=16 ;
 
 -- 
 -- Dumping data for table `users`
 -- 
 
 INSERT INTO `users` (`uID`, `uFName`, `uLName`, `uEmail`, `uPass`, `uColor`, `uLastActivity`) VALUES 
-(7, 'Cory', 'Gross', 'corygross@hotmail.com', 'dfa9e8660763fd9453cbe56eebff2e39', 'black', '2008-11-02 23:39:54'),
-(9, 'Bob', 'Villa', 'bv@hotmail.com', 'dfa9e8660763fd9453cbe56eebff2e39', 'black', '2008-10-29 19:39:52'),
-(10, 'Cory', 'Tester', 'corygross@yahoo.com', 'dfa9e8660763fd9453cbe56eebff2e39', 'black', '2008-11-02 23:40:00'),
+(7, 'Cory', 'Gross', 'corygross@hotmail.com', 'dfa9e8660763fd9453cbe56eebff2e39', 'blue', '2008-11-20 11:56:23'),
+(9, 'Bob', 'Villa', 'bv@hotmail.com', 'dfa9e8660763fd9453cbe56eebff2e39', 'black', '2008-11-20 03:24:48'),
+(10, 'Cory', 'Tester', 'corygross@yahoo.com', 'dfa9e8660763fd9453cbe56eebff2e39', 'blue', '2008-11-20 11:56:52'),
 (11, 'Frank', 'Tank', 'ft@hotmail.com', 'dfa9e8660763fd9453cbe56eebff2e39', 'black', '2008-10-14 14:51:59'),
 (12, 'Red', 'Foreman', 'rf@hotmail.com', 'dfa9e8660763fd9453cbe56eebff2e39', 'black', '2008-10-14 14:57:27'),
 (13, 'Bob', 'Banks', 'bb2@hotmail.com', 'dfa9e8660763fd9453cbe56eebff2e39', 'black', '2008-10-14 14:58:05'),
-(14, 'Rodrigo', 'Richards', 'rr@hotmail.com', 'dfa9e8660763fd9453cbe56eebff2e39', 'black', '2008-10-14 14:59:01');
+(14, 'Rodrigo', 'Richards', 'rr@hotmail.com', 'dfa9e8660763fd9453cbe56eebff2e39', 'black', '2008-10-14 14:59:01'),
+(15, 'Dr.', 'Adams', 'd.robert.adams@gmail.com', '8f16834cd1a9060ec54abce72cea4da2', 'black', '2008-11-20 12:06:43');
 
 -- 
 -- Constraints for dumped tables
