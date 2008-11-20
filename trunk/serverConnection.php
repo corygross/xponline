@@ -182,7 +182,8 @@ function updateContactList($interval){
 }
 
 // Loop for awhile... waiting for something interesting to happen...
-for ($i = 0; $i<100; $i++) 
+//for ($i = 0; $i<60; $i++)
+for ($i = 0; $i<100; $i++)
 { 	
 	// Get the message to send (if any)
 	$messageToSend = getMessage($currentUserID);
