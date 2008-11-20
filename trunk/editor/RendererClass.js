@@ -72,7 +72,7 @@ function Renderer()
 				return tempCurrentLine.join("");
 				
 			case this.SELECTION_LINE:
-				return replaceHTMLEntities( "<span id='selection'>" + paramLineText + "</span>" );
+				return "<span id='selection'>" + replaceHTMLEntities( paramLineText ) + "</span>";
 			
 			case this.SELECTION_TAIL:
 				// paramArg1 = the starting position of the selection
@@ -101,7 +101,7 @@ function Renderer()
 				var tempPosition1, tempPosition2;
 				
 				/* Need to know which order we need to operate in */
-				if ( paramArg1 < paramArg2 ) {
+				if ( paramArg1 <= paramArg2 ) {
 					tempPosition1 = paramArg1;
 					tempPosition2 = paramArg2;
 				}
@@ -111,9 +111,9 @@ function Renderer()
 				}
 				
 				/* Slice 'n dice */
-				tempCurrentLine.push( replaceHTMLEntities( paramLineText.substring(0,tempPosition1)) );
-		        tempCurrentLine.push( replaceHTMLEntities( paramLineText.substr(tempPosition1,tempPosition2)) );
-				tempCurrentLine.push( replaceHTMLEntities( paramLineText.substr(tempPosition2)) );
+				tempCurrentLine.push( replaceHTMLEntities( paramLineText.substring(0,tempPosition1) ) );
+		        tempCurrentLine.push( replaceHTMLEntities( paramLineText.substr(tempPosition1,tempPosition2) ) );
+				tempCurrentLine.push( replaceHTMLEntities( paramLineText.substr(tempPosition2) ) );
 				
 				/* Determine position of cursor */
 				if ( tempPosition1 == paramArg2 ) {
@@ -122,7 +122,7 @@ function Renderer()
 				}
 				else {
 					// Cursor is the second position
-					tempCurrentLine[1] = "<span id='selection'>"+replaceHTMLEntities( tempCurrentLine[1].substring(0,tempCurrentLine[1].length()-2) )+"</span><span id='cursor'>"+replaceHTMLEntities( tempCurrentLine[1].substr(tempCurrentLine[1].length()-2) )+"</span>";
+					tempCurrentLine[1] = "<span id='selection'>"+tempCurrentLine[1].substring(0,tempCurrentLine[1].length-1)+"</span><span id='cursor'>"+tempCurrentLine[1].substr(tempCurrentLine[1].length-1)+"</span>";
 				}
 				// Return this mess
 				return tempCurrentLine.join("");
