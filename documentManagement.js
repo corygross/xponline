@@ -2,8 +2,10 @@ var languageFlag = "text"; //For syntax highlighting
 
 function closeDocument(){	
 	if(documentIsOpen() == true){
+		XPODoc.updateToServer = false;
 		XPODoc.blankDocument();
 		refreshDocument();
+		XPODoc.updateToServer = true;
 	}
 	changeDocTitle("");
 	updateLineCol("","");
@@ -140,7 +142,6 @@ function grantAccess(){
 function newBlankDocument()
 {
 	var dName = document.getElementById('newDocName').value;
-	//alert(dName);
 	if(dName == ""){
 		alert('Please enter a name for the new document.');
 		return;
@@ -156,8 +157,6 @@ function newBlankDocument()
 				alert(transport.responseText);
 			}
 			else{
-			//	alert(responseArr[1]);
-				//alert(responseArr[2]);
 				openDocument(responseArr[1],responseArr[2]);
 			}
 		},		
