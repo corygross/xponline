@@ -23,26 +23,110 @@ function Renderer()
 		 * The space is temporary, and thus is not actually written to the document. */
 		if ( paramLineText == "" ) paramLineText = ' ';
 		
-		/* If the cursor position parameter is set, this implies that the cursor is at this line and must be rendered.  If not, it's business as usual. */
-		if ( paramMODE == this.LOCKED ) {
-			// paramArg1 = the name of the user that locked the line
-			// paramArg2 = the current line number
-			return "<span class='lock' onMouseOver=\"makeNewLockPopup(event,'lock"+paramArg2+"','"+paramArg1+"')\" onMouseOut=\"closeLockPopup('lock"+paramArg2+"')\">" + replaceHTMLEntities( paramLineText ) + "</span>";
-		}
-		else if ( paramMODE == this.NORMAL ) {
-			return replaceHTMLEntities( paramLineText );
-		}
-		else if ( paramMODE == this.CURSOR ) {
-			// temp fix
-			var paramCursorPosition = paramArg1;
-			var tempCurrentLine = new Array();
-	        tempCurrentLine.push( replaceHTMLEntities( paramLineText.substring(0,paramCursorPosition)) );
-	        tempCurrentLine.push(replaceHTMLEntities( paramLineText.substr(paramCursorPosition, 1)) );
-	        tempCurrentLine.push(replaceHTMLEntities( paramLineText.substring(paramCursorPosition+1)) );
-			if ( tempCurrentLine[1] == "" ) tempCurrentLine[1] = ' ';
-			tempCurrentLine[1] = "<span id='cursor'>" + tempCurrentLine[1] + "</span>";
-			return tempCurrentLine.join("");
-		}
+		// Switch statement to handle different values of paramMODE
+		switch ( paramMODE )
+		{
+			case this.CURSOR:
+				// temp fix
+				var paramCursorPosition = paramArg1;
+				var tempCurrentLine = new Array();
+		        tempCurrentLine.push( replaceHTMLEntities( paramLineText.substring(0,paramCursorPosition)) );
+		        tempCurrentLine.push(replaceHTMLEntities( paramLineText.substr(paramCursorPosition, 1)) );
+		        tempCurrentLine.push(replaceHTMLEntities( paramLineText.substring(paramCursorPosition+1)) );
+				if ( tempCurrentLine[1] == "" ) tempCurrentLine[1] = ' ';
+				tempCurrentLine[1] = "<span id='cursor'>" + tempCurrentLine[1] + "</span>";
+				return tempCurrentLine.join("");
+			
+			case this.LOCKED:
+				// paramArg1 = the name of the user that locked the line
+				// paramArg2 = the current line number
+				return "<span class='lock' onMouseOver=\"makeNewLockPopup(event,'lock"+paramArg2+"','"+paramArg1+"')\" onMouseOut=\"closeLockPopup('lock"+paramArg2+"')\">" + replaceHTMLEntities( paramLineText ) + "</span>";
+			
+			case this.NORMAL:
+				return replaceHTMLEntities( paramLineText );
+				
+			case this.SELECTION_HEAD:
+				// paramArg1 = the starting position of the selection
+				var tempCurrentLine = new Array();
+				tempCurrentLine.push( replaceHTMLEntities( paramLineText.substring(0,paramArg1)) );
+		        tempCurrentLine.push( replaceHTMLEntities( paramLineText.substr(paramArg1)) );
+				tempCurrentLine[1] = "<span id='selection'>" + tempCurrentLine[1] + "</span>";
+				return tempCurrentLine.join("");
+				
+			case this.SELECTION_HEAD:
+				// paramArg1 = the starting position of the selection
+				var tempCurrentLine = new Array();
+				tempCurrentLine.push( replaceHTMLEntities( paramLineText.substring(0,paramArg1)) );
+		        tempCurrentLine.push( replaceHTMLEntities( paramLineText.substr(paramArg1)) );
+				tempCurrentLine[1] = "<span id='selection'>" + tempCurrentLine[1] + "</span>";
+				return tempCurrentLine.join("");
+				
+			case this.SELECTION_HEAD_CURSOR:
+				// paramArg1 = the starting position of the selection (and the cursor position)
+				var tempCurrentLine = new Array();
+				tempCurrentLine.push( replaceHTMLEntities( paramLineText.substring(0,paramArg1)) );
+		        tempCurrentLine.push( replaceHTMLEntities( paramLineText.substr(paramArg1,1)) );
+				tempCurrentLine.push( replaceHTMLEntities( paramLineText.substr(paramArg1+1)) );
+				tempCurrentLine[1] = "<span id='cursor'>" + tempCurrentLine[1] + "</span>";
+				tempCurrentLine[2] = "<span id='selection'>" + tempCurrentLine[2] + "</span>";
+				return tempCurrentLine.join("");
+				
+			case this.SELECTION_LINE:
+				return replaceHTMLEntities( "<span id='selection'>" + paramLineText + "</span>" );
+			
+			case this.SELECTION_TAIL:
+				// paramArg1 = the starting position of the selection
+				var tempCurrentLine = new Array();
+				tempCurrentLine.push( replaceHTMLEntities( paramLineText.substring(0,paramArg1)) );
+		        tempCurrentLine.push( replaceHTMLEntities( paramLineText.substr(paramArg1)) );
+				tempCurrentLine[1] = "<span id='selection'>" + tempCurrentLine[0] + "</span>";
+				return tempCurrentLine.join("");
+				
+			case this.SELECTION_TAIL_CURSOR:
+				// paramArg1 = the starting position of the selection (and the cursor position)
+				var tempCurrentLine = new Array();
+				tempCurrentLine.push( replaceHTMLEntities( paramLineText.substring(0,paramArg1)) );
+		        tempCurrentLine.push( replaceHTMLEntities( paramLineText.substr(paramArg1,1)) );
+				tempCurrentLine.push( replaceHTMLEntities( paramLineText.substr(paramArg1+1)) );
+				tempCurrentLine[0] = "<span id='selection'>" + tempCurrentLine[0] + "</span>";
+				tempCurrentLine[1] = "<span id='cursor'>" + tempCurrentLine[1] + "</span>";
+				return tempCurrentLine.join("");
+				
+			case this.SELECTION_ENTIRE:
+				// paramArg1 = the starting position of the selection
+				// paramArg2 = the cursor position
+				
+				/* Local variables */
+				var tempCurrentLine = new Array();
+				var tempPosition1, tempPosition2;
+				
+				/* Need to know which order we need to operate in */
+				if ( paramArg1 < paramArg2 ) {
+					tempPosition1 = paramArg1;
+					tempPosition2 = paramArg2;
+				}
+				else {
+					tempPosition1 = paramArg2;
+					tempPosition2 = paramArg1;
+				}
+				
+				/* Slice 'n dice */
+				tempCurrentLine.push( replaceHTMLEntities( paramLineText.substring(0,tempPosition1)) );
+		        tempCurrentLine.push( replaceHTMLEntities( paramLineText.substr(tempPosition1,tempPosition2)) );
+				tempCurrentLine.push( replaceHTMLEntities( paramLineText.substr(tempPosition2)) );
+				
+				/* Determine position of cursor */
+				if ( tempPosition1 == paramArg2 ) {
+					// Cursor is the first position
+					tempCurrentLine[1] = "<span id='cursor'>"+replaceHTMLEntities( tempCurrentLine[1].substring(0,1) )+"</span><span id='selection'>"+replaceHTMLEntities( tempCurrentLine[1].substr(1) )+"</span>";
+				}
+				else {
+					// Cursor is the second position
+					tempCurrentLine[1] = "<span id='selection'>"+replaceHTMLEntities( tempCurrentLine[1].substring(0,tempCurrentLine[1].length()-2) )+"</span><span id='cursor'>"+replaceHTMLEntities( tempCurrentLine[1].substr(tempCurrentLine[1].length()-2) )+"</span>";
+				}
+				// Return this mess
+				return tempCurrentLine.join("");
+		} // END SWITCH
 	}
 	
 	/************************************/
@@ -65,7 +149,7 @@ function Renderer()
 		paramText = paramText.replace(/\//g, "&#47;");
 		paramText = paramText.replace(/\\/g, "&#92;");
 		paramText = paramText.replace(/\t/g,"&nbsp;&nbsp;&nbsp;&nbsp;");
-	return paramText;
-}
+		return paramText;
+	}
 	
 }

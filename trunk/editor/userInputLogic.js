@@ -127,22 +127,20 @@ function getSelectedText(paramDocument) {
 }
 // If selection mode is not 'on', this function sets it 'on' and sets the selectionAnchor to given position (if given; otherwise current cursor position)
 // If selection mode is already on, this method does nothing
-// TODO / FIXME:  Really should check the legality of the given parameters.  Maybe make a function just for this purpose, since this problem comes up often
-function setSelectMode(paramLine, paramColumn) {
+function setSelectMode(paramDocument, paramLine, paramColumn) {
 	if ( !isSelectMode ) {
 		if (paramLine == null) paramLine = cursorLine;
 		if (paramColumn == null) paramColumn = cursorColumn;
-		selectionAnchorLine = paramLine;
-		selectionAnchorColumn = paramColumn;
-		isSelectMode = true;
+		// kinda hackish
+		var returnValue = paramDocument.setCurrentSelection( paramLine, paramColumn, paramLine, paramColumn );
+		if ( returnValue ) isSelectMode = true;
 	}
 	else return false;
 }
 // This function sets selection mode 'off'.
-function resetSelectMode() {
+function resetSelectMode( paramDocument ) {
 	isSelectMode = false;
-	selectionAnchorColumn = null;	// could do -1 too...
-	selectionAnchorLine = null;
+	paramDocument.clearCurrentSelection();
 }
 
 
@@ -189,7 +187,7 @@ function typeSpecial(paramDoc, paramKEYCODE, paramIsAlt, paramIsCtl, paramIsShif
 	
 		case LEFTARROWKEY: 
 			/* If we are holding shift, moving the cursor actually selects text, so we need to ensure we are in select mode */
-			if ( paramIsShift ) if ( !isSelectMode ) setSelectMode(cursorLine, cursorColumn);
+			if ( paramIsShift ) if ( !isSelectMode ) setSelectMode( paramDoc, cursorLine, cursorColumn );
 			
 			// If we are at the first char of the first line do nothing
 			// If we are at the first char of any other line, wrap to the last char of the previous line
@@ -208,7 +206,7 @@ function typeSpecial(paramDoc, paramKEYCODE, paramIsAlt, paramIsCtl, paramIsShif
 			
 		case RIGHTARROWKEY:
 			/* If we are holding shift, moving the cursor actually selects text, so we need to ensure we are in select mode */
-			if ( paramIsShift ) if ( !isSelectMode ) setSelectMode(cursorLine, cursorColumn);
+			if ( paramIsShift ) if ( !isSelectMode ) setSelectMode( paramDoc, cursorLine, cursorColumn );
 			
 			// If we are at the last char of the last line, do nothing
 			// If we are at the last char of any other line, wrap to the first char of the next line
@@ -227,7 +225,7 @@ function typeSpecial(paramDoc, paramKEYCODE, paramIsAlt, paramIsCtl, paramIsShif
 			
 		case UPARROWKEY:
 			/* If we are holding shift, moving the cursor actually selects text, so we need to ensure we are in select mode */
-			if ( paramIsShift ) if ( !isSelectMode ) setSelectMode(cursorLine, cursorColumn);
+			if ( paramIsShift ) if ( !isSelectMode ) setSelectMode( paramDoc, cursorLine, cursorColumn );
 			
 			// If we are on the first line, move to first char of line.
 			// If we are not on the first line, see if the line is locked and alert the user if it is
@@ -239,7 +237,7 @@ function typeSpecial(paramDoc, paramKEYCODE, paramIsAlt, paramIsCtl, paramIsShif
 			
 		case DOWNARROWKEY:
 			/* If we are holding shift, moving the cursor actually selects text, so we need to ensure we are in select mode */
-			if ( paramIsShift ) if ( !isSelectMode ) setSelectMode(cursorLine, cursorColumn);			
+			if ( paramIsShift ) if ( !isSelectMode ) setSelectMode( paramDoc, cursorLine, cursorColumn );			
 			
 			// If we are on the last line, move to last char of line.
 			// If we are not on the last line, see if the line is locked and alert the user if it is
@@ -251,7 +249,7 @@ function typeSpecial(paramDoc, paramKEYCODE, paramIsAlt, paramIsCtl, paramIsShif
 			
 		case ENDKEY:
 			/* If we are holding shift, moving the cursor actually selects text, so we need to ensure we are in select mode */
-			if ( paramIsShift ) if ( !isSelectMode ) setSelectMode(cursorLine, cursorColumn);
+			if ( paramIsShift ) if ( !isSelectMode ) setSelectMode( paramDoc, cursorLine, cursorColumn );
 			
 			/* If we are holding CTL, then we want to go to the very last char of the document.  Otherwise, of just the current line */
 			if ( paramIsCtl ) setCursor( paramDoc.getDocumentLength()-1, paramDoc.getLineLength( paramDoc.getDocumentLength()-1 ) );
@@ -261,7 +259,7 @@ function typeSpecial(paramDoc, paramKEYCODE, paramIsAlt, paramIsCtl, paramIsShif
 			
 		case HOMEKEY:
 			/* If we are holding shift, moving the cursor actually selects text, so we need to ensure we are in select mode */
-			if ( paramIsShift ) if ( !isSelectMode ) setSelectMode();
+			if ( paramIsShift ) if ( !isSelectMode ) setSelectMode( paramDoc, cursorLine, cursorColumn );
 			
 			/* If we are holding CTL, then we want to go to the very first char of the document.  Otherwise, of just the current line */
 			if ( paramIsCtl ) setCursor( 0, 0 );
@@ -271,7 +269,7 @@ function typeSpecial(paramDoc, paramKEYCODE, paramIsAlt, paramIsCtl, paramIsShif
 			
 		case PAGEUPKEY:
 			/* If we are holding shift, moving the cursor actually selects text, so we need to ensure we are in select mode */
-			if ( paramIsShift ) if ( !isSelectMode ) setSelectMode(cursorLine, cursorColumn);
+			if ( paramIsShift ) if ( !isSelectMode ) setSelectMode( paramDoc, cursorLine, cursorColumn );
 			
 			/* If we are holding CTL, Notepadd++ and a variety of other programs perform no function in this case.  Do the same */
 			if ( paramIsCtl ) break;
@@ -298,7 +296,7 @@ function typeSpecial(paramDoc, paramKEYCODE, paramIsAlt, paramIsCtl, paramIsShif
 					
 		case PAGEDOWNKEY:
 			/* If we are holding shift, moving the cursor actually selects text, so we need to ensure we are in select mode */
-			if ( paramIsShift ) if ( !isSelectMode ) setSelectMode(cursorLine, cursorColumn);
+			if ( paramIsShift ) if ( !isSelectMode ) setSelectMode( paramDoc, cursorLine, cursorColumn );
 			
 			/* If we are holding CTL, Notepadd++ and a variety of other programs perform no function in this case.  Do the same */
 			if ( paramIsCtl ) break;
