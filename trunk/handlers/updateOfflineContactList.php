@@ -1,13 +1,11 @@
 <?php
 session_start();
-//require_once "../dbConnect.php";
-require_once $_SESSION['homeDir']."\dbConnect.php";
+
+require_once $_SESSION['homeDir']."/dbConnect.php";
 
 $currentUserID = "";
 
 if(isset($_SESSION['uID'])) { $currentUserID = $_SESSION['uID']; }
-
-//$currentUserID = $_SESSION['uID'];
 
 if($currentUserID == ""){
 	echo "fail";
