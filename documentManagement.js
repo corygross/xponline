@@ -201,11 +201,6 @@ function openDocument(dID, dName)
 	});
 }
 
-function downloadDocument(dName)
-{
-	$('super_form').submit();
-}
-
 /*
  * Functions: setSyntaxFlag
  *

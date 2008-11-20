@@ -59,7 +59,13 @@ function deleteMenuClick()
 
 function downloadMenuClick()
 {
-	$('super_form').submit();	
+	if(typeof(XPODoc.documentID) != "undefined" && XPODoc.documentID != ""){
+		$('super_form').action = "./handlers/downloadDocument.php?dID=" + XPODoc.documentID;
+		$('super_form').submit();
+	}
+	else{
+		alert("You must first open the document you want to download.");
+	}
 }
 
 function exitMenuClick()
