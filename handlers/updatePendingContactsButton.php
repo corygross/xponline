@@ -1,7 +1,7 @@
 <?php
 session_start();
 
-require_once $_SESSION['homeDir']."\dbConnect.php";
+require_once $_SESSION['homeDir']."/dbConnect.php";
 
 function getButton(){
 	if(isset($_SESSION['uID'])) { $uID = $_SESSION['uID']; }
