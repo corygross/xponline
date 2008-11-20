@@ -30,8 +30,6 @@ var OVERWRITE = 1;
 var isSelectMode;
 var isInsertMode;
 
-
-
 /***********************************************/
 /********** MOUSE RELATED FUNCTIONS ********/
 
@@ -332,7 +330,10 @@ function typeSpecial(paramDoc, paramKEYCODE, paramIsAlt, paramIsCtl, paramIsShif
 			// -- which doesn't exist in our implementation.  We simulate this removal by merging lines.
 			// Otherwise, we simply remove the previous char in the current line
 			if ( cursorLine == 0 && cursorColumn == 0 ) break;
-			if ( cursorColumn == 0 ) {
+			if ( cursorColumn == 0 && paramDoc.getLineLockingUser( cursorLine-1 ) != null ) {
+				alert("Another user is currently on line "+(cursorLine-1)+", and it is locked.");
+			}
+			else if ( cursorColumn == 0 ) {
 				// Merge the two lines, and remove the original line
 				cursorColumn = paramDoc.getLineLength( cursorLine-1 );	// Place cursor at end of prior line
 				// Perform text merge into prior line
@@ -353,7 +354,10 @@ function typeSpecial(paramDoc, paramKEYCODE, paramIsAlt, paramIsCtl, paramIsShif
 			// If we are at the last char of any other line, we remove the 'newline character', thus merging the current line with the next line
 			// Otherwise, we simply remove the char at the cursor position
 			if ( cursorColumn == paramDoc.getLineLength( paramDoc.getDocumentLength()-1 )-1 && cursorLine == paramDoc.getDocumentLength()-1 ) break;
-			if ( cursorColumn == paramDoc.getLineLength( cursorLine ) ) {
+			if ( cursorColumn == paramDoc.getLineLength( cursorLine ) && paramDoc.getLineLockingUser( cursorLine+1 ) != null ) {
+				alert("Another user is currently on line "+(cursorLine+1)+", and it is locked.");
+			}
+			else if ( cursorColumn == paramDoc.getLineLength( cursorLine ) ) {
 				// Merge the next line into the current line
 				paramDoc.setLineText( cursorLine, paramDoc.getLineText(cursorLine) + paramDoc.getLineText(cursorLine+1) );
 				// Remove the line in question from our data structure

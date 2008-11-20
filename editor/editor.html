@@ -135,6 +135,7 @@ function gotoPosition( paramLineNum, paramColNum ) {
 	XPODoc.renderUpdates( cursorLine, cursorColumn );
 	displayCursorPos();
 	adjustScroll();
+	updateLineLock( paramLineNum );
 }
 
 // This function takes each line of input and applies formatting based on keywords
@@ -579,7 +580,7 @@ onMouseDownFunction = function( paramEvent ) {
 
 	// Calculate new cursor position
 	captureMousePos(paramEvent);
-	deriveCursorForDocument(mouseX,mouseY,XPODoc);
+	deriveCursorForDocument(mouseX,mouseY,XPODoc);	
 	
 	// Flag the old line as needing re-rendering
 	XPODoc.setLineUpdated( oldCursorLine );
