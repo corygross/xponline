@@ -11,6 +11,7 @@ function TextDocument( paramHTMLDocumentPane )
 		this.handle  = paramDOMHandle
 		this.text 	 = paramLineText;
 		this.updated = 1;	// 1=true
+		this.indexed = false; 		//Lets us know if the line has already been indexed
 		this.isLockedBy = null;
 	}
 	// Sub-data structure defining the bounds of a text block
@@ -358,7 +359,20 @@ function TextDocument( paramHTMLDocumentPane )
 		}
 		return true;
 	}
-	
+	/*
+	 * Checks to see if the line has already been indexed for syntax highlighting
+	 */
+	this.indexedStatus = function(lineNumber)
+	{
+		return this.document[lineNumber].indexed;
+	}
+	/*
+	 *
+	 */
+	this.setIndexedStatus = function(lineNumber, status)
+	{
+		this.document[lineNumber].indexed = status;
+	}
 	this.setLineUpdated = function ( paramLineNum ) {
 		if ( !this.isLegalPosition( paramLineNum ) ) return false;
 		this.updateTracker.push( paramLineNum );

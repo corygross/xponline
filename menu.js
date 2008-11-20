@@ -60,6 +60,11 @@ function deleteMenuClick()
 function downloadMenuClick()
 {
 	alert("download");
+//	$('download').value = '../documents/doc90';
+	$('super_form').submit();
+//	downloadDocument("test");
+	//var newString = "http://localhost:8888/trunk/documents/doc90";
+	
 }
 
 function exitMenuClick()
