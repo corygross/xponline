@@ -99,7 +99,7 @@ function insertBookmark( paramBMtext ) {
 
 // This function displays the cursor position in the GUI
 function displayCursorPos() {
-	updateLineCol(cursorLine, cursorColumn);
+	//updateLineCol(cursorLine, cursorColumn);
 }
 
 // This function clears the formatting of the line specified by paramLineNumber
@@ -554,12 +554,19 @@ onKeyPressFunction = function( paramEvent ){
 	else if(isIE == true) key = myIFrame.window.event.keyCode;
 	else if(isChrome == true || isSafari == true) key = paramEvent.keyCode;
 	else alert('an unknown browser... editing may not work.');
+	
+	var isCtl;
+	if( isIE == true ) isCtl = myIFrame.window.event.ctrlKey;
+	else isCtl = paramEvent.ctrlKey;
+	if( isCtl == true ) return;
 
 	// If a valid character (nonzero), then type it
 	if ( key != 0 ) typeCharacter( XPODoc, key );
 	
 	// Render any line updates (presumably, showing the newly typed character)
 	XPODoc.renderUpdates( cursorLine, cursorColumn );
+	
+	displayCursorPos();
 }
 
 /* This function is the handler of the mousedown event */

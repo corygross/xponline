@@ -286,6 +286,8 @@ function typeSpecial(paramDoc, paramKEYCODE, paramIsAlt, paramIsCtl, paramIsShif
 				cursorLine = 0;
 				cursorColumn = 0;
 			} else if ( cursorColumn >= paramDoc.getLineLength( cursorLine ) ) cursorColumn = paramDoc.getLineLength(cursorLine);
+			// If the line is locked, move down one
+			while ( paramDoc.getLineLockingUser( cursorLine ) != null ) { cursorLine++; }
 			if(isIE == true){
 				myIFrame.scrollBy(0,-guiDoc.body.clientHeight+PADDING_TOP);
 			}
@@ -314,6 +316,8 @@ function typeSpecial(paramDoc, paramKEYCODE, paramIsAlt, paramIsCtl, paramIsShif
 				cursorColumn = paramDoc.getLineLength( cursorLine )-1;
 				if( cursorColumn < 0 ) cursorColumn = 0;
 			} else if ( cursorColumn >= paramDoc.getLineLength( cursorLine ) ) cursorColumn = paramDoc.getLineLength(cursorLine);
+			// If the line is locked, move up one
+			while ( paramDoc.getLineLockingUser( cursorLine ) != null ) { cursorLine--; }
 			if(isIE == true){
 				myIFrame.scrollBy(0,guiDoc.body.clientHeight-PADDING_TOP);
 			}

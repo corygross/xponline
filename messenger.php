@@ -19,7 +19,7 @@ Contacts
 
 <ul id="contactList" name="contactList" class="contacts">
 <!-- this is updated with the current contact list -->
-<img src="images/red-loading-sm.gif" alt="loading..." />&nbsp;
+<img src="images/red-loading-sm.gif" style="padding:5px 5px;" alt="loading..." />&nbsp;
 Loading...
 </ul>
 
