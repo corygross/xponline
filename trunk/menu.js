@@ -43,6 +43,7 @@ function copyIconClicked()
 function cutIconClicked()
 {
 	alert("cut");
+	return;
 	var selection = XPODoc.getCurrentSelection();
 	if( selection != false ){
 		var cutText = XPODoc.getTextInRange(selection.startLine, selection.startColumn, selection.endLine, selection.endColumn, 1);
