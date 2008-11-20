@@ -21,10 +21,22 @@ runQuery($sqlUpdateTime);
 //UPDATE when the last time the user was connected and working on a particular document
 if($currentDocumentID != ""){
 	$sqlUpdateDocTime = "UPDATE access SET dLastActivity=CURRENT_TIMESTAMP WHERE dID='$currentDocumentID' AND uID='$currentUserID';";
-	runQuery($sqlUpdateDocTime);
+	runQuery($sqlUpdateDocTime);	
 }
 
+cleanupUpdateTable();
+
+
 if (ob_get_level() == 0) ob_start();
+
+// Clean up the update table every 5 minutes-ish if they have no references from the update queue
+function cleanupUpdateTable(){
+	if(isset($_SESSION['updateTableCleanup']) == false || $_SESSION['updateTableCleanup'] < time()){
+		$_SESSION['updateTableCleanup'] = intval(time()) + 300;
+		$cleanupQuery = "DELETE FROM updates WHERE updates.updateID NOT IN ( SELECT updatequeue.updateID FROM updatequeue );";
+		runQuery($cleanupQuery);
+	}
+}
 
 /*
  * Retrieves a message from the message queue
@@ -117,11 +129,11 @@ function getPeerUpdates($uID, $dID){
 		$checkForUpdates = false;
 		if($fileModifyTime != $_SESSION["$lastModifyKey"]){
 			$_SESSION["$lastModifyKey"] = $fileModifyTime;
-			$_SESSION["$checkedAgainKey"] = $fileModifyTime + 2;
+			$_SESSION["$checkedAgainKey"] = intval(time()) + 3;
 			$checkForUpdates = true;
 		}
-		else if($_SESSION["$checkedAgainKey"] != "false" && $_SESSION["$checkedAgainKey"] <= $fileModifyTime){
-			$_SESSION["$checkedAgainKey"] = "false";
+		else if( $_SESSION["$checkedAgainKey"] != false && $_SESSION["$checkedAgainKey"] < time() ){
+			$_SESSION["$checkedAgainKey"] = false;
 			$checkForUpdates = true;
 		}
 		
@@ -149,7 +161,7 @@ function getPeerUpdates($uID, $dID){
 // Update the pending contacts button every $interval seconds (approx)
 function updatePendingContactsButton($interval){
 	if( isset($_SESSION['updateContactButtonTime']) == false || $_SESSION['updateContactButtonTime'] < time() || $_GET['init'] == "true" ){
-		$_SESSION['updateContactButtonTime'] = time() + $interval;
+		$_SESSION['updateContactButtonTime'] = intval(time()) + $interval;
 	}
 	else{
 		return "";
@@ -165,11 +177,11 @@ function updatePendingContactsButton($interval){
 function updateContactList($interval){
 	$returnImmediately = false;
 	if( isset($_SESSION['updateContactListTime']) == false || $_GET['init'] == "true" ){
-		$_SESSION['updateContactListTime'] = time() + $interval;
+		$_SESSION['updateContactListTime'] = intval(time()) + $interval;
 		$returnImmediately = true;
 	}
 	else if( $_SESSION['updateContactListTime'] < time() ){
-		$_SESSION['updateContactListTime'] = time() + $interval;
+		$_SESSION['updateContactListTime'] = intval(time()) + $interval;
 	}
 	else{
 		return false;
