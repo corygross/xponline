@@ -6,7 +6,7 @@ $uID = $_SESSION['uID'];
 
 // Both '+' and '&' have to be put back in.  They were taken out for transmission.
 $updateArray = json_decode(preg_replace('/pLUsSign/',"+", preg_replace('/aMPerSand/',"&",$_POST['updateData'])),true);
-//echo preg_replace('/pLUsSign/',"+", preg_replace('/aMPerSand/',"&",$_POST['updateData']));
+echo "*".$_POST['updateData']."*";
 $lastDocID;
 $lastAction;
 $lastLineNum;
@@ -33,7 +33,7 @@ foreach ($updateArray as $updateObject){
 
 function doUpdate($uID, $dID, $action, $lineNum, $text){
 
-	if($uID == "" || $dID == "" || $action == "" || $lineNum == ""){
+	if($uID == "" || $dID == "" || $action == "" || $lineNum === ""){
 		return;
 	}
 
