@@ -140,6 +140,7 @@ function grantAccess(){
 function newBlankDocument()
 {
 	var dName = document.getElementById('newDocName').value;
+	//alert(dName);
 	if(dName == ""){
 		alert('Please enter a name for the new document.');
 		return;
@@ -155,6 +156,8 @@ function newBlankDocument()
 				alert(transport.responseText);
 			}
 			else{
+			//	alert(responseArr[1]);
+				//alert(responseArr[2]);
 				openDocument(responseArr[1],responseArr[2]);
 			}
 		},		
@@ -173,7 +176,7 @@ function openDocument(dID, dName)
 	showLoadingIndicator();
 
 	// Get the document from the server and display it!!!
-	new Ajax.Request('./handlers/getDocumentContents.php?dID=' + dID, {
+	new Ajax.Request('http://localhost:8888/trunk/handlers/getDocumentContents.php?dID=' + dID,  {
 		method:'get',
 		onSuccess: function(transport) {
 			hideLoadingIndicator();
@@ -196,6 +199,20 @@ function openDocument(dID, dName)
 			alert("There was a problem opening the document.  Please try again. failure 2");
 		}		
 	});
+}
+
+function downloadDocument(dName)
+{
+
+//	$('download').value = 'top10';
+	$('super_form').submit();
+	
+	//new Ajax.Request('./handlers/downloadDocument.php?dName=' + dName, {
+//		method:'get',
+//		onSuccess: function(transport){alert(transport.responseText);},
+//		onFailure: function(){alert("All bad")}
+//	});
+	
 }
 
 /*

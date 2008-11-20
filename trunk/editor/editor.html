@@ -142,12 +142,11 @@ function gotoPosition( paramLineNum, paramColNum ) {
 function indexLineText(inputText)
 {
 // This function or a subsequent one is slow as hell.  bypass that for now by just returning the inputtext
-return inputText;
+	return inputText;
 	var newLine = "";
 //	var testArr = new Array("public", "static", "void");
 	var words = inputText.split(" ");
 	
-
 		for(var counter = 0; counter < words.size(); counter++)
 		{	
 			var curWord = words[counter];
@@ -163,6 +162,7 @@ return inputText;
 				var unmarkedWord = writeSpans(curWord, "none");
 				newLine += unmarkedWord;
 				newLine += writeSpans("", "space");
+			//newLine += curWord;
 			}
 	//	}
 	}
@@ -190,6 +190,22 @@ function lockLines( newLineLocks ) {
 // This function renders the cursor in the document. 
 function renderCursor() 
 {
+	//Another option is to keep track of spaces. If you know where the first spaces is and when you encounter 
+	//the second, check that word for syntax highlighting
+
+	/*
+	 * 1. Keep track of the last space location on a line in a variable
+	 * 2. If the line has already been indexed, grab the rest of the line from the last space to the 
+	 *    end of the current line.
+	 * 3. Run the substring and through the indexLineText function
+	 *
+	 *
+	 */
+//	alert("CursorLine is " + cursorLine);
+//	if(XPODoc.indexedStatus(cursorLine) == false){alert("indexing not applied."); XPODoc.setIndexedStatus(cursorLine,true);}
+//	else
+///	{alert("indexing applied to this line");}
+	
 	             // Slice 'n dice the line to isolate the cursor
 	                var tempCurrentLine = new Array();
 
@@ -200,6 +216,9 @@ function renderCursor()
 					//If syntax highlighting is enabled
 					if(checkSyntaxHighlighting())
 					{
+						//See if we can identify that the line may or may not have already been indexed
+						
+						
 						//Parse the line text for any tokens and return the parsed html
 		                var formatted = indexLineText(tempCurrentLine[0] + tempCurrentLine[1] + tempCurrentLine[2]);
 										
@@ -287,6 +306,10 @@ function refreshDocument() {
 	for(var l=0; l < XPODoc.document.length; l++ ){
 		var newLine = guiDoc.createElement('div');
 		newLine.setAttribute('id', XPODoc.getLineId(l) );
+		//see if the line has been indexed
+		//if(XPODoc.indexedStatus(XPODoc.getLineId(l)) == false){alert("Not indexed");}
+		//else
+		//{alert("Line already indexed");}
 		newLine.setAttribute('class', "line");		// RELATED TO FIX OF ISSUE #1 >> See DEVLOG.TXT is
 		myDoc.appendChild( newLine );				
 		if ( l == cursorLine ) {/*renderCursor();*/;}

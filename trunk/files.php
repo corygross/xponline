@@ -104,4 +104,31 @@ function fileCheck($extension)
 	}
 	
 }
+
+/*
+ * Function: fileDownload
+ *
+ * Purpose: Constructs a link that allows a user to download
+ * 			the currently active file
+ *
+ * Parameters: docID - the document id of the active file
+ *
+ * Returns: None
+ *
+ *
+ *
+ */
+function fileDownload($docID)
+{
+	$name_query = "SELECT dName FROM documents WHERE dID = $docID";
+//	$name_query = 'select dName from documents where dID = 9; LIMIT 0, 30 ';
+	
+	//Fool the browser into opening the save dialog
+	header('Content-type: application/octet-stream');
+
+	readfile('documents/doc90');
+
+//	$fileName = mysql_query($name_query);
+//	echo $fileName;
+}
 ?>
