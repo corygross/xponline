@@ -486,7 +486,7 @@ function loadNewDoc(docID, docText, accessMode) {
 	setCursor(0,0);
 	
 	/* Render the entire document */
-	XPODoc.renderEntireDocument();
+	XPODoc.renderEntireDocument( cursorLine, cursorColumn );
 }
 
 
@@ -586,7 +586,7 @@ onMouseDownFunction = function( paramEvent ) {
 	if ( isSelectMode ) resetSelectMode();
 	else {
 		// Set the selection mode to enable rendering of the selection
-		setSelectMode( cursorLine, cursorColumn );
+		setSelectMode( XPODoc, cursorLine, cursorColumn );
 		
 		// Enable event listener for mouse movement.  This allows us to dynamically render the selection.
 		if(isIE == true || isChrome == true || isSafari == true) guiDoc.onmousemove = onMouseMoveFunction;
@@ -609,6 +609,9 @@ onMouseMoveFunction = function( paramEvent ) {
 	// Check if we are in select mode or not:
 	// If we are not in select-mode...
 	if ( isSelectMode ) {
+		// Update the current selection with the current cursor position
+		XPODoc.updateSelection( cursorLine, cursorColumn );
+		
 		// Determine if the mouse has moved enough to require re-rendering of the line
 		// If so, flag the line(s) for rendering.  Otherwise, do nothing.
 		if ( oldCursorLine != cursorLine ) {
@@ -642,7 +645,7 @@ onMouseUpFunction = function( paramEvent ) {
 		XPODoc.setCurrentSelection( selectionAnchorLine, selectionAnchorColumn, cursorLine, cursorColumn );
 	
 	// Disable select-mode
-	resetSelectMode();
+	resetSelectMode( XPODoc );
 }
 </script>
 <iframe id="myI" name="myI" src="./editor/editableContent.html" style="width:100%;height:100%;"></iframe>

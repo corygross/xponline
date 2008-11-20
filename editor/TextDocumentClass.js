@@ -48,11 +48,17 @@ function TextDocument( paramHTMLDocumentPane )
 	//  Clears the contents of the document
 	this.blankDocument = function() {
 		this.htmlDocumentContent.innerHTML = "";
+		this.clearCurrentSelection();
 		this.document = new Array();
 		this.appendLine("");				// This avoids null-related errors in several places
 		this.uniqueNameCounter = 0;			// This variable is used to provide unique id's to each line
 		this.documentID = "";
 		this.updateToServer = false;
+	}
+	
+	// Clears the current selection
+	this.clearCurrentSelection = function() {
+		//this.currentSelection = new this.block( null, null, null, null );
 	}
 	
 	// Returns the length of the document in number of lines
@@ -362,7 +368,10 @@ function TextDocument( paramHTMLDocumentPane )
 	// This function sets the current selection.  Currently, it is not forgiving of invalid line/column numbers.  This may change in the future
 	this.setCurrentSelection = function( paramStartLine, paramStartColumn, paramEndLine, paramEndColumn ) {
 		if ( !this.isLegalPosition( paramStartLine, paramStartColumn ) || !this.isLegalPosition( paramEndLine, paramEndColumn ) ) return false;
-		this.currentSelection = new this.block( paramStartLine, paramStartColumn, paramEndLine, paramEndColumn );
+		this.currentSelection.startLine = paramStartLine;
+		this.currentSelection.startColumn = paramStartColumn;
+		this.currentSelection.endLine = paramEndLine;
+		this.currentSelection.endColumn = paramEndColumn;
 		return true;
 	}
 	
@@ -373,26 +382,64 @@ function TextDocument( paramHTMLDocumentPane )
 		return true;
 	}
 	
+	// This function updates the currentSelection (called when the cursor is moved while the document is in "select-mode"
+	this.updateSelection = function( paramNewEndLine, paramNewEndColumn ) {
+		if ( !this.isLegalPosition( paramNewEndLine, paramNewEndColumn ) ) return false;
+		if ( this.currentSelection.startLine == null ) return false;
+		this.currentSelection.endLine = paramNewEndLine;
+		this.currentSelection.endColumn = paramNewEndColumn;
+		return true;
+	}
+	
 	
 	
 	
 	///////////////////////////////////////////////////////////
 	////////////// RENDERING-TYPE FUNCTIONS ///////////////
 	
-	this.renderEntireDocument = function () {
-		for(var l=0; l < this.document.length; l++ ){
-			this.renderLine( l );			
+	this.renderEntireDocument = function ( paramCursorLine, paramCursorColumn ) {
+		for(var ln=0; ln < this.document.length; ln++ ){
+			this.renderLine( ln, paramCursorLine, paramCursorColumn );			
 		}
-		// Dave, for some reason there are updates in the updateTracker after a full render.  (for example, the cursor doesn't get rendered on document load without this)
-		this.renderUpdates( cursorLine, cursorColumn );
 	}
 	
 	this.renderLine = function ( paramLineNum, paramCursorLine, paramCursorColumn ) {
+		// We need the line text for every different possible outcome, so let's make it readable
+		var lineText = this.getLineText( paramLineNum );
+		
+		// Line is locked
 		if( this.getLineLockingUser( paramLineNum ) != null ) 
-			this.getLineHandle( paramLineNum ).innerHTML = this.renderer.renderLine( this.getLineText( paramLineNum ), this.renderer.LOCKED, this.getLineLockingUser( paramLineNum ), paramLineNum );
+			this.getLineHandle( paramLineNum ).innerHTML = this.renderer.renderLine( lineText, this.renderer.LOCKED, this.getLineLockingUser( paramLineNum ), paramLineNum );
+		// Line contains cursor (and nothing special otherwise)
 		else if ( paramCursorLine == paramLineNum )
-			this.getLineHandle( paramLineNum ).innerHTML = this.renderer.renderLine( this.getLineText( paramLineNum ), this.renderer.CURSOR, paramCursorColumn );
-		else this.getLineHandle( paramLineNum ).innerHTML = this.renderer.renderLine( this.getLineText( paramLineNum ), this.renderer.NORMAL );
+			this.getLineHandle( paramLineNum ).innerHTML = this.renderer.renderLine( lineText, this.renderer.CURSOR, paramCursorColumn );
+		// Line contains the start of the current (multiline) selection (no cursor)
+		else if ( this.currentSelection.startLine == paramLineNum )
+			this.getLineHandle( paramLineNum ).innerHTML = this.renderer.renderLine( lineText, this.renderer.SELECTION_HEAD, this.currentSelection.startLine );
+		// Line contains the start of the current (multiline) selection, and the cursor is the endpoint
+		else if ( paramCursorLine == paramLineNum && this.currentSelection.startLine == paramLineNum )
+			this.getLineHandle( paramLineNum ).innerHTML = this.renderer.renderLine( lineText, this.renderer.SELECTION_HEAD_CURSOR, this.currentSelection.startLine );
+		// Line contains the end of the current (multiline) selection, and not the cursor
+		else if ( this.currentSelection.endLine == paramLineNum )
+			this.getLineHandle( paramLineNum ).innerHTML = this.renderer.renderLine( lineText, this.renderer.SELECTION_TAIL, this.currentSelection.endLine );
+		// Line contains the end of the current (multiline) selection, and the cursor is the endpoint
+		else if ( paramCursorLine == paramLineNum && this.currentSelection.endLine == paramLineNum )
+			this.getLineHandle( paramLineNum ).innerHTML = this.renderer.renderLine( lineText, this.renderer.SELECTION_TAIL_CURSOR, this.currentSelection.endLine );
+		// Line contains the entire selection (this happens when the selection only spans one line).  Cursor is implied.
+		else if ( this.currentSelection.startLine == paramLineNum && this.currentSelection.endLine == paramLineNum ) {
+			var tempArg1; var tempArg2;
+			if ( paramCursorColumn == this.currentSelection.startColumn ) {
+				tempArg1 = this.currentSelection.endColumn;
+				tempArg2 = paramCursorColumn;	// NOTE: CURSOR SHOULD BE EXACTLY EQUAL TO THE OTHER SELECTION ENDPOINT
+			}
+			else {
+				tempArg1 = this.currentSelection.startColumn;
+				tempArg2 = paramCursorColumn;	// NOTE: CURSOR SHOULD BE EXACTLY EQUAL TO THE OTHER SELECTION ENDPOINT
+			}
+			this.getLineHandle( paramLineNum ).innerHTML = this.renderer.renderLine( lineText, this.renderer.SELECTION_ENTIRE, tempArg1, tempArg2 );
+		}
+		// Line contains nothing special.
+		else this.getLineHandle( paramLineNum ).innerHTML = this.renderer.renderLine( lineText, this.renderer.NORMAL );
 	}
 	
 	this.renderUpdates = function ( paramCursorLine, paramCursorColumn ) {
@@ -412,4 +459,5 @@ function TextDocument( paramHTMLDocumentPane )
 	this.htmlDocumentContent = this.htmlDocumentPane.getElementById("entireDocument");
 	this.document = new Array();
 	this.renderer = new Renderer();	
+	this.currentSelection = new this.block( null, null, null, null );
 }
