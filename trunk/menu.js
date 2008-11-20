@@ -43,6 +43,11 @@ function copyIconClicked()
 function cutIconClicked()
 {
 	alert("cut");
+	var selection = XPODoc.getCurrentSelection();
+	if( selection != false ){
+		var cutText = XPODoc.getTextInRange(selection.startLine, selection.startColumn, selection.endLine, selection.endColumn, 1);
+		alert(cutText);
+	}	
 }
 
 function deleteMenuClick()

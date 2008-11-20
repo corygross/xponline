@@ -340,12 +340,12 @@ function sendMessage(toID){
 		method:'get',
 		onSuccess: function(transport) {			
 			if(transport.responseText != "success"){
-				alert("There was a problem sending '"+message+".'");
+				alert("There was a problem sending the message.");
 			}
 		},		
 		onFailure: function()
 		{
-			alert("There was a problem sending '"+message+".'");
+			alert("There was a problem sending the message.");
 		}		
 	});
 }

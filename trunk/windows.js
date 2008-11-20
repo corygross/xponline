@@ -105,7 +105,7 @@ function makeNewPopup(id, title, type)
 
 	var newHTML = "";
 	newHTML += "<div class='window_head' onmousedown=\"grab('" + popupID + "', event);\">";
-	newHTML += "<table style='width:100%;'><tr style='width:100%;'><td style='width:10%;'></td><td style='width:80%;'>"+title+"</td><td class='window_min' onClick=\"hidePopup('"+popupID+"')\">&#8211;</td></tr></table></div>";
+	newHTML += "<table style='width:100%;'><tr style='width:100%;'><td style='width:10%;'></td><td style='width:80%;'>"+title+"</td><td class='window_min' onClick=\"contextClosePopup('"+popupID+"')\" >&#8211;</td></tr></table></div>";
 
 	if(type == 'chat')
 	{
@@ -194,7 +194,7 @@ function makeNewPopup(id, title, type)
 	}
 	else if(type == 'confirmContact')
 	{
-		newHTML += "<form name='confirmForm' onkeydown='closeOnEscape(event, \""+popupID+"\");'><div id='pendingContainer' name='pendingContainer'><img src='images/red-loading-sm.gif' alt='loading...' />&nbsp;Retrieving...</div></form>";
+		newHTML += "<form name='confirmForm' onkeydown='closeOnEscape(event, \""+popupID+"\");'><div id='pendingContainer' name='pendingContainer'><img src='images/red-loading-sm.gif' style='padding:2px 2px;' alt='loading...' />&nbsp;Retrieving...</div></form>";
 	}
 	else if(type == 'new_blank')
 	{
@@ -207,7 +207,7 @@ function makeNewPopup(id, title, type)
 	}
 	else if(type == 'open_doc')
 	{
-		newHTML += "<div id='openDocContainer' name='openDocContainer'><img src='images/red-loading-sm.gif' alt='loading...' />&nbsp;Retrieving...</div>";
+		newHTML += "<div id='openDocContainer' name='openDocContainer'><img src='images/red-loading-sm.gif' style='padding:2px 2px;' alt='loading...' />&nbsp;Retrieving...</div>";
 	}
 	else if(type == 'grantAccess')
 	{
@@ -219,7 +219,7 @@ function makeNewPopup(id, title, type)
 		newHTML += "</td><td></td></tr>";
 		newHTML += "<tr><td>&nbsp;</td><td></td><td></td></tr>";
 		newHTML += "<tr><td>&nbsp;</td><td>Select a document:</td><td></td></tr>";
-		newHTML += "<tr><td>&nbsp;</td><td><div id='accessDocContainer' name='accessDocContainer'><img src='images/red-loading-sm.gif' alt='loading...' />&nbsp;Retrieving document list...</div></td><td></td></tr>";
+		newHTML += "<tr><td>&nbsp;</td><td><div id='accessDocContainer' name='accessDocContainer'><img src='images/red-loading-sm.gif' style='padding:2px 2px;' alt='loading...' />&nbsp;Retrieving document list...</div></td><td></td></tr>";
 		newHTML += "<tr><td>&nbsp;</td><td><form name='grantForm'><input type='radio' name='aLevel' value='r' checked='checked'/>Read<br />";
 		newHTML += "<input type='radio' name='aLevel' value='w'/>Write<br />";
 		newHTML += "<input type='radio' name='aLevel' value='n'/>None</form></td><td></td></tr>";
@@ -258,7 +258,7 @@ function makeNewPopup(id, title, type)
 	{
 		newHTML += "<form onkeypress='callFunctionOnEnter(event, deleteDocument);' onkeydown='closeOnEscape(event, \""+popupID+"\");'>";
 		newHTML += "<table style='width:100%;'><tr><td style='width:10%;'></td><td style='width:80%;'>Select a document to delete:</td><td style='width:10%;'></td></tr>";
-		newHTML += "<tr><td>&nbsp;</td><td><div id='deleteDocContainer' name='deleteDocContainer'><img src='images/red-loading-sm.gif' alt='loading...' />&nbsp;Retrieving document list...</div></td><td></td></tr>";
+		newHTML += "<tr><td>&nbsp;</td><td><div id='deleteDocContainer' name='deleteDocContainer'><img src='images/red-loading-sm.gif' style='padding:2px 2px;' alt='loading...' />&nbsp;Retrieving document list...</div></td><td></td></tr>";
 		newHTML += "<tr><td></td><td align='right'><input type='button' value='Delete' onClick='deleteDocument();'/><input type='button' value='Cancel' onClick=\"destroyPopup('"+popupID+"');\"/></td><td></td></tr>";
 		newHTML += "</table></form>";
 	}
@@ -299,12 +299,7 @@ function closeOnEscape( ev, paramID ){
 	else myEvt = window.event;
 	
 	if(myEvt.keyCode == 27){
-		if(paramID.indexOf("chat") == -1){
-			destroyPopup(paramID);
-		}
-		else{
-			hidePopup(paramID);
-		}
+		contextClosePopup(paramID);
 		// Overkill on the event suppression
 		myEvt.returnValue=false;
 		myEvt.cancel = true;
@@ -312,6 +307,15 @@ function closeOnEscape( ev, paramID ){
 		if (myEvt.preventDefault) myEvt.preventDefault();
 		if (myEvt.stopPropagation) myEvt.stopPropagation();
 		return false;
+	}
+}
+
+function contextClosePopup(paramID){
+	if(paramID.indexOf("chat") == -1){
+		destroyPopup(paramID);
+	}
+	else{
+		hidePopup(paramID);
 	}
 }
 

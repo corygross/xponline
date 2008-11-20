@@ -104,7 +104,7 @@ function TextDocument( paramHTMLDocumentPane )
 	
 	// This function returns the block object defining the current selection within the document.  If nothing is selected, this method returns false;
 	this.getCurrentSelection = function( ) {
-		if ( typeof this.currentSelection != 'block' ) return false;
+		if ( typeof this.currentSelection != 'object' ) return false;
 		return this.currentSelection;
 	}
 	
