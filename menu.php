@@ -6,13 +6,7 @@
    <tr><td class="menu" onclick="newMenuClick();"><u>N</u>ew...</td></tr>
    <tr><td class="menu" onclick="openMenuClick();"><u>O</u>pen...</td></tr>
    <tr><td class="menu" onclick="uploadMenuClick();"><u>U</u>pload New...</td></tr>
-   <tr><td class="menu" onclick="downloadMenuClick();">Download
-		<form id="super_form" method="post" action="/trunk/handlers/downloadDocument.php/">
-    		<input type="hidden" id="download" name="download" />
-		</form>
-
-		
-</td></tr>
+   <tr><td class="menu" onclick="downloadMenuClick();">Download</td></tr>
    <tr><td class="menu" onclick="accessMenuClick();">Grant Access...</td></tr>
    <tr><td class="menu" onclick="deleteMenuClick();">Delete...</td></tr>
    <tr><td class="menu" onclick="closeMenuClick();">Close</td></tr>
@@ -42,3 +36,6 @@
 <td class="menu_icon"><img src="images/paste.bmp" alt="Paste" onClick="pasteIconClicked();"/></td>
 </tr>
 </table>
+<form id="super_form" style="margin: 0px; padding: 0px;" method="post" action="./handlers/downloadDocument.php">
+	<input type="hidden" id="download" name="download" />
+</form>
