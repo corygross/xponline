@@ -430,6 +430,9 @@ function init() {
 		
 	/* Initialize our text document data structure */
 	XPODoc = new TextDocument( guiDoc );
+	
+	/* Initialize our always open connection to the server */
+	comet.connect();
 }
 
 /* This function is responsible for (re-)initializing the text data structure, given a document ID, text, and setting the access mode */
