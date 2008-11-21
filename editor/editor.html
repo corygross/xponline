@@ -1,10 +1,3 @@
-<script type="text/javascript" charset="utf-8" src="tokensearch.js"></script>
-<script type="text/javascript" charset="utf-8" src="writeSpans.js"></script>
-<script type="text/javascript" charset="utf-8" src="editor/RendererClass.js"></script>
-<script type="text/javascript" charset="utf-8" src="editor/TextDocumentClass.js"></script>
-<script type="text/javascript" charset="utf-8" src="editor/userInputLogic.js"></script>
-<script type="text/javascript" src="jWords.js"></script>
-<script type="text/javascript" charset="utf-8" src = "editor/toggleSH.js"></script>
 <script type="text/javascript">
 
 /**********************************************/
@@ -171,11 +164,14 @@ function indexLineText(inputText)
 
 // This function highlights and locks lines given by the 'newLineLocks' array it receives
 function lockLines( newLineLocks ) {
+	// Close the currently open lock popup, so we don't get left with one stuck open
+	window.frames.myI.closeLockPopup();
+
 	// Clear the old line locks
 	for( var i=0; i < lockedLines.length; i++ )
 	{
 		XPODoc.unlockLine( lockedLines[i].lineID );
-		XPODoc.setLineUpdated( lockedLines[i].lineID );
+		XPODoc.setLineUpdated( lockedLines[i].lineID );		
 	}
 	// Add the new line locks
 	for( var j=0; j < newLineLocks.length; j++ )

@@ -1,8 +1,12 @@
-function makeNewLockPopup(event, id, userName)
+// The id of any lock popup that is open.  We need to keep track of this
+// to be able to hide it if new locks arrive while the user is hovering over the lock
+var currentLockPopupID = null;
+
+function makeNewLockPopup(event, popupID, userName)
 {
-	var popupID = id;
-	var location = captureMousePos(event);
+	if(currentLockPopupID != null){ closeLockPopup();	}
 	
+	var location = captureMousePos(event);	
 	var leftEdge = location[0] + 15;
 	var topEdge = location[1] + 15;
 
@@ -21,12 +25,15 @@ function makeNewLockPopup(event, id, userName)
 	
 	newElm.innerHTML = userName;
 	document.body.appendChild(newElm);
+	currentLockPopupID = popupID;
 }
 
-function closeLockPopup(id)
+function closeLockPopup()
 {
-	var pop = document.getElementById(id);
-	pop.parentNode.removeChild(pop);
+	var pop = document.getElementById(currentLockPopupID);
+	if(pop != null){
+		pop.parentNode.removeChild(pop);
+	}
 }
 
 function captureMousePos(e) {
