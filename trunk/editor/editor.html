@@ -584,9 +584,6 @@ onKeyDownFunction = function( paramEvent ) {
 
 /* This function is the handler for the keypress event.  Mainly, this function will execute the typeCharacter function, if applicable */
 onKeyPressFunction = function( paramEvent ){
-	// Remember the prior cursor line position
-	var oldCursorLine = cursorLine;
-	
 	// Determine the ASCII code of the to-be-typed character (browser-dependent implementation)
 	var key;
 	if(isFF == true) key = paramEvent.charCode;
