@@ -365,6 +365,8 @@ var pendingServerUpdates = new Array();
 // paramText: the new text for the affected line
 // paramLineNum: the line where the action will take place
 function updateDocument( paramAction, paramText, paramLineNum ) {
+	if(readOnly == true) return;
+
 	// Fix the line locks
 	if(paramAction == "i" || paramAction == "d"){
 		for( var i=0; i < lockedLines.length; i++ )
@@ -418,8 +420,17 @@ function sendDocumentUpdates(){
 	setTimeout('sendDocumentUpdates()', 1000);
 }
 
-function updateLineLock( line ) {
-	new Ajax.Request('./documents/lineLock/updateLineLock.php?curLine='+line+'&docID='+XPODoc.documentID, {
+this.updateLineLock = function ( line ) {
+	var initFlag = "";
+	if( typeof(updateLineLock.lockOrderCounter) == "undefined" ){ 
+		updateLineLock.lockOrderCounter = 0; 
+		initFlag = "&lockInit=true";
+	}
+	else{
+		if( updateLineLock.lockOrderCounter == 499 ) { updateLineLock.lockOrderCounter = 0; }
+		else { updateLineLock.lockOrderCounter++; }
+	}
+	new Ajax.Request("./documents/lineLock/updateLineLock.php?curLine=" + line + "&docID=" + XPODoc.documentID + "&order=" + updateLineLock.lockOrderCounter + initFlag, {
 		method:'get'		
 	});
 }
@@ -459,8 +470,12 @@ function init() {
 function loadNewDoc(docID, docText, accessMode) {
 	/* Ensure that the text data structure is clean  */
 	// NOTE:  Couldn't we instead, simply do:  XPODoc = new TextDocument();  ????  Would that be less efficient?
+	XPODoc.updateToServer = false;	
 	XPODoc.blankDocument();
 	XPODoc.documentID = docID;
+	
+	/* Clear the line locks array */
+	lockedLines = new Array();
 	
 	/* Populate the XPODoc data structure */
 	XPODoc.insertText(docText);
@@ -510,6 +525,7 @@ function loadNewDoc(docID, docText, accessMode) {
 	
 	/* Render the entire document */
 	XPODoc.renderEntireDocument( cursorLine, cursorColumn );
+	XPODoc.updateToServer = true;
 }
 
 

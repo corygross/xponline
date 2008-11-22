@@ -6,9 +6,22 @@ $uID = $_SESSION['uID'];
 $dID = $_GET['docID'];
 
 $curLine = $_GET['curLine'];
+$lockCounter = $_GET['order'];
 
 if($uID == "" || $dID == "" || $curLine == ""){
 	return;
+}
+
+// Reset the counter on lock init or if the lock number is 499.  Only possible values for the counter are 0 - 499.
+if( isset($_GET['lockInit']) == true || $lockCounter == 499){
+	$_SESSION['lockOrder'] = -1;
+}
+else if( $_SESSION['lockOrder'] > $lockCounter ){
+	// If our session lock order is greater than the just arrived one, then it arrived out of order - discard it.
+	return;
+}
+else{
+	$_SESSION['lockOrder'] = $lockCounter;
 }
 
 // userID,lineNum,time???\n

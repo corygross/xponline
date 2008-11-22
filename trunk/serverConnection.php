@@ -86,10 +86,19 @@ function getCollisionInfo($uID, $dID){
 	if(file_exists($fileName)){
 		$fileModifyTime = filemtime($fileName);
 		$lastModifyKey = 'lastLockFileModify'.$dID;
-		if($fileModifyTime != $_SESSION["$lastModifyKey"] || $_SESSION['newFileInit'] == "true"){
-			$_SESSION['newFileInit'] = "false";
+		$checkLocksAgainKey = 'checkLocksAgainKey'.$dID;
+		$checkLocks = false;
+		if($fileModifyTime != $_SESSION["$lastModifyKey"]){
 			$_SESSION["$lastModifyKey"] = $fileModifyTime;
-			
+			$_SESSION["$checkLocksAgainKey"] = intval(time()) + 1; //check again in 1 second.  We could miss a change if we don't
+			$checkLocks = true;	
+		}
+		else if( $_SESSION["$checkLocksAgainKey"] != false && $_SESSION["$checkLocksAgainKey"] < time() ){
+			$_SESSION["$checkLocksAgainKey"] = false;
+			$checkLocks = true;
+		}
+		
+		if($checkLocks == true){
 			$fileHandle = fopen($fileName, 'r') or die("can't open file");
 			//$wholeFile = fread($fileHandle, filesize($fileName)+1);
 			$wholeFile = fread($fileHandle, filesize($fileName));
@@ -129,7 +138,7 @@ function getPeerUpdates($uID, $dID){
 		$checkForUpdates = false;
 		if($fileModifyTime != $_SESSION["$lastModifyKey"]){
 			$_SESSION["$lastModifyKey"] = $fileModifyTime;
-			$_SESSION["$checkedAgainKey"] = intval(time()) + 3;
+			$_SESSION["$checkedAgainKey"] = intval(time()) + 2;
 			$checkForUpdates = true;
 		}
 		else if( $_SESSION["$checkedAgainKey"] != false && $_SESSION["$checkedAgainKey"] < time() ){
