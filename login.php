@@ -6,29 +6,40 @@ session_start();
 <head>
 	<title>XPonline | Login</title>
 	<!--link rel="stylesheet" href="style.css" type="text/css" / -->
-	<!--link rel="stylesheet" href="login_reg.css" type="text/css" / -->
+	<link rel="stylesheet" href="login_reg.css" type="text/css" />
 </head>
-<body>
+<body class = "gradient">
+	<div id="theForm" align = "center">
 	<form name="login" id="login" method="post" action="validateLogin.php">
-		<h2>Welcome to XPonline!</h2>
-		<h3>Please login:</h3>
+	<img src="images/logo.png" align="middle"/>
+		<!--h3>Please login:</h3-->
 		<?php
 			if(isset($_GET['i']))
 			{
 				print("<div id=\"error\">Incorrect login - please try again</div>");   
 			}
 		?>
+		<br />
+		<br />
+		<label class="lblTxt">Email:</label><br />
+		<input type="text" class = "inputFields" name="email" id="email" value="<?php echo $_GET['e']; ?>" />
+		<br />
+		<br />
+		<br />
+		<br />
+		<label class="lblTxt">Password:</label><br />
+		<input type="password" class = "inputFields" name="pass" id="pass" />
+		<br />
+		<br />
+		<br />
+		<input type="image" src="images/login_btn.png" name="login" id="login" value="Login" />
+		&nbsp
+		&nbsp
+		&nbsp
+		&nbsp
 
-		<label>Email:</label><br />
-		<input type="text" name="email" id="email" value="<?php echo $_GET['e']; ?>" />
-		<br />
-		<label>Password:</label><br />
-		<input type="password" name="pass" id="pass" />
-		<br />
-		<input type="submit" name="login" id="login" value="Login" />
-		<input type="button" name="register" id="register" value="Register" onClick="location.href='register.php';" />
-		<h2>Project Description</h2>
-		<p>A description of our project goes here...</p>
+		<input type="image" src = "images/register_btn.png" name="register" id="register" value="Register" onClick="location.href='register.php';" />
+	</div>
 	</form>
 	<script>document.getElementById('email').focus();</script>
 </body>

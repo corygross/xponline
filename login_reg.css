@@ -1,0 +1,54 @@
+/*
+ * File: Login_reg.css
+ * 
+ * Purpose: Formatting for the login and registration pages
+ * Author: Ron Tolliver
+ *
+ *
+ */
+
+#login{ margin: 0 auto;}
+#error {
+   font-size: 15px;
+   font-weight: bold;
+   color: #FF0000;
+   margin: 0px 0px 10px 0px;
+   padding: 5px 10px 5px 10px;
+   border: solid 1px #000000;
+   background: #ffebe8;
+}
+
+#success {
+   font-size: 15px;
+   font-weight: bold;
+   color: BLACK;
+   margin: 0px 0px 10px 0px;
+   padding: 5px 10px 5px 10px;
+   border: solid 1px #000000;
+   background: #99ff99;
+}                       
+
+.gradient{
+	height: 600px;
+	padding: 4px;
+	background: url(bkground4.jpeg) 0% 0%;
+	color: black;
+}
+
+/*For the textfields*/
+#theForm{
+	margin-left:auto;
+	margin-right:auto;
+}
+
+.inputFields{
+	height:20px;
+	width:200px;
+	font-size:13pt;
+}
+.lblTxt{
+	font-size: 14pt;
+	font-weight: bold;
+}
+
+
