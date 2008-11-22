@@ -59,34 +59,46 @@ else{
 <html>
 <head>
 <title>XPonline | Register</title>
-<link rel="stylesheet" href="style.css" type="text/css" />
+<!--link rel="stylesheet" href="style.css" type="text/css" /-->
+<link rel="stylesheet" href="login_reg.css" type="text/css" />
 </head>
-<body>
+<body class="gradient">
+<div id="image_div" align="center"<img src ="images/logo.png" align="middle"/></div>
+
+<!-- encapsulate all of the html goodies -->
+<div id="form_div" align="center">
 <form name="register" id="register" method="post" action="register.php">
-<h3>Please enter the following information:</h3>
+<h3>Register for XP Online</h3>
 <?php
 if($error != ""){
 	print("<div id=\"error\">$error</div>");   
 }
 ?>
-<label>First name:</label><br />
+<label>First name</label><br />
 <input type="text" name="fName" id="fName" value="<?php echo $fName; ?>" />
 <br />
-<label>Last Name:</label><br />
+<br />
+<label>Last Name</label><br />
 <input type="text" name="lName" id="lName" value="<?php echo $lName; ?>" />
 <br />
-<label>Email:</label><br />
+<br />
+<label>Email</label><br />
 <input type="text" name="email" id="email" value="<?php echo $email; ?>" />
 <br />
-<label>Password:</label><br />
+<br />
+<label>Password</label><br />
 <input type="password" name="pass1" id="pass1" />
 <br />
-<label>Confirm password:</label><br />
+<br />
+<label>Confirm password</label><br />
 <input type="password" name="pass2" id="pass2" />
 <br />
-<input type="submit" name="btnRegister" id="btnRegister" value="Submit" />
+<br />
+<br />
+<br />
+<input type="image" src="images/login_btn.png" name="btnRegister" id="btnRegister" value="Submit" />
 </form>
 <script>document.getElementById('fName').focus();</script>
-
+</div>
 </body>
 </html>
