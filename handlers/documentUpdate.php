@@ -6,10 +6,9 @@ $uID = $_SESSION['uID'];
 
 // Both '+' and '&' have to be put back in.  They were taken out for transmission.
 $updateArray = json_decode(preg_replace('/pLUsSign/',"+", preg_replace('/aMPerSand/',"&",$_POST['updateData'])),true);
-echo "*".$_POST['updateData']."*";
+
 $lastDocID;
-$lastAction;
-$lastLineNum;
+
 //$masterFileHandle = null;
 
 foreach ($updateArray as $updateObject){
@@ -23,11 +22,8 @@ foreach ($updateArray as $updateObject){
 	//}	
 	
 	doUpdate($uID, $dID, $action, $lineNum, $text);
-
 	
 	$lastDocID = $dID;
-	$lastAction = $action;
-	$lastLineNum = $lineNum;
 }
 
 
@@ -67,8 +63,7 @@ function doUpdate($uID, $dID, $action, $lineNum, $text){
 			$updateQueueResult = runQuery($update_queue_insert);
 		}
 	}
-
-
+	
 	// Update the physical document
 	$fileName = "../documents/doc".$dID;
 	if(file_exists($fileName)){
@@ -82,7 +77,6 @@ function doUpdate($uID, $dID, $action, $lineNum, $text){
 			deleteLine($fileName, $lineNum);
 		}
 	}
-
 }
 
 function updateLine($fileName, $lineNum, $lineText){
@@ -118,7 +112,7 @@ function deleteLine($fileName, $lineNum){
 }
 
 function updateLineLocks($uID, $dID, $curLine, $action){
-	if($uID == "" || $dID == "" || $curLine == ""){
+	if($uID == "" || $dID == "" || $curLine === ""){
 		return;
 	}
 	
@@ -126,7 +120,6 @@ function updateLineLocks($uID, $dID, $curLine, $action){
 	if($action != "i" && $action != "d"){
 		return;
 	}
-
 
 	$fileName = "../documents/lineLock/doc".$dID."-lock";
 	$toWriteBack = "";
@@ -136,18 +129,26 @@ function updateLineLocks($uID, $dID, $curLine, $action){
 		fclose($fileHandle);
 
 		$lineArray = explode("\n", $wholeFile);
-		foreach($lineArray as $line){				
+		foreach($lineArray as $line){
 			$lineParts = explode(",", $line);
-			$sqlCheckStillActive = "SELECT * FROM access WHERE dID='$dID' AND uID='$lineParts[0]' AND (dLastActivity>DATE_SUB(CURRENT_TIMESTAMP,INTERVAL 30 SECOND));";
+			if($lineParts[0] == $uID){
+				$toWriteBack .= $line . "\n";
+				continue;
+			}
+			$sqlCheckStillActive = "SELECT * FROM access WHERE dID='$dID' AND uID='$lineParts[0]' AND (dLastActivity>DATE_SUB(CURRENT_TIMESTAMP,INTERVAL 10 SECOND));";
 			$result = runQuery($sqlCheckStillActive);
 			if(mysql_num_rows($result) > 0){
-				if($action == "i" && $lineParts[1] > $curLine){
+				if($action == "i" && $lineParts[1] >= $curLine){
 					$newLineNum = intval($lineParts[1])+1;
 					$toWriteBack .= $lineParts[0] . "," . $newLineNum . "," . $lineParts[2] . "\n";
 				}
 				else if($action == "d" && $lineParts[1] > $curLine){
 					$newLineNum = intval($lineParts[1])-1;
 					$toWriteBack .= $lineParts[0] . "," . $newLineNum . "," . $lineParts[2] . "\n";
+				}
+				else if($action == "d" && $lineParts[1] == $curLine){
+					// A user can't delete the line you are on!!!
+					// What do we do about it here?
 				}
 				else{
 					$toWriteBack .= $line . "\n";
@@ -156,7 +157,7 @@ function updateLineLocks($uID, $dID, $curLine, $action){
 		}
 	}
 	else{
-		echo "file not found";
+		return;  // The line lock file doesn't exist...  We will check on the next run for it.
 	}
 
 	$fileHandle = fopen($fileName, 'w') or die("can't open file");
