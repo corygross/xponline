@@ -49,6 +49,12 @@ if(isset($_POST['btnRegister']) == true)
 		}
 	}
 }
+//Cancel button
+else 
+	if(isset($_POST['btnCancel']) == true)
+	{
+		header("Location: login.php");
+	}
 else{
 	$fName = "";
 	$lName = "";
@@ -63,8 +69,11 @@ else{
 <link rel="stylesheet" href="login_reg.css" type="text/css" />
 </head>
 <body class="gradient">
-<div id="image_div" align="center"<img src ="images/logo.png" align="middle"/></div>
 
+<!-- Not sure why I don't display in IE 7' -->
+<div id="image_div" align="center">
+	<img src ="images/logo.png" alt="XP Online logo"/> 
+</div>
 <!-- encapsulate all of the html goodies -->
 <div id="form_div" align="center">
 <form name="register" id="register" method="post" action="register.php">
@@ -96,7 +105,10 @@ if($error != ""){
 <br />
 <br />
 <br />
-<input type="image" src="images/login_btn.png" name="btnRegister" id="btnRegister" value="Submit" />
+<input type="submit" name="btnRegister" id="btnRegister" value="Submit" />
+&nbsp
+&nbsp
+<input type="submit" name="btnCancel" id="btnCancel" value="Cancel" />
 </form>
 <script>document.getElementById('fName').focus();</script>
 </div>

@@ -32,13 +32,9 @@ session_start();
 		<br />
 		<br />
 		<br />
-		<input type="image" src="images/login_btn.png" name="login" id="login" value="Login" />
-		&nbsp
-		&nbsp
-		&nbsp
-		&nbsp
-
-		<input type="image" src = "images/register_btn.png" name="register" id="register" value="Register" onClick="location.href='register.php';" />
+		<input type="submit" src="images/login_btn.png" name="login" id="login" value="Login" />
+		&nbsp;&nbsp;&nbsp;&nbsp;
+		<input type="button" src = "images/register_btn.png" name="register" id="register" value="Register" onClick="location.href='register.php';" />
 	</div>
 	</form>
 	<script>document.getElementById('email').focus();</script>

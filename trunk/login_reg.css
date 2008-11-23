@@ -51,12 +51,26 @@
 	font-weight: bold;
 }
 
+#image_div{
+    margin-top:0px;
+    margin-bottom:0px;
+    padding:0px;
+}
 /*Registration form*/
 #form_div{
 	width:300px;
 	border:3px solid black;
 	margin-left:auto;
 	margin-right:auto;
+}
+
+#registerBtn{
+	border: 0; 
+    background: url("./images/register_btn.png"); 
+    /* Insert the dimensions of your "b.png" image */ 
+    width: 87px; 
+    height: 23px; 
+    
 }
 
 
