@@ -32,6 +32,7 @@
 	height: 600px;
 	padding: 4px;
 	background: url(images/bkground4.jpeg) 0% 0%;
+	background-repeat:repeat-x;
 	color: black;
 }
 
