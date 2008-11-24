@@ -98,9 +98,8 @@ function getCollisionInfo($uID, $dID){
 			$checkLocks = true;
 		}
 		
-		if($checkLocks == true){
+		if($checkLocks == true){			
 			$fileHandle = fopen($fileName, 'r') or die("can't open file");
-			//$wholeFile = fread($fileHandle, filesize($fileName)+1);
 			$wholeFile = fread($fileHandle, filesize($fileName));
 			fclose($fileHandle);
 
