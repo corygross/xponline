@@ -24,7 +24,7 @@ var XPODoc;
 
 // Other stuff
 var readOnly = true;
-var syntaxHighlightOn = true;
+var syntaxHighlightOn = false;
 var lockedLines = new Array();
 
 // HTML-DOM handle for document pane
@@ -90,18 +90,6 @@ function displayCursorPos() {
 	//updateLineCol(cursorLine, cursorColumn);
 }
 
-// This function clears the formatting of the line specified by paramLineNumber
-//function clearFormatting( paramLineNum ) {
-//	if(guiDoc.getElementById( XPODoc.getLineId(paramLineNum) ) != null){
-//		//guiDoc.getElementById( XPODoc.getLineId(paramLineNum) ).innerHTML = XPODoc.getLineText(paramLineNum)
-//
-//		//RT - NOT SURE WHAT THIS DOES....
-//		//Parses the contents of each line for syntax hightlighting.
-//		guiDoc.getElementById( XPODoc.getLineId(paramLineNum) ).innerHTML = indexLineText(replaceHTMLEntities(XPODoc.getLineText(paramLineNum)));
-//		guiDoc.getElementById( XPODoc.getLineId(paramLineNum) ).innerHTML = indexLineText(XPODoc.getLineText(paramLineNum));
-//	}
-//}
-
 // This function gives the document focus.  This is called when the document is loaded and when popup windows are closed
 function giveDocumentFocus(){
 	if(isIE == true) myIFrame.focus();
@@ -126,6 +114,7 @@ function gotoPosition( paramLineNum, paramColNum ) {
 	updateLineLock( paramLineNum );
 }
 
+/*
 // This function takes each line of input and applies formatting based on keywords
 function indexLineText(inputText)
 {
@@ -156,6 +145,7 @@ function indexLineText(inputText)
 	}
 	return newLine;
 }
+*/
 
 // This function highlights and locks lines given by the 'newLineLocks' array it receives
 function lockLines( newLineLocks ) {
@@ -196,7 +186,7 @@ function renderCursor()
 //	if(XPODoc.indexedStatus(cursorLine) == false){alert("indexing not applied."); XPODoc.setIndexedStatus(cursorLine,true);}
 //	else
 ///	{alert("indexing applied to this line");}
-	
+/*	
 	             // Slice 'n dice the line to isolate the cursor
 	                var tempCurrentLine = new Array();
 
@@ -272,8 +262,9 @@ function renderCursor()
 			
 	       // Update the GUI with the correct line and col
 	       displayCursorPos();
-	
+	*/
 }
+
 
 /* Replace some things like tabs, spaces, < and > */
 //function replaceHTMLEntities( paramText ) {
@@ -297,10 +288,6 @@ function refreshDocument() {
 	for(var l=0; l < XPODoc.document.length; l++ ){
 		var newLine = guiDoc.createElement('div');
 		newLine.setAttribute('id', XPODoc.getLineId(l) );
-		//see if the line has been indexed
-		//if(XPODoc.indexedStatus(XPODoc.getLineId(l)) == false){alert("Not indexed");}
-		//else
-		//{alert("Line already indexed");}
 		newLine.setAttribute('class', "line");		// RELATED TO FIX OF ISSUE #1 >> See DEVLOG.TXT is
 		myDoc.appendChild( newLine );				
 		if ( l == cursorLine ) {/*renderCursor();*/;}
@@ -323,8 +310,6 @@ function adjustScroll() {
 		frameHeight = myIFrame.contentWindow.innerHeight;
 	}
 
-	//var frameWidth = myIFrame.contentWindow.innerWidth;
-	//var frameHeight = myIFrame.contentWindow.innerHeight;
 	var cursorDocOffsetX = (cursorColumn*FONT_WIDTH) + PADDING_LEFT;
 	var cursorDocOffsetY = (cursorLine*FONT_HEIGHT) + PADDING_TOP;
 	var visibleEdgeX = getScrollOffsetX()+frameWidth-FONT_WIDTH;
