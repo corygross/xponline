@@ -7,7 +7,6 @@ var mouseX;
 var mouseY;
 var selectionAnchorColumn;
 var selectionAnchorLine;
-var lastSpace = 'x'; //Keep track of the last space entered
 
 /* KEYBOARD-RELATED */
 // const is mozilla only!!!!  do NOT use it!!!!
@@ -172,20 +171,6 @@ function typeCharacter( paramDoc, paramCharCode ) {
 	// Insert character
 	tempCurrentLine[1]=String.fromCharCode(paramCharCode) + tempCurrentLine[1];
 	
-	if(String.fromCharCode(paramCharCode) == ' ')
-	{
-		if(lastSpace != 'x')
-		{
-			//Grab the substring and perform indexing here instead
-			var tempWord = tempCurrentLine.join("");
-			var curWord = tempWord.substring(lastSpace, cursorColumn);
-			//alert("I should be indexing " + curWord);
-			delete curWord;
-			//alert("test");
-		}
-		//Update the space flag
-		lastSpace = cursorColumn;
-	}
 	// Update cursor
 	cursorColumn++;
 	
