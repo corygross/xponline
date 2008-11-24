@@ -51,37 +51,34 @@ function openPopup(id, title, type){
 		curOpenWindow = id;
 	}
 	if(document.getElementById(id) == null){
-		makeNewPopup(id, title, type);
+		this.makeNewPopup(id, title, type);
 	}
 	else{
 		makePopupVisible(id);
 	}
 }
 
-var lastNewTop = 0;
-var lastNewLeft = 100;
+//var lastNewTop = 0;
+//var lastNewLeft = 100;
 var chatWindows = new Array();
-function makeNewPopup(id, title, type)
+this.makeNewPopup = function (popupID, title, type) 
 {
-	var popupID = id;
+	if( typeof(makeNewPopup.lastNewTop) == "undefined" ) makeNewPopup.lastNewTop = 0;
+	if( typeof(makeNewPopup.lastNewLeft) == "undefined" ) makeNewPopup.lastNewLeft = 100;
+
 	var leftEdge;
 	var topEdge;
 
 	if(type == 'chat'){
-		if(lastNewTop == 0 || lastNewTop > 250)
-		{
-			lastNewTop = 100;
-		}
-		else
-		{
-			lastNewTop += 15;	
-		}
-		lastNewLeft += 15;
+		if(makeNewPopup.lastNewTop == 0 || makeNewPopup.lastNewTop > 250) {	makeNewPopup.lastNewTop = 100; }
+		else { makeNewPopup.lastNewTop += 15; }
 		
-		leftEdge = lastNewLeft;
-		topEdge = lastNewTop;
+		makeNewPopup.lastNewLeft += 15;
 		
-		chatWindows.push(id);
+		leftEdge = makeNewPopup.lastNewLeft;
+		topEdge = makeNewPopup.lastNewTop;
+		
+		chatWindows.push(popupID);
 	}
 	else{
 		leftEdge = (screen.width/2) - 150;
