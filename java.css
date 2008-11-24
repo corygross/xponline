@@ -18,7 +18,7 @@
 .synchronized{color:red}
 .boolean	{color:blue}
 .do	{color:green}
-.if	{color:red}
+.if	{color:blue}
 .private	{color:blue}
 .this{color:green}
 .break	{color:orange}
@@ -53,3 +53,6 @@
 .volatile{color:blue}
 .const{color:green}
 .number{color:red}
+.string{color:blue}
+.paren{color:blue}
+.comment{color:green}
