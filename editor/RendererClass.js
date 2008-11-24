@@ -12,6 +12,7 @@ function Renderer()
 	this.SELECTION_TAIL_CURSOR = 6;	// Rendering with the line being the END of a selection, with the endpoint at the cursor position. Requires paramArg1 to be the cursor position.
 	this.SELECTION_ENTIRE = 7;		// Rendering with the line containing a whole selection.  Requires paramArg1 to be the endpoint of selection and paramArg2 to be the position of the cursor.
 	this.LOCKED = 8;		// Rendering with the line being locked.  
+	this.SYNTAX_HILITE = 9;			// Rendering with the line syntax highlighted
 
 	/* This function is the main rendering function.  It renders a single line, taking all factors into consideration (at least, it should...) */
 	/* Parameters:  paramLineText ==> Text for the line which is being rendered
@@ -27,12 +28,11 @@ function Renderer()
 		switch ( paramMODE )
 		{
 			case this.CURSOR:
-				// temp fix
-				var paramCursorPosition = paramArg1;
+				// paramArg1 = the cursor position
 				var tempCurrentLine = new Array();
-		        tempCurrentLine.push( replaceHTMLEntities( paramLineText.substring(0,paramCursorPosition)) );
-		        tempCurrentLine.push(replaceHTMLEntities( paramLineText.substr(paramCursorPosition, 1)) );
-		        tempCurrentLine.push(replaceHTMLEntities( paramLineText.substring(paramCursorPosition+1)) );
+		        tempCurrentLine.push( replaceHTMLEntities( paramLineText.substring(0,paramArg1)) );
+		        tempCurrentLine.push(replaceHTMLEntities( paramLineText.substr(paramArg1, 1)) );
+		        tempCurrentLine.push(replaceHTMLEntities( paramLineText.substring(paramArg1+1)) );
 				if ( tempCurrentLine[1] == "" ) tempCurrentLine[1] = ' ';
 				tempCurrentLine[1] = "<span id='cursor'>" + tempCurrentLine[1] + "</span>";
 				return tempCurrentLine.join("");
@@ -126,6 +126,11 @@ function Renderer()
 				}
 				// Return this mess
 				return tempCurrentLine.join("");
+				
+			case this.SYNTAX_HILITE:
+				// paramArg1 = cursor position
+				return this.syntaxHighlight(paramLineText, paramArg1);
+				
 		} // END SWITCH
 	}
 	
@@ -133,22 +138,142 @@ function Renderer()
 	/******** UTILITY FUNCTIONS *******/
 	
 	this.classifyToken = function ( paramTokenText ) {
+		if( paramTokenText.match(/^\d+$/) ) return "number";
+		return paramTokenText;
+	}
+	
+	this.findMatches = function( paramArray ) {		
+		var resultArray = new Array();
+		for(var counter = 0; counter < paramArray.length; counter++) {	
+			var curWord = paramArray[counter];
+			if( curWord.trim() != "" ){				
+				if( tokenSearch(curWord) == true ) resultArray.push(curWord);				
+			}
+		}
+		// Only return unique array entries
+		return resultArray.uniq();
+	}
+	
+	this.indexSortfunction = function(a, b){
+		// Compare 'a' with 'b' and return -1 if a should be before b, 1 if b should be before a, and 0 if they are equal... this shouldn't happen in our case actually
+		if( a.index < b.index ) return -1;
+		else if( b.index < a.index ) return 1;
+		return 0;
+	}
+	
+	this.syntaxHighlight = function( paramText, paramCursorCol ) {
+		var indexesArray = new Array();		
+		var textBeforeComment;
+		var commentIndex = paramText.indexOf("//");
+		if( commentIndex != -1 ){
+			// If we found some single line comments, add them into our array of found things, and don't check after their index for other tokens
+			indexesArray.push(new this.tokenMatch( paramText.substring(commentIndex), paramText.length, "comment" ));
+			textBeforeComment = paramText.substring(0, commentIndex-1);
+		}
+		else textBeforeComment = paramText;
+
+		var matchesArray = this.findMatches( this.tokenizeText( textBeforeComment ) );
 		
+		// If no token matches, cursor, or comments, return plain text
+		if( matchesArray.length == 0 && commentIndex == -1 && paramCursorCol == null ) return replaceHTMLEntities( paramText );
+		
+		// Find out what the indexes of each of our found tokens are in the line
+		for(var i = 0; i < matchesArray.length; i++)
+		{			
+			var regEx = new RegExp("\\b"+matchesArray[i]+"\\b", "g");
+			while(regEx.test(textBeforeComment)){
+				indexesArray.push(new this.tokenMatch( matchesArray[i], regEx.lastIndex, this.classifyToken(matchesArray[i]) ));
+			}						
+		}
+
+		// Sort all of the matches we found, based on the index that we found them at
+		indexesArray.sort(this.indexSortfunction);
+		
+		var lineText = new Array();
+		var lastEndIndex = paramText.length;
+		if( lastEndIndex == paramCursorCol ) lastEndIndex++;
+		
+		// We start at the end of the for loop, so we don't mess up any of the indexes we have when we add spans
+		for(var i = indexesArray.length-1; i >=0 ; i--)
+		{
+			// Found the cursor outside of a token
+			if( paramCursorCol != null && paramCursorCol >= indexesArray[i].index && paramCursorCol <  lastEndIndex){
+				var tempCurrentLine = new Array();
+		        tempCurrentLine.push( replaceHTMLEntities( paramText.substring(indexesArray[i].index,paramCursorCol)) );
+		        tempCurrentLine.push(replaceHTMLEntities( paramText.substr(paramCursorCol, 1)) );
+		        tempCurrentLine.push(replaceHTMLEntities( paramText.substring(paramCursorCol+1,lastEndIndex)) );
+				if ( tempCurrentLine[1] == "" ) tempCurrentLine[1] = ' ';
+				tempCurrentLine[1] = "<span id='cursor'>" + tempCurrentLine[1] + "</span>";
+				lineText.push(tempCurrentLine.join(""));
+			}
+			// No token, no cursor
+			else if( indexesArray[i].index < lastEndIndex ){ 
+				lineText.push( replaceHTMLEntities(paramText.substring(indexesArray[i].index, lastEndIndex) ));
+			}
+			lastEndIndex = indexesArray[i].index - indexesArray[i].token.length;
+			
+			// Found the cursor within a token
+			if( paramCursorCol != null && paramCursorCol >= lastEndIndex && paramCursorCol <  indexesArray[i].index){
+				var tempCurrentLine = new Array();
+				tempCurrentLine.push("<span class='"+indexesArray[i].tokenClass+"'>");
+		        tempCurrentLine.push( replaceHTMLEntities( paramText.substring(lastEndIndex,paramCursorCol)) );
+				tempCurrentLine.push("</span>");
+		        tempCurrentLine.push(replaceHTMLEntities( paramText.substr(paramCursorCol, 1)) );
+				tempCurrentLine.push("<span class='"+indexesArray[i].tokenClass+"'>");
+		        tempCurrentLine.push(replaceHTMLEntities( paramText.substring(paramCursorCol+1,indexesArray[i].index)) );
+				tempCurrentLine.push("</span>");
+				if ( tempCurrentLine[3] == "" ) tempCurrentLine[3] = ' ';
+				tempCurrentLine[3] = "<span id='cursor'>" + tempCurrentLine[3] + "</span>";
+				lineText.push(tempCurrentLine.join(""));
+			}
+			// Found a token without the cursor in it
+			else{
+				lineText.push("</span>");
+				lineText.push( replaceHTMLEntities(paramText.substring(lastEndIndex, indexesArray[i].index)) );
+				lineText.push("<span class='"+indexesArray[i].tokenClass+"'>");
+			}
+		}
+		// If we haven't reached the beginning of the line yet, we need to add that part in too
+		if( paramCursorCol != null && lastEndIndex > 0 && paramCursorCol < lastEndIndex){
+			var tempCurrentLine = new Array();
+			tempCurrentLine.push( replaceHTMLEntities( paramText.substring(0,paramCursorCol)) );
+			tempCurrentLine.push(replaceHTMLEntities( paramText.substr(paramCursorCol, 1)) );
+			tempCurrentLine.push(replaceHTMLEntities( paramText.substring(paramCursorCol+1,lastEndIndex)) );
+			if ( tempCurrentLine[1] == "" ) tempCurrentLine[1] = ' ';
+			tempCurrentLine[1] = "<span id='cursor'>" + tempCurrentLine[1] + "</span>";
+			lineText.push(tempCurrentLine.join(""));
+		}
+		else if( lastEndIndex > 0 ) replaceHTMLEntities(lineText.push( paramText.substring(0, lastEndIndex) ));
+		
+		// Reverse the array (because we added stuff backwards) and return it as a string
+		lineText.reverse();
+		return lineText.join("");
 	}
 	
 	this.tokenizeText = function( paramText ) {
-		
+		// 
+		//return paramText.split(/\.|\;|\{|\}|,|\[|\]|\b/g);
+		return paramText.split(/\.|\;|\(|\)|\{|\}|,|\[|\]|\b/g);
+	}
+
+	this.tokenMatch = function( paramToken, paramIndex, paramTokenClass )
+	{
+		this.token = paramToken;	// The text of the token
+		this.index = paramIndex;	// The last index in the token
+		this.tokenClass = paramTokenClass;	// The classification of the token (used with css)
 	}
 	
 	/* Replace some things like tabs, spaces, < and > */
 	function replaceHTMLEntities( paramText ) {
-		paramText = paramText.replace(/&/g, "&amp;"); // This one must be first
-		paramText = paramText.replace(/>/g, "&gt;");
-		paramText = paramText.replace(/</g, "&lt;");
-		paramText = paramText.replace(/ /g, "&nbsp;");	
-		paramText = paramText.replace(/\//g, "&#47;");
-		paramText = paramText.replace(/\\/g, "&#92;");
-		paramText = paramText.replace(/\t/g,"&nbsp;&nbsp;&nbsp;&nbsp;");
+		if(paramText.replace && paramText != ""){
+			paramText = paramText.replace(/&/g, "&amp;"); // This one must be first
+			paramText = paramText.replace(/>/g, "&gt;");
+			paramText = paramText.replace(/</g, "&lt;");
+			paramText = paramText.replace(/ /g, "&nbsp;");	
+			paramText = paramText.replace(/\//g, "&#47;");
+			paramText = paramText.replace(/\\/g, "&#92;");
+			paramText = paramText.replace(/\t/g,"&nbsp;&nbsp;&nbsp;&nbsp;");
+		}
 		return paramText;
 	}
 	

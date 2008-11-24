@@ -14,6 +14,19 @@
  *				 breaks to high hell.
  * 
  */
+var wordsString = null;
+function tokenSearch(term)
+{
+	if( wordsString == null ){
+		wordsString = "~" + syntax_words.join("~") + "~";
+	}
+	
+	if( wordsString.indexOf("~"+term+"~") != -1 ) return true;	// The token was in the list
+	else if( term.match(/^\d+$/) ) return true;		// The token was an integer
+	else return false;
+}
+
+/*
 function tokenSearch(term)
 {
 	var reservedWords = javawords;	//Right now, just default to java syntax highlighting
@@ -25,3 +38,4 @@ function tokenSearch(term)
 	(beforeCount == afterCount) ? output=false : output=true;
 	return output;
 }
+*/

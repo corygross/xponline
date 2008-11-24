@@ -48,5 +48,5 @@ var syntax_words = new Array(
 	"const",
 	"number",
 	"int",
-	"string"
+	"String"
 	);

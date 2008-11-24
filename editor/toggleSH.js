@@ -2,6 +2,17 @@ var defaultStyleSheet = "default.css";
 
 function toggleSyntaxHighlighting()
 {
+	// We need this syntaxHighlightOn var to use elsewhere
+	syntaxHighlightOn = !syntaxHighlightOn;
+	if( syntaxHighlightOn ){
+		getDoc().getElementById('SS').href = "../syntaxHighlight/java.css";
+		if( documentIsOpen() ) XPODoc.renderEntireDocument(cursorLine, cursorColumn);
+	}
+	else{
+		getDoc().getElementById('SS').href = "../" + defaultStyleSheet;
+	}
+	giveDocumentFocus();
+	/*
 	//alert("the current language is " + getCurrentLanguage());
 	var testVar = getDoc().getElementById('SS').href;
 	if(testVar.indexOf(defaultStyleSheet) != -1)
@@ -14,7 +25,7 @@ function toggleSyntaxHighlighting()
 		}
 	}
 	getDoc().getElementById('SS').href = "../" + defaultStyleSheet;
-	
+	*/
 }	
 
 /*
