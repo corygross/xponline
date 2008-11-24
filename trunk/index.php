@@ -27,13 +27,12 @@ if(isset($_SESSION['homeDir']) == false){
 <script language="javascript" src="messenger.js"></script>
 <script language="javascript" src="clientConnection.js"></script>
 <script	language="javascript" src="editor/toggleSH.js"></script>
-<script language="javascript" src ="jWords.js"></script>
+<script language="javascript" src ="syntaxHighlight/javaWords.js"></script>
 <script language="javascript" src="tokensearch.js"></script>
 <script language="javascript" src="writeSpans.js"></script>
 <script language="javascript" src="editor/RendererClass.js"></script>
 <script language="javascript" src="editor/TextDocumentClass.js"></script>
 <script language="javascript" src="editor/userInputLogic.js"></script>
-<script language="javascript" src ="editor/toggleSH.js"></script>
 </head>
 
 <body style="margin:0px;padding:0px;" onload="init()">

@@ -440,6 +440,7 @@ function TextDocument( paramHTMLDocumentPane )
 				else this.getLineHandle( paramLineNum ).innerHTML = this.renderer.renderLine( lineText, this.renderer.SELECTION_TAIL_CURSOR, paramCursorColumn );
 			}
 			// If there is no selection
+			else if ( syntaxHighlightOn ) this.getLineHandle( paramLineNum ).innerHTML = this.renderer.renderLine( lineText, this.renderer.SYNTAX_HILITE, paramCursorColumn );
 			else this.getLineHandle( paramLineNum ).innerHTML = this.renderer.renderLine( lineText, this.renderer.CURSOR, paramCursorColumn );
 		}
 		// If the line does not contain the cursor, and there is a selection...
@@ -457,9 +458,11 @@ function TextDocument( paramHTMLDocumentPane )
 			else if ( (this.currentSelection.startLine < paramLineNum && this.currentSelection.endLine > paramLineNum ) || ( this.currentSelection.startLine > paramLineNum && this.currentSelection.endLine < paramLineNum ) )
 				this.getLineHandle( paramLineNum ).innerHTML = this.renderer.renderLine( lineText, this.renderer.SELECTION_LINE );
 			// Otherwise, the current line is outside the selection area
+			else if ( syntaxHighlightOn ) this.getLineHandle( paramLineNum ).innerHTML = this.renderer.renderLine( lineText, this.renderer.SYNTAX_HILITE );
 			else this.getLineHandle( paramLineNum ).innerHTML = this.renderer.renderLine( lineText, this.renderer.NORMAL );
 		}
 		// Otherwise, if the line does not contain the cursor and there is no selection, then
+		else if ( syntaxHighlightOn ) this.getLineHandle( paramLineNum ).innerHTML = this.renderer.renderLine( lineText, this.renderer.SYNTAX_HILITE );
 		else this.getLineHandle( paramLineNum ).innerHTML = this.renderer.renderLine( lineText, this.renderer.NORMAL );
 	}
 	
