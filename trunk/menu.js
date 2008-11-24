@@ -113,16 +113,6 @@ function hidemenu(elmnt)
 function highlighMenuClick()
 {
 	toggleSyntaxHighlighting();
-
-/*	var testVar = getDoc().getElementById('SS').href;
-	if(testVar.indexOf("java.css") == -1)
-	{
-		getDoc().getElementById('SS').href = "../java.css"; return;
-	}
-	getDoc().getElementById('SS').href = "../style.css";
-*/
-	//	alert(testVar);
-	//openPopup('syntax_lang','Highlight Language','syntax_lang');
 }
 
 function newMenuClick()
