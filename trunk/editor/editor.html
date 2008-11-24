@@ -25,6 +25,7 @@ var XPODoc;
 // Other stuff
 var readOnly = true;
 var syntaxHighlightOn = false;
+var lineLockToSend = -1;
 var lockedLines = new Array();
 
 // HTML-DOM handle for document pane
@@ -376,8 +377,7 @@ function updateDocument( paramAction, paramText, paramLineNum ) {
 	pendingServerUpdates.push( new updateObject(paramAction, paramText, paramLineNum) );
 }
 
-setTimeout('sendDocumentUpdates()',5000);
-
+// This function actually sends pending document updates to the sever periodically
 function sendDocumentUpdates(){
 
 	if(pendingServerUpdates.length > 0){
@@ -400,21 +400,36 @@ function sendDocumentUpdates(){
 	setTimeout('sendDocumentUpdates()', 1000);
 }
 
-this.updateLineLock = function ( line ) {
-	var initFlag = "";
-	if( typeof(updateLineLock.lockOrderCounter) == "undefined" ){ 
-		updateLineLock.lockOrderCounter = 0; 
-		initFlag = "&lockInit=true";
-	}
-	else{
-		if( updateLineLock.lockOrderCounter == 499 ) { updateLineLock.lockOrderCounter = 0; }
-		else { updateLineLock.lockOrderCounter++; }
-	}
-	new Ajax.Request("./documents/lineLock/updateLineLock.php?curLine=" + line + "&docID=" + XPODoc.documentID + "&order=" + updateLineLock.lockOrderCounter + initFlag, {
-		method:'get'		
-	});
+// This function sets a variable to a line number that needs to be sent to the server as a new line lock.
+this.updateLineLock = function ( paramLine ) {
+	lineLockToSend = paramLine;
 }
 
+// This function sends a waiting line lock to the server periodically
+this.sendLineLock = function () {
+	if( lineLockToSend != -1 ){	
+		var initFlag = "";
+		if( typeof(sendLineLock.lockOrderCounter) == "undefined" ){ 
+			sendLineLock.lockOrderCounter = 0; 
+			initFlag = "&lockInit=true";
+		}
+		else{
+			if( sendLineLock.lockOrderCounter == 499 ) { sendLineLock.lockOrderCounter = 0; }
+			else { sendLineLock.lockOrderCounter++; }
+		}
+		new Ajax.Request("./documents/lineLock/updateLineLock.php?curLine=" + lineLockToSend + "&docID=" + XPODoc.documentID + "&order=" + sendLineLock.lockOrderCounter + initFlag, {
+			method:'get'		
+		});
+		lineLockToSend = -1;
+	}
+	
+	// Every 1 second, see if there is anything to send again
+	setTimeout('sendLineLock()', 1000);
+}
+
+// On load, wait 5 seconds to start checking to see if we need to send any updates or locks to the server
+setTimeout('sendDocumentUpdates()',5000);
+setTimeout('sendLineLock()', 5000);
 
 
 /*************************************************/
