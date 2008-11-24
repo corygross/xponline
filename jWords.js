@@ -1,4 +1,4 @@
-var javawords = new Array(
+var syntax_words = new Array(
 	"public",
 	"system",
 	"abstract",
@@ -48,4 +48,5 @@ var javawords = new Array(
 	"const",
 	"number",
 	"int",
-	"string");
+	"string"
+	);
