@@ -5,3 +5,8 @@ String.prototype.trim = function() {
 	a = this.replace(/^\s+/, '');
 	return a.replace(/\s+$/, '');
 };
+
+// This function removes all spaces at the beginning of a string
+String.prototype.trimLeft = function() {
+	return this.replace(/^\s+/, '');	
+};
