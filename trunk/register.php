@@ -105,10 +105,10 @@ if($error != ""){
 <br />
 <br />
 <br />
-<input type="submit" name="btnRegister" id="btnRegister" value="Submit" />
+<input type="submit" name="btnRegister" id="regBtn" value="" />
 &nbsp
 &nbsp
-<input type="submit" name="btnCancel" id="btnCancel" value="Cancel" />
+<input type="submit" name="btnCancel" id="cancelBtn" value="" />
 </form>
 <script>document.getElementById('fName').focus();</script>
 </div>

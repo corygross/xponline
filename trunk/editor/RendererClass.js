@@ -33,7 +33,9 @@ function Renderer()
 		        tempCurrentLine.push( replaceHTMLEntities( paramLineText.substring(0,paramArg1)) );
 		        tempCurrentLine.push(replaceHTMLEntities( paramLineText.substr(paramArg1, 1)) );
 		        tempCurrentLine.push(replaceHTMLEntities( paramLineText.substring(paramArg1+1)) );
+				
 				if ( tempCurrentLine[1] == "" ) tempCurrentLine[1] = ' ';
+				
 				tempCurrentLine[1] = "<span id='cursor'>" + tempCurrentLine[1] + "</span>";
 				return tempCurrentLine.join("");
 			
