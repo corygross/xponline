@@ -17,9 +17,6 @@
 var wordsString = null;
 function tokenSearch(term)
 {
-<<<<<<< .mine
-//	alert("Received" + term + "Word");
-=======
 	if( wordsString == null ){
 		wordsString = "~" + syntax_words.join("~") + "~";
 	}

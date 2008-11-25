@@ -155,14 +155,21 @@ function showmenu(elmnt)
 var lineCol;
 function updateLineCol(line, col)
 {
-	if(lineCol == null){
+//	if(lineCol == null){
 		lineCol = document.getElementById('curLineCol');
-	}
-	if(line === "" && col === ""){
-		lineCol.innerHTML = "";
-		return;
-	}
-	lineCol.innerHTML = "Ln:" + line + " Col:" + col;
+		
+		if(line !== "" || col !== ""){lineCol.innerHTML = "Ln:" + line + " Col:" + col; return;}
+		else { lineCol.innerHTML = ""; return; }
+//	}
+//	else
+//	{
+	//	if(line === "" && col === "")
+	//	{
+		
+	//	}
+//	}		
+		
+
 }
 
 function uploadMenuClick()
