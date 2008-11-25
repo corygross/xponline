@@ -40,3 +40,4 @@ function writeSpans(word, syntaxCheck)
 	}
 	return newWord;
 }
+

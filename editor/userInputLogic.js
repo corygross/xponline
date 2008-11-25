@@ -8,6 +8,7 @@ var mouseY;
 var selectionAnchorColumn;
 var selectionAnchorLine;
 
+
 /* KEYBOARD-RELATED */
 // const is mozilla only!!!!  do NOT use it!!!!
 var BACKSPACEKEY = 8;	var TABKEY = 9;			var ENTERKEY = 13;
@@ -20,7 +21,7 @@ var LEFTBRACKET = 219;	var LEFTPAREN = 57;		var FINDKEY = 70;
 var GOTOKEY = 71;		var SELECTALLKEY = 65;	var REPLACEKEY = 82;
 var CUTKEY = 88;		var COPYKEY = 67;		var PASTEKEY = 86;
 var NEWKEY = 78;		var OPENKEY = 79;		var UPLOADKEY = 85;
-var COLORKEY = 83;		var HIGHLIGHTKEY = 72;
+var COLORKEY = 83;		var HIGHLIGHTKEY = 72; var SPACEBARKEY = 32;
 
 /* CONSTANTS: INPUT MODES */
 var INSERT = 0;
@@ -170,7 +171,7 @@ function typeCharacter( paramDoc, paramCharCode ) {
 
 	// Insert character
 	tempCurrentLine[1]=String.fromCharCode(paramCharCode) + tempCurrentLine[1];
-	
+
 	// Update cursor
 	cursorColumn++;
 	

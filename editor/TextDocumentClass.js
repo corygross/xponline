@@ -109,6 +109,13 @@ function TextDocument( paramHTMLDocumentPane )
 		return this.currentSelection;
 	}
 	
+	
+	this.insertWord = function(theWord, startChar, endChar, currentLine)
+	{
+		alert("received " + theWord);
+		
+		
+	}
 	// Returns the text within a specified range.  The range is defined by a starting Line/Column and an ending Line/Column value.  
 	// This function returns an ARRAY of lines of text.  The first and last lines in the array will be 'partial' lines, based on the given range.
 	// This function is responsible for getting the range correct whether or not the 'start' and 'end' are given in the correct order.
@@ -475,6 +482,7 @@ function TextDocument( paramHTMLDocumentPane )
 		}
 	}
 	
+
 	/************************************************************/
 	/*********** INITIALIZATION OF THIS INSTANCE ************/
 	this.uniqueNameCounter = 0;

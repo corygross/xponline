@@ -17,6 +17,9 @@
 var wordsString = null;
 function tokenSearch(term)
 {
+<<<<<<< .mine
+//	alert("Received" + term + "Word");
+=======
 	if( wordsString == null ){
 		wordsString = "~" + syntax_words.join("~") + "~";
 	}
@@ -29,13 +32,17 @@ function tokenSearch(term)
 /*
 function tokenSearch(term)
 {
+>>>>>>> .r199
 	var reservedWords = javawords;	//Right now, just default to java syntax highlighting
 	var beforeCount = reservedWords.size();
 	var newArr = reservedWords.without(term);
 	var afterCount = newArr.size();
-	delete newArr; 
+//	alert("BeforeCount is "+ beforeCount);
+//	alert("AfterCount is " + afterCount);
+   	delete newArr; 
 	
 	(beforeCount == afterCount) ? output=false : output=true;
+//	alert("Returning "+ output);
 	return output;
 }
 */

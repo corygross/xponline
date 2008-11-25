@@ -148,6 +148,16 @@ function indexLineText(inputText)
 }
 */
 
+/*
+ * Check to see if the parameter is a valid
+ * token the current langua
+ *
+ */
+function checkWord(currentWord)
+{
+	
+}
+
 // This function highlights and locks lines given by the 'newLineLocks' array it receives
 function lockLines( newLineLocks ) {
 	// Close the currently open lock popup, so we don't get left with one stuck open
@@ -195,6 +205,12 @@ function renderCursor()
 	                tempCurrentLine.push(XPODoc.getLineText(cursorLine).substr(cursorColumn, 1));
 	                tempCurrentLine.push(XPODoc.getLineText(cursorLine).substring(cursorColumn+1));
 
+					//Here we can see if the current character is a space and note that
+					var currentChar = tempCurrentLine[1];
+					alert("the current character is " + currentChar);
+//					if(currentchar == ' '){alert("space");}
+					
+					
 					//If syntax highlighting is enabled
 					if(checkSyntaxHighlighting())
 					{

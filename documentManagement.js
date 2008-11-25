@@ -294,6 +294,7 @@ function showLoadingIndicator()
 		topEdge = (getHeight()/2) - 16;
 	}
 	var loadingIMG = document.getElementById("loadingIndicator");
+	//var loadingIMG =(document.getElementById("myI")).getElementById('loadingIndicator');
 
 	if(isIE){
 		loadingIMG.style.top = topEdge;
