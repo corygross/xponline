@@ -3,6 +3,7 @@ session_start();
 require_once "../dbConnect.php";
 
 $uID = $_SESSION['uID'];
+$isInit = isset($_GET['init']);
 
 // Both '+' and '&' have to be put back in.  They were taken out for transmission.
 $updateArray = json_decode(preg_replace('/pLUsSign/',"+", preg_replace('/aMPerSand/',"&",$_POST['updateData'])),true);
@@ -16,7 +17,29 @@ foreach ($updateArray as $updateObject){
 	$action = $updateObject["action"];
 	$lineNum = $updateObject["lineNum"];
 	$text = $updateObject["text"];
+	$updateNumber = $updateObject["updateNum"];
 	
+/*
+	// Reset the counter on init (the page was either just loaded or refreshed)
+	if( $isInit == true ){
+		$_SESSION['docUpdateOrder'] = 0;
+		$isInit = false;
+	}
+	// We need to set the counter back once we hit 49 so we can just keep looping.  The client only keeps track of 50 updates
+	else if( $updateNumber == 49 ){
+		$_SESSION['docUpdateOrder'] = -1;
+	}
+	// Something happened and updates got out of order.  Ask the client for all updates starting at the expected number
+	else if( $_SESSION['docUpdateOrder']+1 != $updateNumber ){
+		echo "missingUpdateError^d&".$_SESSION['docUpdateOrder']+1;
+		return;
+	}
+	else{
+		$_SESSION['docUpdateOrder'] = $updateNumber;
+	}
+*/
+
+
 	//if($masterFileHandle == null || $lastDocID != $dID){
 	
 	//}	

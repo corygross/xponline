@@ -231,12 +231,29 @@ function adjustScroll() {
 /**********************************************/
 /****** DOCUMENT SYNCHRONIZATION *****/
 
+var updateNumber = -1;
+var updateHistory = new Array();
+updateHistory.length = 50;
+
+function moveArrayUpdatesToHistory(){
+	for( var i=0; i < pendingServerUpdates.length; i++ )
+	{			
+		updateHistory[pendingServerUpdates[i].updateNum] = pendingServerUpdates[i];
+	}
+}
+
 // This will be an 'update' that we will send to the server
-function updateObject(paramAction, paramText, paramLineNum){
+function updateObject(paramAction, paramText, paramLineNum, paramUpdateNum){
 	this.action = paramAction;
 	this.text = paramText;
 	this.lineNum = paramLineNum;
-	this.documentID = XPODoc.documentID;
+	this.documentID = XPODoc.documentID;	
+	if( paramUpdateNum != null ) this.updateNum = paramUpdateNum;
+	else{
+		updateNumber++;
+		if( updateNumber > 49 ) updateNumber = 0;
+		this.updateNum = updateNumber;
+	}
 }
 
 // we might want to move this into the document
@@ -270,7 +287,7 @@ function updateDocument( paramAction, paramText, paramLineNum ) {
 	if(arrayLength > 0){
 		var lastUpdateObj = pendingServerUpdates[ arrayLength-1 ];
 		if(lastUpdateObj.action == "u" && paramAction == "u" && lastUpdateObj.lineNum == paramLineNum){
-			pendingServerUpdates[ arrayLength-1 ] = new updateObject(paramAction, paramText, paramLineNum);
+			pendingServerUpdates[ arrayLength-1 ] = new updateObject(paramAction, paramText, paramLineNum, lastUpdateObj.updateNum);
 			return;
 		}
 	}
@@ -278,19 +295,28 @@ function updateDocument( paramAction, paramText, paramLineNum ) {
 }
 
 // This function actually sends pending document updates to the sever periodically
-function sendDocumentUpdates(){
+//function sendDocumentUpdates(){
+this.sendDocumentUpdates = function(){
 
 	if(pendingServerUpdates.length > 0){
+		if( typeof(sendDocumentUpdates.initString) == "undefined" ) sendDocumentUpdates.initString = "init=true";
+		else sendDocumentUpdates.initString = "";
 	//alert(pendingServerUpdates.toJSON());
-		new Ajax.Request('./handlers/documentUpdate.php?', {
+		new Ajax.Request('./handlers/documentUpdate.php?'+sendDocumentUpdates.initString, {
 			method:'post',
 			postBody: 'updateData='+pendingServerUpdates.toJSON(),
 			onSuccess: function(transport) {
 				if(transport.responseText != ""){
 					//alert(transport.responseText);
+					var updateResponse = transport.responseText.split("^d&");
+					if( updateResponse[0] == "missingUpdateError" ){
+					
+					}
 				}
 			}		
 		});
+		
+		moveArrayUpdatesToHistory();
 		
 		// Clear out the array so it doesn't send again.  We should probably also keep a record somewhere of them for awhile
 		pendingServerUpdates  = new Array();
@@ -588,8 +614,10 @@ onMouseMoveFunction = function( paramEvent ) {
 onMouseUpFunction = function( paramEvent ) {
 	// No need to do any cursor capture, etc.  The onMouseMoveFunction should have kept it up to date.
 	// We want to determine if a selection was made or not, and if so, store the endpoints in the document for use
-	if ( selectionAnchorLine != cursorLine ||selectionAnchorColumn != cursorColumn )
-		XPODoc.setCurrentSelection( selectionAnchorLine, selectionAnchorColumn, cursorLine, cursorColumn );
+	if ( selectionAnchorLine != cursorLine ||selectionAnchorColumn != cursorColumn ){
+		var selection = XPODoc.getCurrentSelection();
+		XPODoc.setCurrentSelection( selection.startLine, selection.startColumn, cursorLine, cursorColumn );
+	}
 	
 	// Disable select-mode
 	resetSelectMode( XPODoc );
