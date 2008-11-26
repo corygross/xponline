@@ -1,3 +1,5 @@
+var curOpenWindow = null;
+var chatWindows = new Array();
 var startTop,startLeft;
 var offsetTop,offsetLeft;
 var myWindow;
@@ -41,7 +43,6 @@ function grab(id, e) {
 	return false; //don't select text in some browsers
 }
 
-var curOpenWindow = null;
 function openPopup(id, title, type){
 	if(type != "chat"){
 		if(curOpenWindow != null){
@@ -58,9 +59,6 @@ function openPopup(id, title, type){
 	}
 }
 
-//var lastNewTop = 0;
-//var lastNewLeft = 100;
-var chatWindows = new Array();
 this.makeNewPopup = function (popupID, title, type) 
 {
 	if( typeof(makeNewPopup.lastNewTop) == "undefined" ) makeNewPopup.lastNewTop = 0;
