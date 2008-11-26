@@ -218,39 +218,13 @@ function openDocument(dID, dName)
  */
 function setSyntaxFlag(filename)
 {
-	var pos = filename.lastIndexOf(".");
-	var extension = filename.substring(pos+1);
-	
-	// Determine which flag to set
-	setCurrentLanguage(extension);
+	var extension = filename.substring(filename.lastIndexOf(".")+1);
+	extension = extension.replace("^5", "");
+
+	languageFlag = extension;
 	
 	// Set the wordsString to null, which will in turn set a new wordsString based on the current extension
 	wordsString = null;
-}
-/*
- * Function: setCurrentLanguage
- *
- * Purpose: Set the language variable
- *			for identifing what type of
- *			file is currently being 
- *			displayed.
- *
- *
- * Input: extension - the currently displayed
- *					  file's extension.
- *
- * Output: None
- *
- */
-function setCurrentLanguage(extension)
-{
-	//Parse out those weird characters that can appear
-	//at the end of an uploaded filename
-	extension = extension.replace("^5", "");
-	
-	if(extension == "java"){languageFlag = "java";}
-	else
-	languageFlag = extension;
 }
 
 /*
