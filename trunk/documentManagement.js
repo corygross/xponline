@@ -221,8 +221,11 @@ function setSyntaxFlag(filename)
 	var pos = filename.lastIndexOf(".");
 	var extension = filename.substring(pos+1);
 	
-	//Determine which flag to set
+	// Determine which flag to set
 	setCurrentLanguage(extension);
+	
+	// Set the wordsString to null, which will in turn set a new wordsString based on the current extension
+	wordsString = null;
 }
 /*
  * Function: setCurrentLanguage
