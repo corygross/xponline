@@ -521,7 +521,16 @@ onMouseDownFunction = function( paramEvent ) {
 	
 	// If selection-mode is not enabled, then enable it
 	// If selection-mode is enabled, then another mouse click normally would end the selection...
-	if ( isSelectMode ) resetSelectMode();
+	if ( isSelectMode ) {
+		// If we get here, that means that we missed a mouseup event, so invalidate the selection!
+		// FIXME: This is really crappy.  Selection is quite buggy.
+		XPODoc.setLineUpdated( cursorLine );
+		cursorLine = XPODoc.getCurrentSelection().startLine;
+		cursorColumn = XPODoc.getCurrentSelection().startColumn;
+		XPODoc.setLineUpdated( cursorLine );
+		resetSelectMode( XPODoc );
+		XPODoc.renderUpdates( cursorLine, cursorColumn );
+	}
 	else {
 		// Set the selection mode to enable rendering of the selection
 		setSelectMode( XPODoc, cursorLine, cursorColumn );
