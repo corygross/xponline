@@ -1,0 +1,87 @@
+/*
+ * java.css
+ *
+ * CSS for Java reserved words syntax highlighting
+ *
+ */
+#cursor{background-color:red;}
+#selection{background-color:blue;}
+
+.lockWindow{background-color:white; border: 2px solid black; position: absolute; display: block; padding:2px 5px 2px 5px;}
+.lock{background-color:orange;}
+
+/*  Modifiers  */
+.public	{color:purple; font-weight:bold;}
+.private	{color:purple; font-weight:bold;}
+.protected	{color:purple; font-weight:bold;}
+.abstract	{color:purple; font-weight:bold;}
+.class	{color:purple; font-weight:bold;}
+.const	{color:purple; font-weight:bold;}
+.declare	{color:purple; font-weight:bold;}
+.static	{color:purple; font-weight:bold;}
+.global	{color:purple; font-weight:bold;}
+.final	{color:purple; font-weight:bold;}
+.var	{color:purple; font-weight:bold;}
+
+/*  Control flow  */
+.for	{color:blue; font-weight:bold;}
+.as	{color:blue; font-weight:bold;}
+.break	{color:blue; font-weight:bold;}
+.case	{color:blue; font-weight:bold;}
+.continue	{color:blue; font-weight:bold;}
+.default	{color:blue; font-weight:bold;}
+.die	{color:blue; font-weight:bold;}
+.do	{color:blue; font-weight:bold;}
+.else	{color:blue; font-weight:bold;}
+.elseif	{color:blue; font-weight:bold;}
+.foreach	{color:blue; font-weight:bold;}
+.exit	{color:blue; font-weight:bold;}
+.if	{color:blue; font-weight:bold;}
+.return	{color:blue; font-weight:bold;}
+.goto	{color:blue; font-weight:bold;}
+.switch	{color:blue; font-weight:bold;}
+.while	{color:blue; font-weight:bold;}
+
+/*  Error handling  */
+.throw{color:blue; font-weight:bold;}
+.try{color:blue; font-weight:bold;}
+.catch{color:blue; font-weight:bold;}
+.exception{color:blue; font-weight:bold;}
+
+/*  Data types  */
+.boolean	{color:purple; font-weight:bold;}
+.array	{color:purple; font-weight:bold;}
+
+/*  Logical  */
+.true	{color:blue; font-weight:bold;}
+.false	{color:blue; font-weight:bold;}
+.null	{color:blue; font-weight:bold;}
+.and	{color:blue; font-weight:bold;}
+.or	{color:blue; font-weight:bold;}
+.xor	{color:blue; font-weight:bold;}
+
+/*  OOP Specific  */
+.new	{color:blue; font-weight:bold;}
+.extends	{color:blue; font-weight:bold;}
+.interface	{color:blue; font-weight:bold;}
+.implements	{color:blue; font-weight:bold;}
+.instanceof	{color:blue; font-weight:bold;}
+.this	{color:blue; font-weight:bold;}
+
+/*  Other PHP Keywords */
+.echo	{color:blue; font-weight:bold;}
+.print	{color:blue; font-weight:bold;}
+.include	{color:blue; font-weight:bold;}
+.include_once	{color:blue; font-weight:bold;}
+.require	{color:blue; font-weight:bold;}
+.require_once	{color:blue; font-weight:bold;}
+.isset	{color:blue; font-weight:bold;}
+.unset	{color:blue; font-weight:bold;}
+.namespace	{color:blue; font-weight:bold;}
+.function	{color:blue; font-weight:bold;}
+.use	{color:blue; font-weight:bold;}
+.clone	{color:blue; font-weight:bold;}
+
+/*  Other  */
+.number{color:orange;}
+.comment{color:green;}
