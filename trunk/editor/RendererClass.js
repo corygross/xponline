@@ -245,7 +245,7 @@ function Renderer()
 			tempCurrentLine[1] = "<span id='cursor'>" + tempCurrentLine[1] + "</span>";
 			lineText.push(tempCurrentLine.join(""));
 		}
-		else if( lastEndIndex > 0 ) replaceHTMLEntities(lineText.push( paramText.substring(0, lastEndIndex) ));
+		else if( lastEndIndex > 0 ) lineText.push( replaceHTMLEntities( paramText.substring(0, lastEndIndex) ));
 		
 		// Reverse the array (because we added stuff backwards) and return it as a string
 		lineText.reverse();
