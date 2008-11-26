@@ -179,6 +179,8 @@ function TextDocument( paramHTMLDocumentPane )
 		// Create a new HTML div, insert it correctly in the existing HTML document, and provide the document line a handle on the div for rendering
 		var newDiv = this.htmlDocumentPane.createElement('div');
 		newDiv.setAttribute('class', "line");
+		if( isIE ) newDiv.className = "line";
+		
 		//newDiv.setAttribute('id', "Line:"+this.uniqueNameCounter++);
 		newDiv.innerHTML = paramText;
 		// Try inserting the new div.  If it fails, we must be on the last line, so then just append it instead.
