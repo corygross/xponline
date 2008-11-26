@@ -17,8 +17,8 @@ function setHighlightingStyleSheet()
 			case 'java':
 				newStyleSheet = "../syntaxHighlight/java.css";
 				break;
-			case 'other':
-				newStyleSheet = "";
+			case 'php':
+				newStyleSheet = "../syntaxHighlight/php.css";
 				break;
 			default:
 				newStyleSheet = "../syntaxHighlight/default_highlight_on.css";

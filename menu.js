@@ -1,3 +1,5 @@
+var cut_copy_text;
+
 function accessMenuClick()
 {
 	openPopup('grantAccess','Grant User Access','grantAccess');
@@ -37,17 +39,20 @@ function colorMenuClick()
 
 function copyIconClicked()
 {
-	alert("copy");
+	var selection = XPODoc.getCurrentSelection();
+	if( selection != false ){
+		cut_copy_text = XPODoc.getTextInRange(selection.startLine, selection.startColumn, selection.endLine, selection.endColumn, 0);
+		//alert(cut_copy_text);
+	}
 }
 
 function cutIconClicked()
 {
-	alert("cut");
-	return;
 	var selection = XPODoc.getCurrentSelection();
 	if( selection != false ){
-		var cutText = XPODoc.getTextInRange(selection.startLine, selection.startColumn, selection.endLine, selection.endColumn, 1);
-		alert(cutText);
+		cut_copy_text = XPODoc.getTextInRange(selection.startLine, selection.startColumn, selection.endLine, selection.endColumn, 0);
+		XPODoc.replaceTextInRange(selection.startLine, selection.startColumn, selection.endLine, selection.endColumn, "");
+		//alert(cut_copy_text);
 	}	
 }
 
@@ -129,7 +134,7 @@ function openMenuClick()
 
 function pasteIconClicked()
 {
-	alert("paste");
+	XPODoc.insertText( cut_copy_text, cursorLine, cursorColumn );
 }
 
 function replaceMenuClick()

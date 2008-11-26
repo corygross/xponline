@@ -23,8 +23,8 @@ function tokenSearch(term)
 			case 'java':
 				wordsString = java_words;
 				break;
-			case 'other':
-				wordsString = "";
+			case 'php':
+				wordsString = php_words;
 				break;
 			default:
 				wordsString = default_words;
