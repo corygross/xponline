@@ -189,6 +189,8 @@ function openDocument(dID, dName)
 				else changeDocTitle(dName);
 
 				setSyntaxFlag(dName); //Set the syntax highlighting flag
+				setHighlightingStyleSheet();
+				
 				loadNewDoc(dID, docInfoArr[1], docInfoArr[0]);
 			}
 		},		
@@ -220,8 +222,7 @@ function setSyntaxFlag(filename)
 {
 	var extension = filename.substring(filename.lastIndexOf(".")+1);
 	extension = extension.replace("^5", "");
-
-	languageFlag = extension;
+	languageFlag = extension.toLowerCase();
 	
 	// Set the wordsString to null, which will in turn set a new wordsString based on the current extension
 	wordsString = null;

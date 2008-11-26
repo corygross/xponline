@@ -1,0 +1,11 @@
+/*
+ * Whatever default css we want in the 
+ * editor when there is no syntax 
+ * highlighting applied.
+ *
+ */
+#cursor{background-color:red;}
+#selection{background-color:blue;}
+
+.lockWindow{background-color:white; border: 2px solid black; position: absolute; display: block; padding:2px 5px 2px 5px;}
+.lock{background-color:orange;}
