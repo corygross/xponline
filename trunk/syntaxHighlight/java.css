@@ -5,54 +5,66 @@
  *
  */
 #cursor{background-color:red;}
-.public{color:blue;};
-.System{color:orange;}
-.abstract{color:red}
-.continue{color:blue}	
-.for	{color:red}
-.new	{color:blue}
-.switch{color:red}
-.assert***	{color:blue}
-.default_goto {color:green}
-.package	{color:green}
-.synchronized{color:red}
-.boolean	{color:blue}
-.do	{color:green}
-.if	{color:blue}
-.private	{color:blue}
-.this{color:green}
-.break	{color:orange}
-.double	{color:red}
-.implements	{color:blue}
-.protected	{color:green}
-.throw{color:orange}
-.byte	{color:red}
-.else	{color:blue}
-.import	{color:green}
-.public	{color:red}
-.throws{color:blue}
-.case	{color:green}
-.enum{color:red}
-.instanceof	{color:blue}
-.return	{color:green}
-.transient{color:}
-.catch	{color:red}
-.extends	{color:blue}
-.int	{color:green}
-.short	{color:orange}
-.try{color:red}
-.char	{color:blue}
-.final	{color:green}
-.interface	{color:blue}
-.static	{color:#FFAABB}
-.void{color:#FFFFAA}
-.class	{color:orange}
-.finally	{color:orange}
-.long	{color:orange}
-.strictfp**	{color:red}
-.volatile{color:blue}
-.const{color:green}
-.number{color:red}
-.String{color:blue}
-.paren{color:blue}
-.comment{color:green}
+
+/*  Modifiers  */
+.public	{color:purple; font-weight:bold;}
+.private	{color:purple; font-weight:bold;}
+.protected	{color:purple; font-weight:bold;}
+.class	{color:purple; font-weight:bold;}
+.static	{color:purple; font-weight:bold;}
+.const{color:purple; font-weight:bold;}
+.final	{color:purple; font-weight:bold;}
+.abstract{color:purple; font-weight:bold;}
+.void{color:purple; font-weight:bold;}
+.volatile{color:purple; font-weight:bold;}
+.transient{color:purple; font-weight:bold;}
+.strictfp	{color:purple; font-weight:bold;}
+.synchronized{color:purple; font-weight:bold;}
+
+/*  Control flow  */
+.for	{color:blue; font-weight:bold;}
+.do	{color:blue; font-weight:bold;}
+.while	{color:blue; font-weight:bold;}
+.if	{color:blue; font-weight:bold;}
+.else	{color:blue; font-weight:bold;}
+.switch{color:blue; font-weight:bold;}
+.case	{color:blue; font-weight:bold;}
+.default	{color:blue; font-weight:bold;}
+.goto		{color:blue; font-weight:bold;}
+.continue{color:blue; font-weight:bold;}
+.break	{color:blue; font-weight:bold;}
+.return	{color:blue; font-weight:bold;}
+.assert	{color:blue; font-weight:bold;}
+
+/*  Error handling  */
+.throw{color:blue; font-weight:bold;}
+.throws{color:blue; font-weight:bold;}
+.try{color:blue; font-weight:bold;}
+.catch	{color:blue; font-weight:bold;}
+.finally	{color:blue; font-weight:bold;}
+
+/*  Primitive types  */
+.boolean	{color:purple; font-weight:bold;}
+.double	{color:purple; font-weight:bold;}
+.byte	{color:purple; font-weight:bold;}
+.enum{color:purple; font-weight:bold;}
+.int	{color:purple; font-weight:bold;}
+.short	{color:purple; font-weight:bold;}
+.char	{color:purple; font-weight:bold;}
+.long	{color:purple; font-weight:bold;}
+
+/*  OOP Specific  */
+.new	{color:blue; font-weight:bold;}
+.this{color:blue; font-weight:bold;}
+.package	{color:blue; font-weight:bold;}
+.import	{color:blue; font-weight:bold;}
+.extends	{color:blue; font-weight:bold;}
+.interface	{color:blue; font-weight:bold;}
+.implements	{color:blue; font-weight:bold;}
+.instanceof	{color:blue; font-weight:bold;}
+
+/*  Other  */
+.String{color:blue;}
+.number{color:orange;}
+.paren{color:blue;}
+.comment{color:green;}
