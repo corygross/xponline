@@ -201,6 +201,9 @@ function updateContactList($interval){
 	return $returnImmediately;
 }
 
+// We need this... to see if we need to clear the locks
+$previousLockCheckKey = $currentDocumentID."prevLockCheck";
+
 // Loop for awhile... waiting for something interesting to happen...
 //for ($i = 0; $i<60; $i++)
 for ($i = 0; $i<100; $i++)
@@ -228,6 +231,7 @@ for ($i = 0; $i<100; $i++)
 	}
 	
 	if ($collisionInfo != ""){
+		$_SESSION['$previousLockCheckKey'] = true;
 		$isDataToSend = true;
 		echo $collisionInfo;		
 	}
@@ -242,7 +246,12 @@ for ($i = 0; $i<100; $i++)
 		echo $pendingContactsUpdate;		
 	}
 	
-	if($isDataToSend == true){
+	if($isDataToSend == true){		
+		// If the collision info is blank and it wasn't before, we need to send empty locks, so that old ones get cleared
+		if($collisionInfo == "" && $_SESSION['$previousLockCheckKey'] == true){
+			$_SESSION['$previousLockCheckKey'] = false;
+			echo "<locks></locks>";  // Return empty locks so it clears old ones if there are none
+		}
 		echo "</body>"; //This is key to have this here, at least for Safari
 		ob_flush();
 		flush();		
