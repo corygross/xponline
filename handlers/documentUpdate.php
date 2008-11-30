@@ -19,25 +19,26 @@ foreach ($updateArray as $updateObject){
 	$text = $updateObject["text"];
 	$updateNumber = $updateObject["updateNum"];
 	
-/*
+
 	// Reset the counter on init (the page was either just loaded or refreshed)
 	if( $isInit == true ){
 		$_SESSION['docUpdateOrder'] = 0;
 		$isInit = false;
 	}
-	// We need to set the counter back once we hit 49 so we can just keep looping.  The client only keeps track of 50 updates
-	else if( $updateNumber == 49 ){
+	// We need to set the counter back once we hit 99 so we can just keep looping.  The client only keeps track of 100 updates
+	else if( $updateNumber == 99 ){
 		$_SESSION['docUpdateOrder'] = -1;
 	}
 	// Something happened and updates got out of order.  Ask the client for all updates starting at the expected number
 	else if( $_SESSION['docUpdateOrder']+1 != $updateNumber ){
-		echo "missingUpdateError^d&".$_SESSION['docUpdateOrder']+1;
+		$nextUpdateNum = intval($_SESSION['docUpdateOrder'])+1;
+		echo "missingUpdateError^split&".$nextUpdateNum;
 		return;
 	}
 	else{
 		$_SESSION['docUpdateOrder'] = $updateNumber;
 	}
-*/
+
 
 
 	//if($masterFileHandle == null || $lastDocID != $dID){
