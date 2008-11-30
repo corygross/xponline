@@ -33,6 +33,7 @@ if(isset($_SESSION['homeDir']) == false){
 <script language="javascript" src="editor/RendererClass.js"></script>
 <script language="javascript" src="editor/TextDocumentClass.js"></script>
 <script language="javascript" src="editor/userInputLogic.js"></script>
+<script language="javascript" src="editor/documentSynchronization.js"></script>
 </head>
 
 <body style="margin:0px;padding:0px;" onload="init()">
