@@ -108,6 +108,20 @@ function findAll(){
 	return XPODoc.document.findAllMatches(text, document.findForm.findMatchCase.checked);
 }
 
+///////////////////////////////////////////////////////////
+////////////////////////// findCount //////////////////////////
+// returns false if none found, otherwise returns an array of results
+function findCount(){
+	var text = document.getElementById('textToFind').value;
+	if(text == ""){
+		alert("Please enter something to search for!");
+		return;
+	}
+	var resultsArray = XPODoc.document.findAllMatches(text, document.findForm.findMatchCase.checked);
+	if( resultsArray == false ) alert( "0 tokens found." );
+	else alert( resultsArray.length + " tokens are found." );
+}
+
 // This function is called by the Find window when the user clicks Find Next
 function findText(){
 	var text = document.getElementById('textToFind').value;

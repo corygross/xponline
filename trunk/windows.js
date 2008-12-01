@@ -239,7 +239,7 @@ this.makeNewPopup = function (popupID, title, type)
 			newHTML += "<br /><form name='findForm' onkeypress='callFunctionOnEnter(event, findText);' onkeydown='closeOnEscape(event, \""+popupID+"\");'><table style='width:100%;'><tr><td style='width:25%;'></td><td style='width:50%;'></td><td style='width:25%;'></td></tr>";
 			newHTML += "<tr><td>&nbsp;Find what:</td><td><input id='textToFind' name='textToFind' type='text' style='width:95%' /></td><td><input type='button' value='Find Next' style='width:100%' onClick='findText();'/></td></tr>";
 			newHTML += "<tr><td>&nbsp;</td><td><input type='radio' name='findType' value='up' />Up<br />";
-			newHTML += "<input type='radio' name='findType' value='down' checked='checked' />Down</td><td><input type='button' value='Find All' style='width:100%' onClick='findAll();'/><br /><input type='button' value='Close' style='width:100%' onClick=\"hidePopup('"+popupID+"');\"/></td></tr>";
+			newHTML += "<input type='radio' name='findType' value='down' checked='checked' />Down</td><td><input type='button' value='Count' style='width:100%' onClick='findCount();'/><br /><input type='button' value='Close' style='width:100%' onClick=\"hidePopup('"+popupID+"');\"/></td></tr>";
 			newHTML += "<tr><td colspan='2'><input type='checkbox' id='findMatchCase' name='findMatchCase' value='matchCase' />&nbsp;Match case</td><td align='right'></td><td></td></tr>";
 			newHTML += "</table></form>";
 			break;
