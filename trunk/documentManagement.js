@@ -265,18 +265,36 @@ function selectUser(id, name){
 
 var leftEdge = -1;
 var	topEdge = -1;
+var loadingIMG = null;
 function showLoadingIndicator()
 {
 	if(leftEdge == -1){
 		leftEdge = (screen.width/2) - 16;
 		topEdge = (getHeight()/2) - 16;
 	}
-	var loadingIMG = document.getElementById("loadingIndicator");
-	//var loadingIMG =(document.getElementById("myI")).getElementById('loadingIndicator');
 
-	if(isIE){
-		loadingIMG.style.top = topEdge;
-		loadingIMG.style.left = leftEdge;
+	var theIFrame;
+	if(isIE)
+	{
+		theIFrame = frames['myI'].document;
+	}
+	else
+	{
+		theIFrame = document.getElementById("myI").contentDocument;
+	}
+		if(loadingIMG == null)
+		{
+			loadingIMG = theIFrame.getElementById("loadingIndicator");
+		}
+
+	topEdge = screen.height/2;
+	leftEdge = theIFrame.width/2;
+
+	if(isIE)
+	{
+		leftEdge = theIFrame.body.scrollWidth/2;
+		loadingIMG.style.top = topEdge + "px";
+		loadingIMG.style.left = leftEdge + "px";
 		loadingIMG.style.display = "block";	
 	}
 	else{
@@ -287,7 +305,12 @@ function showLoadingIndicator()
 
 function hideLoadingIndicator()
 {
-	document.getElementById("loadingIndicator").style.display="none";
+	var theIFrame;
+	var myIframe;
+	if(isIE == false){ myIframe = document.getElementById("myI").contentDocument;}
+	else {myIframe = frames['myI'].document;}
+	
+	myIframe.getElementById("loadingIndicator").style.display="none";
 }
 
 function submitUpload(){

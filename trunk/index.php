@@ -11,7 +11,7 @@ if(isset($_SESSION['homeDir']) == false){
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Frameset//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd">
 <html>
 <head>
-<title>XPonline</title>
+<title>XP Online</title>
 <link rel="stylesheet" id="colorSchemeSS" href="<?php echo "colorSchemes/".$_SESSION['uColor'].".css"; ?>" type="text/css" />
 
 <script language="javascript" src="prototype.js"></script>
@@ -119,10 +119,10 @@ M<br />E<br />S<br />S<br />E<br />N<br />G<br />E<br />R
 </td>
 </tr>
 </table>
-<div name="loadingIndicator" id="loadingIndicator" style="position:absolute;display:none;">
+<!--div name="loadingIndicator" id="loadingIndicator" style="position:absolute;display:none;"-->
 <!--div name="loadingIndicator" id="loadingIndicator" align="center" -->
-<img src="images/red-loading.gif" alt="loading..." />
-</div>
+<!--img src="images/red-loading.gif" alt="loading..." /-->
+<!--/div-->
 </body>
 </html>
 
