@@ -44,6 +44,7 @@ function copyIconClicked()
 		cut_copy_text = XPODoc.getTextInRange(selection.startLine, selection.startColumn, selection.endLine, selection.endColumn, 0);
 		//alert(cut_copy_text);
 	}
+	giveDocumentFocus();
 }
 
 function cutIconClicked()
@@ -52,8 +53,11 @@ function cutIconClicked()
 	if( selection != false ){
 		cut_copy_text = XPODoc.getTextInRange(selection.startLine, selection.startColumn, selection.endLine, selection.endColumn, 0);
 		XPODoc.replaceTextInRange(selection.startLine, selection.startColumn, selection.endLine, selection.endColumn, "");
+		setCursor( selection.startLine, selection.startColumn );
+		XPODoc.renderUpdates( cursorLine, cursorColumn );
 		//alert(cut_copy_text);
-	}	
+	}
+	giveDocumentFocus();
 }
 
 function deleteMenuClick()
@@ -134,7 +138,13 @@ function openMenuClick()
 
 function pasteIconClicked()
 {
-	XPODoc.insertText( cut_copy_text, cursorLine, cursorColumn );
+	if( typeof(cut_copy_text) != "undefined" ){
+		var endCoords = XPODoc.insertText( cut_copy_text, cursorLine, cursorColumn );		
+		setCursor( endCoords[0], endCoords[1] );
+		XPODoc.setLineUpdated( cursorLine+1 );
+		XPODoc.renderUpdates( cursorLine, cursorColumn );
+	}
+	giveDocumentFocus();
 }
 
 function replaceMenuClick()
