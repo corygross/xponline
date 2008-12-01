@@ -14,6 +14,8 @@ function Renderer()
 	this.LOCKED = 8;		// Rendering with the line being locked.  
 	this.SYNTAX_HILITE = 9;			// Rendering with the line syntax highlighted
 
+	this.isSyntaxHiliteOn = true;
+	
 	/* This function is the main rendering function.  It renders a single line, taking all factors into consideration (at least, it should...) */
 	/* Parameters:  paramLineText ==> Text for the line which is being rendered
 	 *		      paramMODE ==> Determines how the line will be rendered (and how the following parameters are treated)  Valid values are integers.  Use constant values defined in this class.
@@ -24,15 +26,24 @@ function Renderer()
 		 * The space is temporary, and thus is not actually written to the document. */
 		if ( paramLineText == "" ) paramLineText = ' ';
 		
+		var myMODE;
+		if ( this.isSyntaxHiliteOn ) {
+			myMODE = this.SYNTAX_HILITE;
+			if ( paramMODE == this.NORMAL ) paramMODE = this.SYNTAX_HILITE;
+		}
+		else myMODE = this.NORMAL;
+		
 		// Switch statement to handle different values of paramMODE
 		switch ( paramMODE )
 		{
 			case this.CURSOR:
 				// paramArg1 = the cursor position
 				var tempCurrentLine = new Array();
-		        tempCurrentLine.push( replaceHTMLEntities( paramLineText.substring(0,paramArg1)) );
-		        tempCurrentLine.push(replaceHTMLEntities( paramLineText.substr(paramArg1, 1)) );
-		        tempCurrentLine.push(replaceHTMLEntities( paramLineText.substring(paramArg1+1)) );
+				if ( paramArg1 != 0 )
+					tempCurrentLine.push( this.renderLine( paramLineText.substring(0,paramArg1), myMODE ) );
+				else tempCurrentLine.push( "" );
+		        tempCurrentLine.push( replaceHTMLEntities( paramLineText.substr(paramArg1, 1)) );
+		        tempCurrentLine.push( this.renderLine( paramLineText.substring(paramArg1+1), myMODE ) );
 				
 				if ( tempCurrentLine[1] == "" ) tempCurrentLine[1] = ' ';
 				
@@ -50,46 +61,46 @@ function Renderer()
 			case this.SELECTION_HEAD:
 				// paramArg1 = the starting position of the selection
 				var tempCurrentLine = new Array();
-				tempCurrentLine.push( replaceHTMLEntities( paramLineText.substring(0,paramArg1)) );
-		        tempCurrentLine.push( replaceHTMLEntities( paramLineText.substr(paramArg1)) );
+				if ( paramArg1 != 0 )
+					tempCurrentLine.push( this.renderLine( paramLineText.substring(0,paramArg1), myMODE ) );
+				else tempCurrentLine.push( "" );
+		        tempCurrentLine.push( this.renderLine( paramLineText.substr(paramArg1), myMODE ) );
 				tempCurrentLine[1] = "<span id='selection'>" + tempCurrentLine[1] + "</span>";
 				return tempCurrentLine.join("");
-				
-			case this.SELECTION_HEAD:
-				// paramArg1 = the starting position of the selection
-				var tempCurrentLine = new Array();
-				tempCurrentLine.push( replaceHTMLEntities( paramLineText.substring(0,paramArg1)) );
-		        tempCurrentLine.push( replaceHTMLEntities( paramLineText.substr(paramArg1)) );
-				tempCurrentLine[1] = "<span id='selection'>" + tempCurrentLine[1] + "</span>";
-				return tempCurrentLine.join("");
-				
+			
 			case this.SELECTION_HEAD_CURSOR:
 				// paramArg1 = the starting position of the selection (and the cursor position)
 				var tempCurrentLine = new Array();
-				tempCurrentLine.push( replaceHTMLEntities( paramLineText.substring(0,paramArg1)) );
-		        tempCurrentLine.push( replaceHTMLEntities( paramLineText.substr(paramArg1,1)) );
-				tempCurrentLine.push( replaceHTMLEntities( paramLineText.substr(paramArg1+1)) );
+				if ( paramArg1 != 0 )
+					tempCurrentLine.push( this.renderLine( paramLineText.substring(0,paramArg1), myMODE ) );
+				else tempCurrentLine.push( "" );
+		        tempCurrentLine.push( replaceHTMLEntities( paramLineText.substr(paramArg1,1) ) );
+				tempCurrentLine.push( this.renderLine( paramLineText.substr(paramArg1+1), myMODE ) );
 				tempCurrentLine[1] = "<span id='cursor'>" + tempCurrentLine[1] + "</span>";
 				tempCurrentLine[2] = "<span id='selection'>" + tempCurrentLine[2] + "</span>";
 				return tempCurrentLine.join("");
 				
 			case this.SELECTION_LINE:
-				return "<span id='selection'>" + replaceHTMLEntities( paramLineText ) + "</span>";
+				return "<span id='selection'>" + this.renderLine( paramLineText, myMODE ) + "</span>";
 			
 			case this.SELECTION_TAIL:
 				// paramArg1 = the starting position of the selection
 				var tempCurrentLine = new Array();
-				tempCurrentLine.push( replaceHTMLEntities( paramLineText.substring(0,paramArg1)) );
-		        tempCurrentLine.push( replaceHTMLEntities( paramLineText.substr(paramArg1)) );
-				tempCurrentLine[1] = "<span id='selection'>" + tempCurrentLine[0] + "</span>";
+				if ( paramArg1 != 0 )
+					tempCurrentLine.push( this.renderLine( paramLineText.substring(0,paramArg1), myMODE ) );
+				else tempCurrentLine.push( "" );
+		        tempCurrentLine.push( this.renderLine( paramLineText.substr(paramArg1), myMODE ) );
+				tempCurrentLine[0] = "<span id='selection'>" + tempCurrentLine[0] + "</span>";
 				return tempCurrentLine.join("");
 				
 			case this.SELECTION_TAIL_CURSOR:
 				// paramArg1 = the starting position of the selection (and the cursor position)
 				var tempCurrentLine = new Array();
-				tempCurrentLine.push( replaceHTMLEntities( paramLineText.substring(0,paramArg1)) );
-		        tempCurrentLine.push( replaceHTMLEntities( paramLineText.substr(paramArg1,1)) );
-				tempCurrentLine.push( replaceHTMLEntities( paramLineText.substr(paramArg1+1)) );
+				if ( paramArg1 != 0 )
+					tempCurrentLine.push( this.renderLine( paramLineText.substring(0,paramArg1), myMODE ) );
+				else tempCurrentLine.push( "" );
+		        tempCurrentLine.push( replaceHTMLEntities( paramLineText.substr(paramArg1,1) ) );
+				tempCurrentLine.push( this.renderLine( paramLineText.substr(paramArg1+1), myMODE ) );
 				tempCurrentLine[0] = "<span id='selection'>" + tempCurrentLine[0] + "</span>";
 				tempCurrentLine[1] = "<span id='cursor'>" + tempCurrentLine[1] + "</span>";
 				return tempCurrentLine.join("");
@@ -113,18 +124,24 @@ function Renderer()
 				}
 				
 				/* Slice 'n dice */
-				tempCurrentLine.push( replaceHTMLEntities( paramLineText.substring(0,tempPosition1) ) );
-		        tempCurrentLine.push( replaceHTMLEntities( paramLineText.substr(tempPosition1,tempPosition2) ) );
-				tempCurrentLine.push( replaceHTMLEntities( paramLineText.substr(tempPosition2) ) );
+				if ( tempPosition1 != 0 ) {
+					tempCurrentLine.push( this.renderLine( paramLineText.substring(0,tempPosition1), myMODE ) );
+				}
+		        tempCurrentLine.push( paramLineText.substring(tempPosition1,tempPosition2) );
+				tempCurrentLine.push( paramLineText.substr(tempPosition2) );
 				
 				/* Determine position of cursor */
 				if ( tempPosition1 == paramArg2 ) {
 					// Cursor is the first position
-					tempCurrentLine[1] = "<span id='cursor'>"+replaceHTMLEntities( tempCurrentLine[1].substring(0,1) )+"</span><span id='selection'>"+replaceHTMLEntities( tempCurrentLine[1].substr(1) )+"</span>";
+					if ( tempCurrentLine[1].substr(1) == "" )
+						tempCurrentLine[1] = "<span id='cursor'>"+ replaceHTMLEntities( tempCurrentLine[1].substring(0,1) )+"</span>";
+					else tempCurrentLine[1] = "<span id='cursor'>"+ replaceHTMLEntities( tempCurrentLine[1].substring(0,1) )+"</span><span id='selection'>"+ this.renderLine( tempCurrentLine[1].substr(1), myMODE )+"</span>";
+					tempCurrentLine[2] = this.renderLine( tempCurrentLine[2], myMODE );
 				}
 				else {
 					// Cursor is the second position
-					tempCurrentLine[1] = "<span id='selection'>"+tempCurrentLine[1].substring(0,tempCurrentLine[1].length-1)+"</span><span id='cursor'>"+tempCurrentLine[1].substr(tempCurrentLine[1].length-1)+"</span>";
+					tempCurrentLine[1] = "<span id='selection'>"+this.renderLine( tempCurrentLine[1], myMODE )+"</span>";
+					tempCurrentLine[2] = "<span id='cursor'>"+replaceHTMLEntities( tempCurrentLine[2].substr(0,1) )+"</span>"+this.renderLine( tempCurrentLine[2].substr(1), myMODE );
 				}
 				// Return this mess
 				return tempCurrentLine.join("");
@@ -267,6 +284,7 @@ function Renderer()
 	
 	/* Replace some things like tabs, spaces, < and > */
 	function replaceHTMLEntities( paramText ) {
+		return paramText;
 		if(paramText.replace && paramText != ""){
 			paramText = paramText.replace(/&/g, "&amp;"); // This one must be first
 			paramText = paramText.replace(/>/g, "&gt;");

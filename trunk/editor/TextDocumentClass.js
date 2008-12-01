@@ -10,7 +10,7 @@ function TextDocument( paramHTMLDocumentPane )
 		this.id 	 = paramId;
 		this.handle  = paramDOMHandle
 		this.text 	 = paramLineText;
-		this.updated = 1;	// 1=true
+		this.updated = 1;			// 1=true
 		this.indexed = false; 		//Lets us know if the line has already been indexed
 		this.isLockedBy = null;
 	}
@@ -22,6 +22,7 @@ function TextDocument( paramHTMLDocumentPane )
 		this.endLine = paramEndLine;
 		this.endColumn = paramEndColumn;
 	}
+	this.isSelection = false;	// This is to be a "boolean" which we use to keep track of whether we have a currentSelection
 	this.currentSelection;		// This is to be a block, or null if nothing is selected
 	this.document;				// This is to be an array of lines
 	this.documentID;			//  Keep track of the document's unique ID
@@ -59,7 +60,18 @@ function TextDocument( paramHTMLDocumentPane )
 	
 	// Clears the current selection
 	this.clearCurrentSelection = function() {
-		//this.currentSelection = new this.block( null, null, null, null );
+		this.isSelection = false;
+		var tmpStart; var tmpFinish;
+		if ( this.currentSelection.startLine < this.currentSelection.endLine ) {
+			tmpStart = this.currentSelection.startLine;
+			tmpFinish = this.currentSelection.endLine;
+		} else {
+			tmpStart = this.currentSelection.endLine;
+			tmpFinish = this.currentSelection.startLine;
+		}
+		var tmpNumLines = tmpFinish - tmpStart;
+		for (var i=0;i<=tmpNumLines;i++)
+			this.setLineUpdated(tmpStart+i);
 	}
 	
 	// Returns the length of the document in number of lines
@@ -154,13 +166,13 @@ function TextDocument( paramHTMLDocumentPane )
 		}
 
 		// Populate the return array with the appropriate text
-		var numLinesSpanned = endLine - startLine;
-		if ( numLinesSpanned == 0 ) {
+		var numLinesSpanned = endLine - startLine + 1;
+		if ( numLinesSpanned == 1 ) {
 			returnText.push( this.getLineText(startLine).substring(startColumn, endColumn) );
 		}
 		else {
 			returnText.push( this.getLineText(startLine).substring(startColumn));
-			for (i=0;i<numLinesSpanned-1;i++) {
+			for (i=1;i<numLinesSpanned-1;i++) {
 				returnText.push( this.getLineText( startLine+i ) );
 			}
 			returnText.push( this.getLineText(endLine).substring(0, endColumn) );
@@ -333,13 +345,13 @@ function TextDocument( paramHTMLDocumentPane )
 		}
 		
 		// Remove all appropriate text, leaving only... the appropriate text
-		var numLinesSpanned = endLine - startLine;
-		if ( numLinesSpanned == 0 ) {
+		var numLinesSpanned = endLine - startLine + 1;
+		if ( numLinesSpanned == 1 ) {
 			this.setLineText( startLine, this.getLineText(startLine).substring(0, startColumn) + this.getLineText(startLine).substring(endColumn) );
 		}
 		else {
 			this.setLineText( startLine, this.getLineText(startLine).substring(0, startColumn) );
-			for (i=0;i<numLinesSpanned-1;i++) {
+			for (i=1;i<numLinesSpanned-1;i++) {
 				this.removeLine( startLine+i );
 			}
 			this.setLineText( endLine, this.getLineText(endLine).substring(endColumn) );
@@ -395,6 +407,7 @@ function TextDocument( paramHTMLDocumentPane )
 		this.currentSelection.startColumn = paramStartColumn;
 		this.currentSelection.endLine = paramEndLine;
 		this.currentSelection.endColumn = paramEndColumn;
+		this.isSelection = true;
 		return true;
 	}
 	
@@ -425,8 +438,10 @@ function TextDocument( paramHTMLDocumentPane )
 			this.renderLine( ln, paramCursorLine, paramCursorColumn );			
 		}
 	}
-	
+
 	this.renderLine = function ( paramLineNum, paramCursorLine, paramCursorColumn ) {
+		this.renderer.isSyntaxHiliteOn = syntaxHighlightOn;
+		
 		// We need the line text for every different possible outcome, so let's make it readable
 		var lineText = this.getLineText( paramLineNum );
 		
@@ -439,17 +454,26 @@ function TextDocument( paramHTMLDocumentPane )
 			
 			// If there is a selection...
 			if ( this.isSelection ) {
-				// If this line contains the start of the selection, then it must contain the entire selection (since the cursor is always at position endLine/endColumn
-				if ( this.currentSelection.startLine == paramLineNum )
-					this.getLineHandle( paramLineNum ).innerHTML = this.renderer.renderLine( lineText, this.renderer.SELECTION_ENTIRE, this.currentSelection.startColumn, paramCursorColumn );
-				// If the startLine is AFTER the current (end) line, then we are at the tail end of the selection.
-				else if ( this.currentSelection.startLine > paramLineNum )
+				// If this line contains the start of the selection, then it must contain the entire selection (since the cursor is always at position endLine/endColumn)
+				if ( this.currentSelection.startLine == paramLineNum ) {
+					// BUT... make sure the selection is not a null-selection!  If so, just render the cursor
+					if ( this.currentSelection.startColumn == this.currentSelection.endColumn ) {
+						this.getLineHandle( paramLineNum ).innerHTML = this.renderer.renderLine( lineText, this.renderer.CURSOR, paramCursorColumn );
+					}
+					// If we *actually* have a selection, then render it
+					else this.getLineHandle( paramLineNum ).innerHTML = this.renderer.renderLine( lineText, this.renderer.SELECTION_ENTIRE, this.currentSelection.startColumn, paramCursorColumn );
+				}
+				// If the startLine is AFTER the current (end) line, then we are at the head end of the selection.
+				else if ( this.currentSelection.startLine > paramLineNum ) {
 					this.getLineHandle( paramLineNum ).innerHTML = this.renderer.renderLine( lineText, this.renderer.SELECTION_HEAD_CURSOR, paramCursorColumn );
-				// Otherwise, we must be at the start of the selection
+				}
+				// Otherwise, we must be at the tail of the selection
 				else this.getLineHandle( paramLineNum ).innerHTML = this.renderer.renderLine( lineText, this.renderer.SELECTION_TAIL_CURSOR, paramCursorColumn );
 			}
 			// If there is no selection
-			else if ( syntaxHighlightOn ) this.getLineHandle( paramLineNum ).innerHTML = this.renderer.renderLine( lineText, this.renderer.SYNTAX_HILITE, paramCursorColumn );
+			else if ( syntaxHighlightOn ) {
+				this.getLineHandle( paramLineNum ).innerHTML = this.renderer.renderLine( lineText, this.renderer.SYNTAX_HILITE, paramCursorColumn );
+			}
 			else this.getLineHandle( paramLineNum ).innerHTML = this.renderer.renderLine( lineText, this.renderer.CURSOR, paramCursorColumn );
 		}
 		// If the line does not contain the cursor, and there is a selection...
@@ -458,20 +482,26 @@ function TextDocument( paramHTMLDocumentPane )
 			// If the current line is the endpoint of the selection
 			if ( this.currentSelection.startLine == paramLineNum ) {
 				// If the current line is the 'head' of the selection
-				if ( this.currentSelection.startLine < this.currentSelection.endLine )
-					this.getLineHandle( paramLineNum ).innerHTML = this.renderer.renderLine( lineText, this.renderer.SELECTION_HEAD, this.currentSelection.startLine );
+				if ( this.currentSelection.startLine < this.currentSelection.endLine ) {
+					this.getLineHandle( paramLineNum ).innerHTML = this.renderer.renderLine( lineText, this.renderer.SELECTION_HEAD, this.currentSelection.startColumn );
+				}
 				// Otherwise, the current line fully part of a selection (it isn't part of the tail, because by definition as I have it, that implies the cursor is present)
-				else this.getLineHandle( paramLineNum ).innerHTML = this.renderer.renderLine( lineText, this.renderer.SELECTION_TAIL, this.currentSelection.startLine );
+				else this.getLineHandle( paramLineNum ).innerHTML = this.renderer.renderLine( lineText, this.renderer.SELECTION_TAIL, this.currentSelection.startColumn );
 			}
 			// If the current line is not an enpoint of selection, and the current line is between the start and end lines...
-			else if ( (this.currentSelection.startLine < paramLineNum && this.currentSelection.endLine > paramLineNum ) || ( this.currentSelection.startLine > paramLineNum && this.currentSelection.endLine < paramLineNum ) )
+			else if ( (this.currentSelection.startLine < paramLineNum && this.currentSelection.endLine > paramLineNum ) || ( this.currentSelection.startLine > paramLineNum && this.currentSelection.endLine < paramLineNum ) ) {
 				this.getLineHandle( paramLineNum ).innerHTML = this.renderer.renderLine( lineText, this.renderer.SELECTION_LINE );
+			}
 			// Otherwise, the current line is outside the selection area
-			else if ( syntaxHighlightOn ) this.getLineHandle( paramLineNum ).innerHTML = this.renderer.renderLine( lineText, this.renderer.SYNTAX_HILITE );
+			else if ( syntaxHighlightOn ) {
+				this.getLineHandle( paramLineNum ).innerHTML = this.renderer.renderLine( lineText, this.renderer.SYNTAX_HILITE );
+			}
 			else this.getLineHandle( paramLineNum ).innerHTML = this.renderer.renderLine( lineText, this.renderer.NORMAL );
 		}
 		// Otherwise, if the line does not contain the cursor and there is no selection, then
-		else if ( syntaxHighlightOn ) this.getLineHandle( paramLineNum ).innerHTML = this.renderer.renderLine( lineText, this.renderer.SYNTAX_HILITE );
+		else if ( syntaxHighlightOn ) {
+			this.getLineHandle( paramLineNum ).innerHTML = this.renderer.renderLine( lineText, this.renderer.SYNTAX_HILITE );
+		}
 		else this.getLineHandle( paramLineNum ).innerHTML = this.renderer.renderLine( lineText, this.renderer.NORMAL );
 	}
 	

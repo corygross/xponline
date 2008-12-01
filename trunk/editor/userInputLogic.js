@@ -138,7 +138,6 @@ function setSelectMode(paramDocument, paramLine, paramColumn) {
 // This function sets selection mode 'off'.
 function resetSelectMode( paramDocument ) {
 	isSelectMode = false;
-	paramDocument.clearCurrentSelection();
 }
 
 
