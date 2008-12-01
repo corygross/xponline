@@ -285,12 +285,20 @@ onKeyDownFunction = function( paramEvent ) {
 		isAlt = paramEvent.altKey;
 		isCtl = paramEvent.ctrlKey;
 	}
+	
+	if ( !isShift ) {
+		XPODoc.clearCurrentSelection();
+		resetSelectMode( XPODoc );
+		XPODoc.setLineUpdated( cursorLine );
+		XPODoc.renderUpdates( cursorLine, cursorColumn );
+	}
 
 	// if typeSpecial actually does something, it returns false.  Capture this value: it will be our return value at the end of the function
 	var returnValue = typeSpecial( XPODoc, key, isAlt, isCtl, isShift );
 
 	// Flag old line as needing re-rendering.
 	XPODoc.setLineUpdated( oldCursorLine );
+	
 	// If the cursor jumped lines, flag the new line as needing re-rendering also.  Also, update the line lock...
 	if(oldCursorLine != cursorLine) {
 		XPODoc.setLineUpdated( cursorLine );
@@ -332,99 +340,86 @@ onKeyPressFunction = function( paramEvent ){
 
 /* This function is the handler of the mousedown event */
 onMouseDownFunction = function( paramEvent ) {
-	// Keep track of prior cursor position
-	var oldCursorLine = cursorLine;
-
+	// Flag existing (soon-to-be-old) cursor position for rerendering
+	XPODoc.setLineUpdated( cursorLine );
+	
 	// Calculate new cursor position
-	captureMousePos(paramEvent);
-	deriveCursorForDocument(mouseX,mouseY,XPODoc);	
+	captureMousePos( paramEvent );
+	deriveCursorForDocument( mouseX, mouseY, XPODoc );
 	
-	// Flag the old line as needing re-rendering
-	XPODoc.setLineUpdated( oldCursorLine );
-	// If the cursor jumped lines, flag that line for re-rendering also.  Also, update the line lock...
-	if(oldCursorLine != cursorLine) {
-		XPODoc.setLineUpdated( cursorLine );
-		updateLineLock(cursorLine);
-	}
-	// Re-render the affected lines
+	// Update the line lock based on new line position
+	updateLineLock( cursorLine );
+	
+	// Flag the new cursor's line for rerendering
+	XPODoc.setLineUpdated( cursorLine );
+	
+	// If there is an existing selection prior to clicking the mouse down, then we need to flag the selection range for re-rendering (because it will no longer apply)
+	if ( XPODoc.isSelection ) XPODoc.clearCurrentSelection();
+	
+	// Enable selectMode, as well as start the new selection based on the current cursor position
+	isSelectMode = XPODoc.setCurrentSelection( cursorLine, cursorColumn, cursorLine, cursorColumn );
+	
+	// Enable event listener for mouse movement.  This allows us to dynamically render the selection.
+	if(isIE == true || isChrome == true || isSafari == true) guiDoc.onmousemove = onMouseMoveFunction;
+	else guiDoc.addEventListener("mousemove", onMouseMoveFunction, true);
+	
+	// Render any of the lines which need updating by now
 	XPODoc.renderUpdates( cursorLine, cursorColumn );
-	
-	// If selection-mode is not enabled, then enable it
-	// If selection-mode is enabled, then another mouse click normally would end the selection...
-	if ( isSelectMode ) {
-		// If we get here, that means that we missed a mouseup event, so invalidate the selection!
-		// FIXME: This is really crappy.  Selection is quite buggy.
-		XPODoc.setLineUpdated( cursorLine );
-		cursorLine = XPODoc.getCurrentSelection().startLine;
-		cursorColumn = XPODoc.getCurrentSelection().startColumn;
-		XPODoc.setLineUpdated( cursorLine );
-		resetSelectMode( XPODoc );
-		XPODoc.renderUpdates( cursorLine, cursorColumn );
-	}
-	else {
-		// Set the selection mode to enable rendering of the selection
-		setSelectMode( XPODoc, cursorLine, cursorColumn );
-		
-		// Enable event listener for mouse movement.  This allows us to dynamically render the selection.
-		if(isIE == true || isChrome == true || isSafari == true) guiDoc.onmousemove = onMouseMoveFunction;
-		else guiDoc.addEventListener("mousemove", onMouseMoveFunction, true);
-	}
 }
 
 /* This function is the handler of the mousemove event */
 /* NOTE:  THE HANDLER FOR THIS FUNCTION SHOULD NOT BE */
 /* REGISTERED UNLESS NEEDED!!  THIS FUNCTION KILLS PERFORMANCE OTHERWISE */
 onMouseMoveFunction = function( paramEvent ) {
-	// Remember original cursor position
-	var oldCursorLine = cursorLine;
-	var oldCursorColumn = cursorColumn;
+	// Determine if the mouse motion actually made a difference.  If not, just return.
+	var oldLine = cursorLine;
+	var oldColumn = cursorColumn;
+	captureMousePos( paramEvent );
+	deriveCursorForDocument( mouseX, mouseY, XPODoc );
+	if ( oldLine == cursorLine && oldColumn == cursorColumn ) return;
 	
-	// Determine which position the mouse is in
-	captureMousePos(paramEvent);
-	deriveCursorForDocument(mouseX,mouseY,XPODoc);
+	// If we make it to this line, the cursor should have moved, and thus the selection range has changed
+	XPODoc.updateSelection( cursorLine, cursorColumn );
 	
-	// Check if we are in select mode or not:
-	// If we are not in select-mode...
-	if ( isSelectMode ) {
-		// Update the current selection with the current cursor position
-		XPODoc.updateSelection( cursorLine, cursorColumn );
-		
-		// Determine if the mouse has moved enough to require re-rendering of the line
-		// If so, flag the line(s) for rendering.  Otherwise, do nothing.
-		if ( oldCursorLine != cursorLine ) {
-			XPODoc.setLineUpdated( oldCursorLine );
-			XPODoc.setLineUpdated( cursorLine );
-			// TODO: FIXME: I expect there to be rendering artifacts when the mouse is moved rapidly.  We will most likely need to flag all lines BETWEEN the old and new cursor as well
-		}
-		else if ( oldCursorColumn != cursorColumn ) {
-			XPODoc.setLineUpdated( cursorLine );
-		}
+	// Determine which lines need re-rendering as a result of the updated cursor
+	var tmpStart; var tmpEnd;
+	if ( oldLine == cursorLine ) {
+		XPODoc.setLineUpdated( cursorLine );
 	}
-	// If we are not in select mode, we need to remove this event listener, and ensure that the cursor maintains it's position
 	else {
-		// Remove the event listener:
-		if(isIE == true || isChrome == true || isSafari == true) guiDoc.onmousemove = null;
-		else guiDoc.removeEventListener("mousemove", onMouseMoveFunction, true);
-		
-		// Revert cursor
-		setCursor( oldCursorLine, oldCursorColumn );
+		if ( oldLine < cursorLine ) {
+			tmpStart = oldLine;
+			tmpEnd = cursorLine;
+		} else {
+			tmpStart = cursorLine;
+			tmpEnd = oldLine;
+		}
+		for (var i=tmpStart;i<=tmpEnd;i++)
+			XPODoc.setLineUpdated( i );
 	}
 	
-	// Render any changes
+	// Go ahead and render the updated lines
 	XPODoc.renderUpdates( cursorLine, cursorColumn );
 }
 
 /* This function is the handler of the mouseup event */
 onMouseUpFunction = function( paramEvent ) {
-	// No need to do any cursor capture, etc.  The onMouseMoveFunction should have kept it up to date.
-	// We want to determine if a selection was made or not, and if so, store the endpoints in the document for use
-	if ( selectionAnchorLine != cursorLine ||selectionAnchorColumn != cursorColumn ){
-		var selection = XPODoc.getCurrentSelection();
-		XPODoc.setCurrentSelection( selection.startLine, selection.startColumn, cursorLine, cursorColumn );
+	// On mouseup, the selection is complete.  Disable selectMode.
+	isSelectMode = false;
+	
+	// Remove the mouseMove event listener, as it is not necessary except for real-time updating of selection
+	if(isIE == true || isChrome == true || isSafari == true) guiDoc.onmousemove = null;
+	else guiDoc.removeEventListener("mousemove", onMouseMoveFunction, true);
+	
+	// Determine if we *actually* have a selection.  If not, tell the document that there is no current selection
+	var tmpSel = XPODoc.getCurrentSelection();
+	if ( tmpSel.startLine == tmpSel.endLine && tmpSel.startColumn == tmpSel.endColumn ) {
+		XPODoc.clearCurrentSelection();
 	}
 	
-	// Disable select-mode
-	resetSelectMode( XPODoc );
+	// Should not be necessary to render at this point, since the onMouseMove function should have done all rendering up until now 
+	//(XPODoc.clearCurrentSelection() should only flag a single line (the cursor's line) for update, which we should have rendered before now anyway
+	XPODoc.renderUpdates( cursorLine, cursorColumn );
 }
 </script>
 <iframe id="myI" name="myI" src="./editor/editableContent.html" style="width:100%;height:100%;"></iframe>
