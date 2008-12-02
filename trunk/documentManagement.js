@@ -287,7 +287,7 @@ function showLoadingIndicator()
 			loadingIMG = theIFrame.getElementById("loadingIndicator");
 		}
 
-	topEdge = screen.height/2;
+	topEdge = getHeight()/2;
 	leftEdge = theIFrame.width/2;
 
 	if(isIE)
