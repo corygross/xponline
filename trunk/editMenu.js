@@ -205,13 +205,20 @@ function replaceSelected(){
 // This function searches the array of lines and returns an array of all matches
 Array.prototype.replaceAllMatches = function(searchStr, replacementText, matchCase) {
 	var regEx;
-	if(matchCase) regEx = new RegExp(searchStr, "g");
-	else regEx = new RegExp(searchStr, "gi");
+	var replaceRegEx;
 
+	if(matchCase){ 
+		regEx = new RegExp(searchStr, "");
+		replaceRegEx = new RegExp(searchStr, "g");
+	}
+	else{ 
+		regEx = new RegExp(searchStr, "i");
+		replaceRegEx = new RegExp(searchStr, "gi");
+	}
+	
 	for (var i=0; i<this.length; i++) {
-		while(regEx.test(this[i].text)){
-			var newLineText = this[i].text.replace(regEx, replacementText);
-			XPODoc.setLineText( i, newLineText );
+		if(regEx.test(this[i].text)){
+			XPODoc.setLineText( i, this[i].text.replace(replaceRegEx, replacementText) );
 		}
     }
 
@@ -232,6 +239,7 @@ function replaceAll(){
 	}
 	else{
 		XPODoc.document.replaceAllMatches(currentText, replacementText, document.replaceForm.findMatchCase.checked);
+		updateDocument( "n", "Another user has replaced all occurences of '"+currentText+"' with '"+replacementText+"'", 0 );
 		alert(allFoundMatches.length + ' matches replaced.');
 	}	
 }
