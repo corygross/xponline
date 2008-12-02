@@ -9,8 +9,7 @@ $isInit = isset($_GET['init']);
 $updateArray = json_decode(preg_replace('/pLUsSign/',"+", preg_replace('/aMPerSand/',"&",$_POST['updateData'])),true);
 
 $lastDocID;
-
-//$masterFileHandle = null;
+$masterFileHandle = null;
 
 foreach ($updateArray as $updateObject){
 	$dID = $updateObject["documentID"];
@@ -39,30 +38,52 @@ foreach ($updateArray as $updateObject){
 		$_SESSION['docUpdateOrder'] = $updateNumber;
 	}
 
-
-
-	//if($masterFileHandle == null || $lastDocID != $dID){
+	// We haven't gotten the file handle yet - get it
+	if($masterFileHandle == null){
+		$masterFileHandle = getDocFileHandle($uID, $dID);
+	}
+	// In one batch, updates to multiple documents came (the user may have switched docs)
+	// Save any changes we made to the last document handle we had, and then get a new file handle for the new document
+	else if($lastDocID != $dID){
+		$fileName = "../documents/doc".$lastDocID;
+		file_put_contents($fileName, $masterFileHandle);
+		$masterFileHandle = getDocFileHandle($uID, $dID);
+	}
 	
-	//}	
-	
-	doUpdate($uID, $dID, $action, $lineNum, $text);
+	doUpdate($uID, $dID, $masterFileHandle, $action, $lineNum, $text);
 	
 	$lastDocID = $dID;
 }
 
+// After we are done updating, we have to write all the changes we made to disk
+if($masterFileHandle != null){
+	$fileName = "../documents/doc".$lastDocID;
+	file_put_contents($fileName, $masterFileHandle);
+}
 
-function doUpdate($uID, $dID, $action, $lineNum, $text){
-
-	if($uID == "" || $dID == "" || $action == "" || $lineNum === ""){
-		return;
-	}
-
+// This function returns a handle to the physical document
+// We will then pass around a reference so we don't have to keep opening and closing it
+function getDocFileHandle($uID, $dID){
 
 	// Check to make sure the user has write access to the document
 	$checkSQL = "SELECT * FROM access WHERE dID='$dID' AND uID='$uID' AND accessLvl='w';";
 	$checkResult = runQuery($checkSQL);
-	if(mysql_num_rows($checkResult) < 1){
-		echo "You don't have permission to modify this document.";
+	if(mysql_num_rows($checkResult) < 1){		
+		exit("You do not have permission to modify this document.");
+	}
+	
+	$fileName = "../documents/doc".$dID;
+	if(file_exists($fileName)){
+		return file($fileName);
+	}
+	else{
+		exit("The document does not exist on the server.");
+	}
+}
+
+function doUpdate($uID, $dID, &$docHandle, $action, $lineNum, $text){
+
+	if($uID == "" || $dID == "" || $action == "" || $lineNum === ""){
 		return;
 	}
 
@@ -90,49 +111,38 @@ function doUpdate($uID, $dID, $action, $lineNum, $text){
 	
 	// Update the physical document
 	$fileName = "../documents/doc".$dID;
-	if(file_exists($fileName)){
-		if($action == "u"){
-			updateLine($fileName, $lineNum, $text);
-		}
-		else if($action == "i"){
-			insertLine($fileName, $lineNum, $text);
-		}
-		else if($action == "d"){
-			deleteLine($fileName, $lineNum);
-		}
+	if($action == "u"){
+		updateLine($fileName, $docHandle, $lineNum, $text);
+	}
+	else if($action == "i"){
+		insertLine($fileName, $docHandle, $lineNum, $text);
+	}
+	else if($action == "d"){
+		deleteLine($fileName, $docHandle, $lineNum);
 	}
 }
 
-function updateLine($fileName, $lineNum, $lineText){
-	$fileHandle = file($fileName);
+function updateLine($fileName, &$fileHandle, $lineNum, $lineText){
 	if(count($fileHandle) < $lineNum){
-		echo "line not found";
-		return;
+		exit("Line '$lineNum' not found to update");
 	}
 	$fileHandle[$lineNum] = $lineText."\n";
-	file_put_contents($fileName, $fileHandle);
 }
 
-function insertLine($fileName, $position, $lineText){
-	$fileHandle = file($fileName);
+function insertLine($fileName, &$fileHandle, $position, $lineText){
 	if(count($fileHandle) < $position){
-		echo "line not found";
-		return;
+		exit("Line '$lineNum' not found to insert");
 	}
 	array_splice($fileHandle,$position,0,$lineText."\n");
-	file_put_contents($fileName, $fileHandle);
 }
 
-function deleteLine($fileName, $lineNum){
-	$fileHandle = file($fileName);
+function deleteLine($fileName, &$fileHandle, $lineNum){
 	if(count($fileHandle) < $lineNum){
-		echo "line not found";
-		return;
+		exit("Line '$lineNum' not found to delete");
 	}
 	$beforeLine = array_slice($fileHandle, 0, $lineNum);
 	$afterLine = array_slice($fileHandle, $lineNum + 1);
 	$fileHandle = array_merge($beforeLine, $afterLine);
-	file_put_contents($fileName, $fileHandle);
 }
 
 function updateLineLocks($uID, $dID, $curLine, $action){

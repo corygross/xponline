@@ -133,6 +133,9 @@ this.sendUpdatesAjax = function( paramUpdatesJSON ){
 				if( updateResponse[0] == "missingUpdateError" ){
 					resendUpdates( updateResponse[1] );
 				}
+				else{
+					alert(transport.responseText);
+				}
 			}
 		}		
 	});
