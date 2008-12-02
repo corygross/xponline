@@ -36,7 +36,7 @@ function deleteDocument(){
 		closeDocument();
 	}
 	
-	destroyPopup('delete_doc');	
+	list.remove(list.selectedIndex);
 	new Ajax.Request('./handlers/deleteDocument.php?docID='+docID, {
 		method:'get',
 		onSuccess: function(transport) {
