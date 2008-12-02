@@ -212,7 +212,6 @@ Array.prototype.replaceAllMatches = function(searchStr, replacementText, matchCa
 		while(regEx.test(this[i].text)){
 			var newLineText = this[i].text.replace(regEx, replacementText);
 			XPODoc.setLineText( i, newLineText );
-			testCount++;
 		}
     }
 
