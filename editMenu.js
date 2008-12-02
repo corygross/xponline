@@ -203,19 +203,19 @@ function replaceSelected(){
 }
 
 // This function searches the array of lines and returns an array of all matches
-Array.prototype.replaceAllMatches = function(searchStr, replacementText, matchCase, cursorLine) {
+Array.prototype.replaceAllMatches = function(searchStr, replacementText, matchCase) {
 	var regEx;
 	if(matchCase) regEx = new RegExp(searchStr, "g");
 	else regEx = new RegExp(searchStr, "gi");
-	
-	for (i=0; i<this.length; i++) {
-		if(this[i].text != ""){
-			if(regEx.test(this[i].text)){
-				var newLineText = this[i].text.replace(regEx, replacementText);
-				XPODoc.setLineText( i, newLineText );
-			}
+
+	for (var i=0; i<this.length; i++) {
+		while(regEx.test(this[i].text)){
+			var newLineText = this[i].text.replace(regEx, replacementText);
+			XPODoc.setLineText( i, newLineText );
+			testCount++;
 		}
     }
+
 	XPODoc.renderUpdates( cursorLine, cursorColumn );
 }
 
@@ -232,7 +232,7 @@ function replaceAll(){
 		alert('0 matches found');
 	}
 	else{
-		XPODoc.document.replaceAllMatches(currentText, replacementText, document.replaceForm.findMatchCase.checked, getCursorLine());
+		XPODoc.document.replaceAllMatches(currentText, replacementText, document.replaceForm.findMatchCase.checked);
 		alert(allFoundMatches.length + ' matches replaced.');
 	}	
 }
