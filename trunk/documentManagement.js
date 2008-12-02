@@ -270,7 +270,7 @@ function showLoadingIndicator()
 {
 	if(leftEdge == -1){
 		leftEdge = (screen.width/2) - 16;
-		topEdge = (getHeight()/2) - 16;
+		topEdge = (getEditorHeight()/2) - 16;
 	}
 
 	var theIFrame;
@@ -287,7 +287,7 @@ function showLoadingIndicator()
 			loadingIMG = theIFrame.getElementById("loadingIndicator");
 		}
 
-	topEdge = getHeight()/2;
+	topEdge = getEditorHeight()/2;
 	leftEdge = theIFrame.width/2;
 
 	if(isIE)
