@@ -302,13 +302,15 @@ onKeyDownFunction = function( paramEvent ) {
 	// If the cursor jumped lines, flag the new line as needing re-rendering also.  Also, update the line lock...
 	if(oldCursorLine != cursorLine) {
 		XPODoc.setLineUpdated( cursorLine );
-		updateLineLock(cursorLine);
+		updateLineLock(cursorLine);		
 	}
 	// Render the updates
 	XPODoc.renderUpdates( cursorLine, cursorColumn );
 	
 	// Ensure we can see the cursor
 	adjustScroll();
+	
+	if( returnValue == false ) displayCursorPos();
 	
 	// Return the result of typeSpecial.  By returning false, the event bubble will stop, which we want in that case.
 	return returnValue;
@@ -420,6 +422,8 @@ onMouseUpFunction = function( paramEvent ) {
 	// Should not be necessary to render at this point, since the onMouseMove function should have done all rendering up until now 
 	//(XPODoc.clearCurrentSelection() should only flag a single line (the cursor's line) for update, which we should have rendered before now anyway
 	XPODoc.renderUpdates( cursorLine, cursorColumn );
+	
+	displayCursorPos();
 }
 </script>
 <iframe id="myI" name="myI" src="./editor/editableContent.html" style="width:100%;height:100%;"></iframe>
