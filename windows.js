@@ -100,7 +100,7 @@ this.makeNewPopup = function (popupID, title, type)
 
 	var newHTML = "";
 	newHTML += "<div class='window_head' onmousedown=\"grab('" + popupID + "', event);\">";
-	newHTML += "<table style='width:100%;'><tr style='width:100%;'><td style='width:10%;'></td><td style='width:80%;'>"+title+"</td><td class='window_min' onClick=\"contextClosePopup('"+popupID+"')\" >&#8211;</td></tr></table></div>";
+	newHTML += "<table style='width:100%;'><tr style='width:100%;'><td style='width:10%;'></td><td style='width:80%;font-size:1.5em;'>"+title+"</td><td class='window_min' onClick=\"contextClosePopup('"+popupID+"')\" >&#8211;</td></tr></table></div>";
 
 	switch( type )
 	{
@@ -116,11 +116,11 @@ this.makeNewPopup = function (popupID, title, type)
 
 			//Create the form that will allow file selection
 			newHTML += "<iframe id='uploadIframe' name='uploadIframe' style='display:none'></iframe>";
-			newHTML += "<div id ='filechooser'><br />";
+			newHTML += "<div id ='filechooser' style='background-color: #bebec9' ><br />";
 			newHTML += "<form id='fileForm' name='fileForm' method='post' action='uploadFile.php' enctype='multipart/form-data' target='uploadIframe'>";
 			newHTML += "<input type='hidden' name='MAX_FILE_SIZE' value='5000000' />";
 			newHTML += "&nbsp;<input type='file' id='filename' name='filename' value='' style='width:270px' /><br/>";
-			newHTML += "&nbsp;<input type='submit' value='upload' onClick='submitUpload();'/>";
+			newHTML += "&nbsp;&nbsp;&nbsp;<input type='submit' value='upload' onClick='submitUpload();'/>";
 			newHTML += "</form><br />";
 			newHTML += "</div>";
 			break;
@@ -143,7 +143,7 @@ this.makeNewPopup = function (popupID, title, type)
 			newHTML += "<form onkeypress='callFunctionOnEnter(event, goToBM);' onkeydown='closeOnEscape(event, \""+popupID+"\");'>";
 			newHTML += "<table style='width:100%;'><tr><td style='width:10%;'></td><td style='width:80%;'>Current bookmarks:</td><td style='width:10%;'></td></tr>";
 			newHTML += "<tr><td>&nbsp;</td><td>";
-			newHTML += "<div style='overflow:auto;background-color:white;margin-left:5px;margin-right:5px;height:250px;'>";
+			newHTML += "<div style='overflow:auto;background-color:#bebec9;margin-left:5px;margin-right:5px;height:250px;'>";
 			newHTML += "<ul class='bms'>";
 			
 			for (i=0; i<bookmarkArray.length; i++)
