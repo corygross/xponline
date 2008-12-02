@@ -27,18 +27,19 @@ function handleUpdateResponse( updateArray ){
 	{
 		//this isn't the update id I really want... I want the document specific one
 		var updateID = updateArray.contents[i].contents[0].contents[0].value;
+		var action = updateArray.contents[i].contents[1].contents[0].value;
 		var lineNum = updateArray.contents[i].contents[2].contents[0].value;
 		var lineText = updateArray.contents[i].contents[3].contents[0].value;
 
 		// Its a line update
-		if(updateArray.contents[i].contents[1].contents[0].value == "u"){
+		if(action == "u"){
 			XPODoc.updateToServer = false;
 			XPODoc.setLineText(lineNum, lineText);
 			XPODoc.renderUpdates( cursorLine, cursorColumn );			
 			XPODoc.updateToServer = true;
 		}
 		// A line insert
-		else if(updateArray.contents[i].contents[1].contents[0].value == "i"){
+		else if(action == "i"){
 			XPODoc.updateToServer = false;
 			XPODoc.insertLine(lineNum, lineText);
 			// If a new line is inserted above our cursor, we need to move the cursor down
@@ -47,13 +48,17 @@ function handleUpdateResponse( updateArray ){
 			XPODoc.updateToServer = true;
 		}
 		// A line delete
-		else if(updateArray.contents[i].contents[1].contents[0].value == "d"){
+		else if(action == "d"){
 			XPODoc.updateToServer = false;
 			XPODoc.removeLine( lineNum );
 			// If a line is deleted above our cursor, we need to move the cursor up
 			if(lineNum < cursorLine){ cursorLine--; }
 			XPODoc.renderUpdates( cursorLine, cursorColumn );
 			XPODoc.updateToServer = true;				
+		}
+		// A notification from another user
+		else if(action == "n"){
+			alert("Notification: " + lineText);
 		}
 	}
 }
