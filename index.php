@@ -119,15 +119,11 @@ M<br />E<br />S<br />S<br />E<br />N<br />G<br />E<br />R
 </td>
 </tr>
 </table>
-<!--div name="loadingIndicator" id="loadingIndicator" style="position:absolute;display:none;"-->
-<!--div name="loadingIndicator" id="loadingIndicator" align="center" -->
-<!--img src="images/red-loading.gif" alt="loading..." /-->
-<!--/div-->
 </body>
 </html>
 
 <script language="JavaScript" type="text/javascript">
-function getHeight() {
+function getEditorHeight() {
   var myHeight = 0;
   if( typeof( window.innerWidth ) == 'number' ) {
     myHeight = window.innerHeight;
@@ -136,7 +132,7 @@ function getHeight() {
   } else if( document.body && document.body.clientHeight ) {
     myHeight = document.body.clientHeight;
   }
-  return myHeight;
+  return myHeight - 40;
 }
-document.getElementById('content').style.height = (getHeight() - 37) + "px";
+document.getElementById('content').style.height = getEditorHeight() + "px";
 </script>
