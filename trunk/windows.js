@@ -86,7 +86,7 @@ this.makeNewPopup = function (popupID, title, type)
 	var newElm = document.createElement("div");
 	newElm.setAttribute('id',popupID);
 	newElm.setAttribute('name',popupID);
-	newElm.setAttribute("style","position: absolute; width: 300px; display: none; top:"+topEdge+"px;left:"+leftEdge+"px;");
+	newElm.setAttribute("style","position: absolute; width: 300px;background-color: #bebec9; display: none; top:"+topEdge+"px;left:"+leftEdge+"px;");
 	newElm.setAttribute("class","window");
 
 	newElm.onmousedown = moveToFront;
@@ -94,13 +94,13 @@ this.makeNewPopup = function (popupID, title, type)
 	//an IE fix
 	var ua = navigator.userAgent.toLowerCase();
 	if((ua.indexOf("msie") != -1)){
-		newElm.style.setAttribute("cssText","position: absolute; width: 300px; display: none; top:"+topEdge+"px;left:"+leftEdge+"px;",0);
+		newElm.style.setAttribute("cssText","position: absolute; width: 300px; background-color: #bebec9; display: none; top:"+topEdge+"px;left:"+leftEdge+"px;",0);
 		newElm.className = "window";
 	}
 
 	var newHTML = "";
 	newHTML += "<div class='window_head' onmousedown=\"grab('" + popupID + "', event);\">";
-	newHTML += "<table style='width:100%;'><tr style='width:100%;'><td style='width:10%;'></td><td style='width:80%;font-size:1.5em;'>"+title+"</td><td class='window_min' onClick=\"contextClosePopup('"+popupID+"')\" >&#8211;</td></tr></table></div>";
+	newHTML += "<table style='width:100%;'><tr style='width:100%;'><td style='width:10%;'></td><td style='width:80%;font-size:1.5em;'>"+title+"</td><td class='window_min' onClick=\"contextClosePopup('"+popupID+"')\" ><img src='images/close.png' /></td></tr></table></div>";
 
 	switch( type )
 	{
@@ -127,7 +127,7 @@ this.makeNewPopup = function (popupID, title, type)
 		
 		case 'add_bm':
 
-			newHTML += "<form name='addBMForm' id='addBMForm' onkeypress='callFunctionOnEnter(event, addBM);' onkeydown='closeOnEscape(event, \""+popupID+"\");'><table style='width:100%;'><tr><td style='width:10%;'></td><td style='width:80%;'>Select a bookmark type:</td><td style='width:10%;'></td></tr>";
+			newHTML += "<form name='addBMForm' id='addBMForm' onkeypress='callFunctionOnEnter(event, addBM);' style='background-color: #bebec9' onkeydown='closeOnEscape(event, \""+popupID+"\");'><table style='width:100%;'><tr><td style='width:10%;'></td><td style='width:80%;'>Select a bookmark type:</td><td style='width:10%;'></td></tr>";
 			newHTML += "<tr><td></td><td><input type='radio' name='bmType' value='TODO' checked='checked'/>TODO</td><td></td></tr>";
 			newHTML += "<tr><td></td><td><input type='radio' name='bmType' value='FIXME'/>FIXME</td><td></td></tr>";
 			newHTML += "<tr><td></td><td><input type='radio' name='bmType' value='HACK'/>HACK</td><td></td></tr>";
@@ -140,7 +140,7 @@ this.makeNewPopup = function (popupID, title, type)
 
 		case 'find_bm':
 
-			newHTML += "<form onkeypress='callFunctionOnEnter(event, goToBM);' onkeydown='closeOnEscape(event, \""+popupID+"\");'>";
+			newHTML += "<form onkeypress='callFunctionOnEnter(event, goToBM);' style='background-color: #bebec9' onkeydown='closeOnEscape(event, \""+popupID+"\");'>";
 			newHTML += "<table style='width:100%;'><tr><td style='width:10%;'></td><td style='width:80%;'>Current bookmarks:</td><td style='width:10%;'></td></tr>";
 			newHTML += "<tr><td>&nbsp;</td><td>";
 			newHTML += "<div style='overflow:auto;background-color:#bebec9;margin-left:5px;margin-right:5px;height:250px;'>";
@@ -192,7 +192,7 @@ this.makeNewPopup = function (popupID, title, type)
 			newHTML += "</td><td></td></tr>";
 			newHTML += "<tr><td>&nbsp;</td><td></td><td></td></tr>";
 			newHTML += "<tr><td>&nbsp;</td><td>Note: Before you can chat with a new contact, they must first confirm you as a contact.</td><td></td></tr>";
-			newHTML += "<tr><td></td><td align='right'><input type='button' value='Cancel' onClick=\"destroyPopup('"+popupID+"');\"/><input type='button' id='btnAddContact' name='btnAddContact' value='Add' disabled='disabled' onClick='addContact();'/></td><td></td></tr>";
+			newHTML += "<tr><td></td><td align='right'><input type='button' id='btnAddContact' name='btnAddContact' value='Add' disabled='disabled' onClick='addContact();'/><input type='button' value='Cancel' onClick=\"destroyPopup('"+popupID+"');\"/></td><td></td></tr>";
 			newHTML += "</table>";
 			break;
 
