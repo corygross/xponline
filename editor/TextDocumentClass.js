@@ -227,15 +227,15 @@ function TextDocument( paramHTMLDocumentPane )
 	// Array elements will be treated as candidates of new lines, and text will be parsed by newline characters and split into lines from there as well.  This function should be able
 	// to check for invalid input, and reject it if necessary.  This function returns the would-be coordinates of the cursor.
 	this.insertText = function( paramTextObject, paramLineNum, paramColumnNum ) {
-		// Validate coordinate of insertion
-		if ( !this.isLegalPosition( paramLineNum, paramColumnNum ) ) return false;
-		
-		// If neither paramLineNum NOR paramColumnNum are supplied, it shall be assumed that the programmer intended to append the text to the end of the document
+		// If paramLineNum is not supplied, it shall be assumed that the programmer intended to append the text to the end of the document
 		if ( paramLineNum == null ) {
 			paramLineNum = this.getDocumentLength()-1;
 			paramColumnNum = this.getLineLength( paramLineNum );
 		}
 				
+		// Validate coordinate of insertion
+		if ( !this.isLegalPosition( paramLineNum, paramColumnNum ) ) return false;
+		
 		// Process the input parameter
 		var insertArray = this.processInput( paramTextObject );
 		
@@ -250,16 +250,17 @@ function TextDocument( paramHTMLDocumentPane )
 		// Prepend the original line's first half back to the original line
 		this.setLineText( paramLineNum, targetLineFirstHalf + insertArray[0] );
 		// Append the original line's second half at end of last new line
-		this.setLineText( paramLineNum+insertArray.length-1, this.getLineText( paramLineNum+insertArray.length-1 ) + targetLineSecondHalf );
+		this.setLineText( paramLineNum+(insertArray.length-1), this.getLineText( paramLineNum+(insertArray.length-1) ) + targetLineSecondHalf );
 		
 		this.updateToServer = true;
 		
 		// Return the coordinates of the character following the end of the inserted text
-		return [paramLineNum + insertArray.length-1, paramColumnNum + insertArray[insertArray.length-1].length ];
+		return [paramLineNum + (insertArray.length-1), paramColumnNum + insertArray[insertArray.length-1].length ];
 	}
 	
 	// This function takes a lineNumber and an optional columnNumber and determines if their values are within bounds of the document
 	this.isLegalPosition = function( paramLineNum, paramColumnNum ) {
+		if ( typeof paramLineNum != 'number' ) return false;
 		if ( paramLineNum >= this.getDocumentLength() || paramLineNum < 0 ) return false;
 		if ( paramColumnNum == null ) return true;
 		else if ( paramColumnNum > this.getLineLength(paramLineNum) || paramColumnNum < 0 ) return false;
@@ -380,7 +381,6 @@ function TextDocument( paramHTMLDocumentPane )
 		// Calling insertText returns what we want...
 		else return this.insertText( paramText, startLine, startColumn );
 	}
-	
 	/* NOTE: setLineId is deliberately omitted.  Id's shall be handled internally by the document structure during line creation only */
 	// Set the text of a specified line to equal paramText
 	this.setLineText = function( paramLineNum, paramText ) {
@@ -423,10 +423,26 @@ function TextDocument( paramHTMLDocumentPane )
 	
 	// This function updates the currentSelection (called when the cursor is moved while the document is in "select-mode"
 	this.updateSelection = function( paramNewEndLine, paramNewEndColumn ) {
+		// Ensure legality of input and selection
 		if ( !this.isLegalPosition( paramNewEndLine, paramNewEndColumn ) ) return false;
 		if ( this.currentSelection.startLine == null ) return false;
+		// Temporarily remember old selection endpoint
+		var oldLine = this.currentSelection.endLine;
+		// Set new selection endpoint
 		this.currentSelection.endLine = paramNewEndLine;
 		this.currentSelection.endColumn = paramNewEndColumn;
+		// Determine which lines need re-rendering as a result of the update (all lines in between old endpoint and new
+		var tmpStart; var tmpEnd;
+		if ( oldLine < paramNewEndLine ) {
+			tmpStart = oldLine;
+			tmpEnd = paramNewEndLine;
+		} else {
+			tmpStart = paramNewEndLine;
+			tmpEnd = oldLine;
+		}
+		for (var i=tmpStart;i<=tmpEnd;i++)
+			XPODoc.setLineUpdated( i );
+			
 		return true;
 	}
 	
@@ -443,11 +459,14 @@ function TextDocument( paramHTMLDocumentPane )
 	}
 
 	this.renderLine = function ( paramLineNum, paramCursorLine, paramCursorColumn, paramLineObject ) {
+		// Ensure legality of input
+		if ( !this.isLegalPosition( paramLineNum ) && paramLineNum != -1 ) return false;
 		// Determine how this function is to used: direct mode (paramLineNum=-1 AND paramLineObject != null)  or indirect mode (by line number)
-		var tmpLine;
 		if ( paramLineNum == -1 && paramLineObject != null ) {
 			tmpLine = paramLineObject;
 		} else tmpLine = this.getLineByLineNumber( paramLineNum );
+		
+		if ( !tmpLine ) return false;
 		
 		// We need the line text and handle for every different possible outcome, so let's make the code more readable
 		var lineText = tmpLine.text;

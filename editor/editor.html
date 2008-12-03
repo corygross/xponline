@@ -299,18 +299,24 @@ onKeyDownFunction = function( paramEvent ) {
 	// If the cursor jumped lines, flag the new line as needing re-rendering also.  Also, update the line lock...
 	if(oldCursorLine != cursorLine) {
 		XPODoc.setLineUpdated( cursorLine );
-		updateLineLock(cursorLine);		
+		updateLineLock(cursorLine);	
 	}
+
+	// Depending on what happened during typeSpecial, do more stuff
+	if( returnValue == false ) {
+		if ( !isShift) {
+			XPODoc.clearCurrentSelection();
+			isSelectMode = false;
+		}
+		else XPODoc.updateSelection( cursorLine, cursorColumn );
+		displayCursorPos();
+	}
+	
 	// Render the updates
 	XPODoc.renderUpdates( cursorLine, cursorColumn );
 	
 	// Ensure we can see the cursor
 	adjustScroll();
-	
-	if( returnValue == false ) {
-		XPODoc.clearCurrentSelection();
-		displayCursorPos();
-	}
 	
 	// Return the result of typeSpecial.  By returning false, the event bubble will stop, which we want in that case.
 	return returnValue;
@@ -335,7 +341,7 @@ onKeyPressFunction = function( paramEvent ){
 	if ( key != 0 ) typeCharacter( XPODoc, key );
 	
 	// Render any line updates (presumably, showing the newly typed character)
-	XPODoc.clearCurrentSelection();
+	//XPODoc.clearCurrentSelection();
 	XPODoc.renderUpdates( cursorLine, cursorColumn );
 	
 	displayCursorPos();
@@ -383,23 +389,6 @@ onMouseMoveFunction = function( paramEvent ) {
 	
 	// If we make it to this line, the cursor should have moved, and thus the selection range has changed
 	XPODoc.updateSelection( cursorLine, cursorColumn );
-	
-	// Determine which lines need re-rendering as a result of the updated cursor
-	var tmpStart; var tmpEnd;
-	if ( oldLine == cursorLine ) {
-		XPODoc.setLineUpdated( cursorLine );
-	}
-	else {
-		if ( oldLine < cursorLine ) {
-			tmpStart = oldLine;
-			tmpEnd = cursorLine;
-		} else {
-			tmpStart = cursorLine;
-			tmpEnd = oldLine;
-		}
-		for (var i=tmpStart;i<=tmpEnd;i++)
-			XPODoc.setLineUpdated( i );
-	}
 	
 	// Go ahead and render the updated lines
 	XPODoc.renderUpdates( cursorLine, cursorColumn );

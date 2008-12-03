@@ -183,7 +183,7 @@ function typeSpecial(paramDoc, paramKEYCODE, paramIsAlt, paramIsCtl, paramIsShif
 	
 		case LEFTARROWKEY: 
 			/* If we are holding shift, moving the cursor actually selects text, so we need to ensure we are in select mode */
-			if ( paramIsShift ) if ( !isSelectMode ) setSelectMode( paramDoc, cursorLine, cursorColumn );
+			if ( paramIsShift )	if ( !isSelectMode ) setSelectMode( paramDoc, cursorLine, cursorColumn );
 			
 			// If we are at the first char of the first line do nothing
 			// If we are at the first char of any other line, wrap to the last char of the previous line
