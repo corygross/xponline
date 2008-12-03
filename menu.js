@@ -38,9 +38,9 @@ function colorMenuClick()
 }
 
 function copyIconClicked()
-{
-	var selection = XPODoc.getCurrentSelection();
-	if( selection != false ){
+{	
+	if( XPODoc.isSelection != false ){
+		var selection = XPODoc.getCurrentSelection();
 		cut_copy_text = XPODoc.getTextInRange(selection.startLine, selection.startColumn, selection.endLine, selection.endColumn, 0);
 		//alert(cut_copy_text);
 	}
@@ -48,9 +48,9 @@ function copyIconClicked()
 }
 
 function cutIconClicked()
-{
-	var selection = XPODoc.getCurrentSelection();
-	if( selection != false ){
+{	
+	if( XPODoc.isSelection != false ){
+		var selection = XPODoc.getCurrentSelection();
 		cut_copy_text = XPODoc.getTextInRange(selection.startLine, selection.startColumn, selection.endLine, selection.endColumn, 0);
 		XPODoc.replaceTextInRange(selection.startLine, selection.startColumn, selection.endLine, selection.endColumn, "");
 		setCursor( selection.startLine, selection.startColumn );
