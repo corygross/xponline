@@ -140,8 +140,8 @@ function openMenuClick()
 function pasteIconClicked()
 {
 	if( typeof(cut_copy_text) != "undefined" ){
-		var endCoords = XPODoc.insertText( cut_copy_text, cursorLine, cursorColumn );		
-		setCursor( endCoords[0], endCoords[1] );
+		var endCoords = XPODoc.insertText( cut_copy_text, cursorLine, cursorColumn );
+		setCursor( endCoords[0], XPODoc.getLineLength( endCoords[0] ) );
 		XPODoc.setLineUpdated( cursorLine+1 );
 		XPODoc.renderUpdates( cursorLine, cursorColumn );
 	}
