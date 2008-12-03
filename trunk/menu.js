@@ -168,20 +168,16 @@ function showmenu(elmnt)
     document.getElementById(elmnt).style.visibility="visible";
 }
 
-var lineCol;
+var lineCol = null;
 function updateLineCol(line, col)
 {
-//	if(lineCol == null){
+	if(lineCol == null){
 		lineCol = document.getElementById('curLineCol');
-		
-		if(line != "" || col != ""){lineCol.innerHTML = "Ln:" + line + " Col:" + col; return;}
-		else { lineCol.innerHTML = ""; return; }
+	}
+	
+	if(line !== "" || col !== ""){lineCol.innerHTML = "Ln:" + line + " Col:" + col; return;}
+	else { lineCol.innerHTML = ""; return; }
 }
-function getLineDisplayHandle() {
-	return document.getElementById('curLineCol');
-}
-
-
 
 function uploadMenuClick()
 {
