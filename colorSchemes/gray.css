@@ -41,7 +41,6 @@ td.window_min{
 	width:10%;
 	cursor:pointer;
 	font-weight:bold;
-	background-image:url('images/close.png');
 }
 
 td.window_min:hover{
@@ -117,6 +116,8 @@ div.contacts_label{
 	margin-right:5px;
 	color: #000000;
 	font-family: arial;
+	text-align:center;
+	font-size: 15px;
 }
 
 ul.contacts{
