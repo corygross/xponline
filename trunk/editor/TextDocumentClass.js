@@ -366,8 +366,8 @@ function TextDocument( paramHTMLDocumentPane )
 		}
 		else {
 			this.setLineText( startLine, this.getLineText(startLine).substring(0, startColumn) );
-			for (i=1;i<numLinesSpanned-1;i++) {
-				this.removeLine( startLine+i );
+			for (i=0;i<numLinesSpanned;i++) {
+				this.removeLine( startLine+1 );
 			}
 			//this.setLineText( endLine, this.getLineText(endLine).substring(endColumn) );
 		}

@@ -172,24 +172,13 @@ function typeCharacter( paramDoc, paramCharCode ) {
 	else newCursorCoords = paramDoc.insertText( String.fromCharCode(paramCharCode), cursorLine, cursorColumn );
 	
 	cursorColumn = newCursorCoords[1];
-	//var tempCurrentLine = new Array();
-	//tempCurrentLine.push(paramDoc.getLineText(cursorLine).substring(0,cursorColumn));
-	//tempCurrentLine.push(paramDoc.getLineText(cursorLine).substr(cursorColumn, 1));
-	//tempCurrentLine.push(paramDoc.getLineText(cursorLine).substring(cursorColumn+1));
-
-	// Insert character
-	//tempCurrentLine[1]=String.fromCharCode(paramCharCode) + tempCurrentLine[1];
-	
-	// Update cursor
-	//cursorColumn++;
-	
-	// Commit changes
-	//paramDoc.setLineText( cursorLine, tempCurrentLine.join("") );
 }
 
 /* This function provides functionality to so-called "special keys".  Basically, any non-character related keyboard input. (kindof) */
 function typeSpecial(paramDoc, paramKEYCODE, paramIsAlt, paramIsCtl, paramIsShift) {
-
+	// Local variable to extract information about cursor after certain operations
+	var newCursorCoords;
+	
 	switch ( paramKEYCODE ) {
 	
 		case LEFTARROWKEY: 
@@ -334,6 +323,15 @@ function typeSpecial(paramDoc, paramKEYCODE, paramIsAlt, paramIsCtl, paramIsShif
 			break;
 			
 		case BACKSPACEKEY:
+			// If there is currently a selection, we want to simply delete it and we're done
+			if ( paramDoc.isSelection ) {
+				var tmpSel = paramDoc.getCurrentSelection();
+				var newCursorCoords = paramDoc.replaceTextInRange( tmpSel.startLine, tmpSel.startColumn, tmpSel.endLine, tmpSel.endColumn ); // no last parameter = delete text
+				cursorLine = newCursorCoords[0];
+				cursorColumn = newCursorCoords[1];
+				break;
+			}			
+			
 			// If we are on the first char of the first line, do nothing.
 			// If we are on the first char of any other line, backspace removes the "newline character"
 			// -- which doesn't exist in our implementation.  We simulate this removal by merging lines.
@@ -359,6 +357,15 @@ function typeSpecial(paramDoc, paramKEYCODE, paramIsAlt, paramIsCtl, paramIsShif
 			break;
 			
 		case DELETEKEY:
+			// If there is currently a selection, we want to simply delete it and we're done
+			if ( paramDoc.isSelection ) {
+				var tmpSel = paramDoc.getCurrentSelection();
+				var newCursorCoords = paramDoc.replaceTextInRange( tmpSel.startLine, tmpSel.startColumn, tmpSel.endLine, tmpSel.endColumn ); // no last parameter = delete text
+				cursorLine = newCursorCoords[0];
+				cursorColumn = newCursorCoords[1];
+				break;
+			}			
+			
 			// If we are at the last char of the last line, do nothing
 			// If we are at the last char of any other line, we remove the 'newline character', thus merging the current line with the next line
 			// Otherwise, we simply remove the char at the cursor position
@@ -379,6 +386,13 @@ function typeSpecial(paramDoc, paramKEYCODE, paramIsAlt, paramIsCtl, paramIsShif
 			break;
 			
 		case ENTERKEY:
+			// If there is currently a selection, we want to simply delete it first, THEN add the 'newline'
+			if ( paramDoc.isSelection ) {
+				var tmpSel = paramDoc.getCurrentSelection();
+				var newCursorCoords = paramDoc.replaceTextInRange( tmpSel.startLine, tmpSel.startColumn, tmpSel.endLine, tmpSel.endColumn ); // no last parameter = delete text
+				cursorLine = newCursorCoords[0];
+				cursorColumn = newCursorCoords[1];
+			}	
 			// When we press the enter key, we need to insert a new line into the document
 			// We need to insert a new line following the current line, which contains the current line's text starting from the cursor
 			paramDoc.insertLine( cursorLine+1, paramDoc.getLineText( cursorLine ).substring( cursorColumn ) );
@@ -389,9 +403,16 @@ function typeSpecial(paramDoc, paramKEYCODE, paramIsAlt, paramIsCtl, paramIsShif
 			break;
 			
 		case TABKEY:
+			// If there is currently a selection, we want to simply delete it first, THEN add the tab
+			if ( paramDoc.isSelection ) {
+				var tmpSel = paramDoc.getCurrentSelection();
+				var newCursorCoords = paramDoc.replaceTextInRange( tmpSel.startLine, tmpSel.startColumn, tmpSel.endLine, tmpSel.endColumn ); // no last parameter = delete text
+				cursorLine = newCursorCoords[0];
+				cursorColumn = newCursorCoords[1];
+			}	
 			// Insert 4 spaces at current cursor position
 			//  SUPER HACK:  Need to redesign functions a bit to eliminate redundancy and make it cleaner and more readable.  
-			// We eventually want this to call an "insertText()" function, but for now....
+			// We eventually want this to call an "insertText()" , but for now....
 			typeCharacter( paramDoc, " ".charCodeAt(0) );
 			typeCharacter( paramDoc, " ".charCodeAt(0) );
 			typeCharacter( paramDoc, " ".charCodeAt(0) );
@@ -411,6 +432,14 @@ function typeSpecial(paramDoc, paramKEYCODE, paramIsAlt, paramIsCtl, paramIsShif
 			
 		//For autobracketing
 		case LEFTBRACKET:
+			// If there is currently a selection, we want to simply delete it first, then go from there
+			if ( paramDoc.isSelection ) {
+				var tmpSel = paramDoc.getCurrentSelection();
+				var newCursorCoords = paramDoc.replaceTextInRange( tmpSel.startLine, tmpSel.startColumn, tmpSel.endLine, tmpSel.endColumn ); // no last parameter = delete text
+				cursorLine = newCursorCoords[0];
+				cursorColumn = newCursorCoords[1];
+			}
+			
 			if( !paramIsShift ) { return true; }
 			if(isFF == true)
 				{
@@ -431,6 +460,14 @@ function typeSpecial(paramDoc, paramKEYCODE, paramIsAlt, paramIsCtl, paramIsShif
 			}
 			break;
 		case LEFTPAREN:
+			// If there is currently a selection, we want to simply delete it first, then go from there
+			if ( paramDoc.isSelection ) {
+				var tmpSel = paramDoc.getCurrentSelection();
+				var newCursorCoords = paramDoc.replaceTextInRange( tmpSel.startLine, tmpSel.startColumn, tmpSel.endLine, tmpSel.endColumn ); // no last parameter = delete text
+				cursorLine = newCursorCoords[0];
+				cursorColumn = newCursorCoords[1];
+			}	
+			
 			if( !paramIsShift ) { return true; }
 			if(isFF == true)
 				{
