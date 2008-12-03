@@ -162,19 +162,26 @@ function setInputMode( paramMODE ) {
 
 // This function is responsible for text input
 function typeCharacter( paramDoc, paramCharCode ) {	
-	var tempCurrentLine = new Array();
-	tempCurrentLine.push(paramDoc.getLineText(cursorLine).substring(0,cursorColumn));
-	tempCurrentLine.push(paramDoc.getLineText(cursorLine).substr(cursorColumn, 1));
-	tempCurrentLine.push(paramDoc.getLineText(cursorLine).substring(cursorColumn+1));
+	// Determine if we typing normally, or overwriting a selected block, and act accordingly
+	if ( paramDoc.isSelection ) paramDoc.insertText( String.fromCharCode(paramCharCode), cursorLine, cursorColumn );
+	else {
+		var tmpSel = paramDoc.getCurrentSelection();
+		paramDoc.replaceTextInRange( tmpSel.startLine, tmpSel.startColumn, tmpSel.endLine, tmpSel.endColumn, String.fromCharCode(paramCharCode) );
+	}
+	
+	//var tempCurrentLine = new Array();
+	//tempCurrentLine.push(paramDoc.getLineText(cursorLine).substring(0,cursorColumn));
+	//tempCurrentLine.push(paramDoc.getLineText(cursorLine).substr(cursorColumn, 1));
+	//tempCurrentLine.push(paramDoc.getLineText(cursorLine).substring(cursorColumn+1));
 
 	// Insert character
-	tempCurrentLine[1]=String.fromCharCode(paramCharCode) + tempCurrentLine[1];
+	//tempCurrentLine[1]=String.fromCharCode(paramCharCode) + tempCurrentLine[1];
 	
 	// Update cursor
 	cursorColumn++;
 	
 	// Commit changes
-	paramDoc.setLineText( cursorLine, tempCurrentLine.join("") );
+	//paramDoc.setLineText( cursorLine, tempCurrentLine.join("") );
 }
 
 /* This function provides functionality to so-called "special keys".  Basically, any non-character related keyboard input. (kindof) */

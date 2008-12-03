@@ -369,7 +369,7 @@ function TextDocument( paramHTMLDocumentPane )
 			return [startLine, startColumn];
 		}
 		// Calling insertText returns what we want...
-		else return insertText( paramText, startLine, startColumn );
+		else return this.insertText( paramText, startLine, startColumn );
 	}
 	
 	/* NOTE: setLineId is deliberately omitted.  Id's shall be handled internally by the document structure during line creation only */
