@@ -289,13 +289,6 @@ onKeyDownFunction = function( paramEvent ) {
 		isAlt = paramEvent.altKey;
 		isCtl = paramEvent.ctrlKey;
 	}
-	
-	if ( !isShift ) {
-		XPODoc.clearCurrentSelection();
-		resetSelectMode( XPODoc );
-		XPODoc.setLineUpdated( cursorLine );
-		XPODoc.renderUpdates( cursorLine, cursorColumn );
-	}
 
 	// if typeSpecial actually does something, it returns false.  Capture this value: it will be our return value at the end of the function
 	var returnValue = typeSpecial( XPODoc, key, isAlt, isCtl, isShift );
@@ -314,7 +307,10 @@ onKeyDownFunction = function( paramEvent ) {
 	// Ensure we can see the cursor
 	adjustScroll();
 	
-	if( returnValue == false ) displayCursorPos();
+	if( returnValue == false ) {
+		XPODoc.clearCurrentSelection();
+		displayCursorPos();
+	}
 	
 	// Return the result of typeSpecial.  By returning false, the event bubble will stop, which we want in that case.
 	return returnValue;
@@ -339,6 +335,7 @@ onKeyPressFunction = function( paramEvent ){
 	if ( key != 0 ) typeCharacter( XPODoc, key );
 	
 	// Render any line updates (presumably, showing the newly typed character)
+	XPODoc.clearCurrentSelection();
 	XPODoc.renderUpdates( cursorLine, cursorColumn );
 	
 	displayCursorPos();

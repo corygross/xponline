@@ -243,8 +243,8 @@ function TextDocument( paramHTMLDocumentPane )
 		var targetLineFirstHalf = this.getLineText( paramLineNum ).substring( 0, paramColumnNum );
 		var targetLineSecondHalf = this.getLineText( paramLineNum ).substring( paramColumnNum );
 		
-		// Insert our lines into the document
-		for (i=0;i<insertArray.length;i++) {
+		// Insert our lines into the document if it is multi-line
+		for (i=1;i<insertArray.length;i++) {
 			this.insertLine( paramLineNum+i, insertArray[i] );
 		}
 		// Prepend the original line's first half back to the original line
@@ -255,7 +255,7 @@ function TextDocument( paramHTMLDocumentPane )
 		this.updateToServer = true;
 		
 		// Return the coordinates of the character following the end of the inserted text
-		return [paramLineNum+insertArray.length-1, insertArray[insertArray.length-1].length ];
+		return [paramLineNum + insertArray.length-1, paramColumnNum + insertArray[insertArray.length-1].length ];
 	}
 	
 	// This function takes a lineNumber and an optional columnNumber and determines if their values are within bounds of the document
@@ -305,13 +305,17 @@ function TextDocument( paramHTMLDocumentPane )
 		return false;
 	}
 	
+	
 	// Remove a line, specified by line number
 	this.removeLine = function( paramLineNum ) {
+	
+		// Ensure legal function input
 		if ( !this.isLegalPosition( paramLineNum ) ) return false;
 		
 		// Remove the HTML div associated with the line
 		var removeMe = this.getLineHandle( paramLineNum );
 		removeMe.parentNode.removeChild( removeMe );
+		
 		// Remove the document line
 		this.document.splice( paramLineNum, 1 );
 		
@@ -358,14 +362,14 @@ function TextDocument( paramHTMLDocumentPane )
 		// Remove all appropriate text, leaving only... the appropriate text
 		var numLinesSpanned = endLine - startLine + 1;
 		if ( numLinesSpanned == 1 ) {
-			this.setLineText( startLine, this.getLineText(startLine).substring(0, startColumn) + this.getLineText(startLine).substring(endColumn) );
+			this.setLineText( startLine, this.getLineText(startLine).substring(0, startColumn) + this.getLineText(endLine).substring(endColumn) );
 		}
 		else {
 			this.setLineText( startLine, this.getLineText(startLine).substring(0, startColumn) );
 			for (i=1;i<numLinesSpanned-1;i++) {
 				this.removeLine( startLine+i );
 			}
-			this.setLineText( endLine, this.getLineText(endLine).substring(endColumn) );
+			//this.setLineText( endLine, this.getLineText(endLine).substring(endColumn) );
 		}
 		
 		// Depending on whether we are inserting text in place of that which we just deleted, perform the appropriate action and return the correct coordinates

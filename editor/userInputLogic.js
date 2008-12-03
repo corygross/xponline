@@ -162,13 +162,16 @@ function setInputMode( paramMODE ) {
 
 // This function is responsible for text input
 function typeCharacter( paramDoc, paramCharCode ) {	
+	// Local variable to extract information about cursor after operations
+	var newCursorCoords;
 	// Determine if we typing normally, or overwriting a selected block, and act accordingly
-	if ( paramDoc.isSelection ) paramDoc.insertText( String.fromCharCode(paramCharCode), cursorLine, cursorColumn );
-	else {
+	if ( paramDoc.isSelection ) {
 		var tmpSel = paramDoc.getCurrentSelection();
-		paramDoc.replaceTextInRange( tmpSel.startLine, tmpSel.startColumn, tmpSel.endLine, tmpSel.endColumn, String.fromCharCode(paramCharCode) );
+		var newCursorCoords = paramDoc.replaceTextInRange( tmpSel.startLine, tmpSel.startColumn, tmpSel.endLine, tmpSel.endColumn, String.fromCharCode(paramCharCode) );
 	}
+	else newCursorCoords = paramDoc.insertText( String.fromCharCode(paramCharCode), cursorLine, cursorColumn );
 	
+	cursorColumn = newCursorCoords[1];
 	//var tempCurrentLine = new Array();
 	//tempCurrentLine.push(paramDoc.getLineText(cursorLine).substring(0,cursorColumn));
 	//tempCurrentLine.push(paramDoc.getLineText(cursorLine).substr(cursorColumn, 1));
@@ -178,7 +181,7 @@ function typeCharacter( paramDoc, paramCharCode ) {
 	//tempCurrentLine[1]=String.fromCharCode(paramCharCode) + tempCurrentLine[1];
 	
 	// Update cursor
-	cursorColumn++;
+	//cursorColumn++;
 	
 	// Commit changes
 	//paramDoc.setLineText( cursorLine, tempCurrentLine.join("") );
