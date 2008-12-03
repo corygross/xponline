@@ -304,7 +304,7 @@ onKeyDownFunction = function( paramEvent ) {
 
 	// Depending on what happened during typeSpecial, do more stuff
 	if( returnValue == false ) {
-		if ( !isShift) {
+		if ( !isShift && key != SELECTALLKEY ) {
 			XPODoc.clearCurrentSelection();
 			isSelectMode = false;
 		}
