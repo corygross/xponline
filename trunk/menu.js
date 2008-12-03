@@ -42,7 +42,6 @@ function copyIconClicked()
 	if( XPODoc.isSelection != false ){
 		var selection = XPODoc.getCurrentSelection();
 		cut_copy_text = XPODoc.getTextInRange(selection.startLine, selection.startColumn, selection.endLine, selection.endColumn, 0);
-		//alert(cut_copy_text);
 	}
 	giveDocumentFocus();
 }
@@ -54,9 +53,9 @@ function cutIconClicked()
 		XPODoc.clearCurrentSelection();
 		cut_copy_text = XPODoc.getTextInRange(selection.startLine, selection.startColumn, selection.endLine, selection.endColumn, 0);
 		XPODoc.replaceTextInRange(selection.startLine, selection.startColumn, selection.endLine, selection.endColumn, "");
-		setCursor( selection.startLine, selection.startColumn );
+		if( selection.startLine <= selection.endLine ) setCursor( selection.startLine, selection.startColumn );
+		else setCursor( selection.endLine, selection.endColumn );
 		XPODoc.renderUpdates( cursorLine, cursorColumn );
-		//alert(cut_copy_text);
 	}
 	giveDocumentFocus();
 }
@@ -160,7 +159,12 @@ function replaceMenuClick()
 
 function selectAllMenuClick()
 {
-	alert("select all");
+	var lastLine = XPODoc.getDocumentLength() - 1;
+	var lastCol = XPODoc.getLineLength( lastLine );
+	XPODoc.setCurrentSelection( 0, 0, lastLine, lastCol );
+	setCursor( lastLine, lastCol );
+	XPODoc.renderEntireDocument( lastLine, lastCol );	
+	giveDocumentFocus();
 }
 
 function showmenu(elmnt)
