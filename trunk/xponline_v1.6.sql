@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 -- 
 -- Host: localhost
--- Generation Time: Nov 20, 2008 at 12:06 PM
+-- Generation Time: Dec 02, 2008 at 08:58 PM
 -- Server version: 5.0.45
 -- PHP Version: 5.2.5
 
@@ -129,7 +129,7 @@ CREATE TABLE `updates` (
   `docID` int(11) NOT NULL,
   `changeByUser` int(11) NOT NULL,
   `lineID` int(11) NOT NULL,
-  `action` enum('u','i','d') collate utf8_unicode_ci NOT NULL,
+  `action` enum('u','i','d','n') collate utf8_unicode_ci NOT NULL,
   `text` text collate utf8_unicode_ci,
   `updateTime` timestamp NOT NULL default CURRENT_TIMESTAMP,
   PRIMARY KEY  (`updateID`),
@@ -166,14 +166,14 @@ CREATE TABLE `users` (
 -- 
 
 INSERT INTO `users` (`uID`, `uFName`, `uLName`, `uEmail`, `uPass`, `uColor`, `uLastActivity`) VALUES 
-(7, 'Cory', 'Gross', 'corygross@hotmail.com', 'dfa9e8660763fd9453cbe56eebff2e39', 'blue', '2008-11-20 11:56:23'),
+(7, 'Cory', 'Gross', 'corygross@hotmail.com', 'dfa9e8660763fd9453cbe56eebff2e39', 'blue', '2008-12-02 20:58:20'),
 (9, 'Bob', 'Villa', 'bv@hotmail.com', 'dfa9e8660763fd9453cbe56eebff2e39', 'black', '2008-11-20 03:24:48'),
-(10, 'Cory', 'Tester', 'corygross@yahoo.com', 'dfa9e8660763fd9453cbe56eebff2e39', 'blue', '2008-11-20 11:56:52'),
+(10, 'Cory', 'Tester', 'corygross@yahoo.com', 'dfa9e8660763fd9453cbe56eebff2e39', 'blue', '2008-12-02 20:58:19'),
 (11, 'Frank', 'Tank', 'ft@hotmail.com', 'dfa9e8660763fd9453cbe56eebff2e39', 'black', '2008-10-14 14:51:59'),
 (12, 'Red', 'Foreman', 'rf@hotmail.com', 'dfa9e8660763fd9453cbe56eebff2e39', 'black', '2008-10-14 14:57:27'),
 (13, 'Bob', 'Banks', 'bb2@hotmail.com', 'dfa9e8660763fd9453cbe56eebff2e39', 'black', '2008-10-14 14:58:05'),
 (14, 'Rodrigo', 'Richards', 'rr@hotmail.com', 'dfa9e8660763fd9453cbe56eebff2e39', 'black', '2008-10-14 14:59:01'),
-(15, 'Dr.', 'Adams', 'd.robert.adams@gmail.com', '8f16834cd1a9060ec54abce72cea4da2', 'black', '2008-11-20 12:06:43');
+(15, 'Dr.', 'Adams', 'd.robert.adams@gmail.com', '8f16834cd1a9060ec54abce72cea4da2', 'black', '2008-11-20 14:13:13');
 
 -- 
 -- Constraints for dumped tables
@@ -204,8 +204,8 @@ ALTER TABLE `msgqueue`
 -- Constraints for table `updatequeue`
 -- 
 ALTER TABLE `updatequeue`
-  ADD CONSTRAINT `updatequeue_ibfk_2` FOREIGN KEY (`userID`) REFERENCES `users` (`uID`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `updatequeue_ibfk_1` FOREIGN KEY (`updateID`) REFERENCES `updates` (`updateID`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `updatequeue_ibfk_1` FOREIGN KEY (`updateID`) REFERENCES `updates` (`updateID`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `updatequeue_ibfk_2` FOREIGN KEY (`userID`) REFERENCES `users` (`uID`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- 
 -- Constraints for table `updates`
