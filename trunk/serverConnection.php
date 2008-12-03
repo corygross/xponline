@@ -33,7 +33,7 @@ if (ob_get_level() == 0) ob_start();
 function cleanupUpdateTable(){
 	if(isset($_SESSION['updateTableCleanup']) == false || $_SESSION['updateTableCleanup'] < time()){
 		$_SESSION['updateTableCleanup'] = intval(time()) + 300;
-		$cleanupQuery = "DELETE FROM updates WHERE updates.updateID NOT IN ( SELECT updatequeue.updateID FROM updatequeue );";
+		$cleanupQuery = "DELETE FROM updates WHERE updateTime < DATE_SUB(CURRENT_TIMESTAMP,INTERVAL 300 SECOND) AND updateID NOT IN ( SELECT updatequeue.updateID FROM updatequeue );";
 		runQuery($cleanupQuery);
 	}
 }
@@ -124,7 +124,7 @@ function getPeerUpdates($uID, $dID){
 	if($dID == ""){
 		return "";
 	}
-	
+
 	$fileName = "./documents/doc".$dID;
 	if(file_exists($fileName)){
 		$fileModifyTime = filemtime($fileName);
