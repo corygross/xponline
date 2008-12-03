@@ -79,6 +79,12 @@ function TextDocument( paramHTMLDocumentPane )
 		return this.document.length;
 	}
 	
+	// Returns the "line" object at the specified lineNum in the document
+	this.getLineByLineNumber = function( paramLineNum ) {
+		if ( !this.isLegalPosition( paramLineNum ) ) return false;
+		return this.document[paramLineNum];
+	}
+	
 	// Returns the HTML DOM handle associated with the specified line
 	this.getLineHandle = function( paramLineNum ) {
 		if ( !this.isLegalPosition( paramLineNum ) ) return false;
@@ -439,15 +445,24 @@ function TextDocument( paramHTMLDocumentPane )
 		}
 	}
 
-	this.renderLine = function ( paramLineNum, paramCursorLine, paramCursorColumn ) {
+	this.renderLine = function ( paramLineNum, paramCursorLine, paramCursorColumn, paramLineObject ) {
+		// Determine how this function is to used: direct mode (paramLineNum=-1 AND paramLineObject != null)  or indirect mode (by line number)
+		var tmpLine;
+		if ( paramLineNum == -1 && paramLineObject != null ) {
+			tmpLine = paramLineObject;
+		} else tmpLine = this.getLineByLineNumber( paramLineNum );
+		
+		// We need the line text and handle for every different possible outcome, so let's make the code more readable
+		var lineText = tmpLine.text;
+		var lineHandle = tmpLine.handle;
+		var lineLockingUser = tmpLine.isLockedBy;
+		
+		// Ensure the renderer knows if syntaxHighlighting is on or not
 		this.renderer.isSyntaxHiliteOn = syntaxHighlightOn;
-		
-		// We need the line text for every different possible outcome, so let's make it readable
-		var lineText = this.getLineText( paramLineNum );
-		
+				
 		// Line is locked
-		if ( this.getLineLockingUser( paramLineNum ) != null ) {
-			this.getLineHandle( paramLineNum ).innerHTML = this.renderer.renderLine( lineText, this.renderer.LOCKED, this.getLineLockingUser( paramLineNum ), paramLineNum );
+		if ( lineLockingUser != null ) {
+			lineHandle.innerHTML = this.renderer.renderLine( lineText, this.renderer.LOCKED, lineLockingUser, paramLineNum );
 		}
 		// Line contains cursor
 		else if ( paramCursorLine == paramLineNum ) {
@@ -458,23 +473,23 @@ function TextDocument( paramHTMLDocumentPane )
 				if ( this.currentSelection.startLine == paramLineNum ) {
 					// BUT... make sure the selection is not a null-selection!  If so, just render the cursor
 					if ( this.currentSelection.startColumn == this.currentSelection.endColumn ) {
-						this.getLineHandle( paramLineNum ).innerHTML = this.renderer.renderLine( lineText, this.renderer.CURSOR, paramCursorColumn );
+						lineHandle.innerHTML = this.renderer.renderLine( lineText, this.renderer.CURSOR, paramCursorColumn );
 					}
 					// If we *actually* have a selection, then render it
-					else this.getLineHandle( paramLineNum ).innerHTML = this.renderer.renderLine( lineText, this.renderer.SELECTION_ENTIRE, this.currentSelection.startColumn, paramCursorColumn );
+					else lineHandle.innerHTML = this.renderer.renderLine( lineText, this.renderer.SELECTION_ENTIRE, this.currentSelection.startColumn, paramCursorColumn );
 				}
 				// If the startLine is AFTER the current (end) line, then we are at the head end of the selection.
 				else if ( this.currentSelection.startLine > paramLineNum ) {
-					this.getLineHandle( paramLineNum ).innerHTML = this.renderer.renderLine( lineText, this.renderer.SELECTION_HEAD_CURSOR, paramCursorColumn );
+					lineHandle.innerHTML = this.renderer.renderLine( lineText, this.renderer.SELECTION_HEAD_CURSOR, paramCursorColumn );
 				}
 				// Otherwise, we must be at the tail of the selection
-				else this.getLineHandle( paramLineNum ).innerHTML = this.renderer.renderLine( lineText, this.renderer.SELECTION_TAIL_CURSOR, paramCursorColumn );
+				else lineHandle.innerHTML = this.renderer.renderLine( lineText, this.renderer.SELECTION_TAIL_CURSOR, paramCursorColumn );
 			}
 			// If there is no selection
 			else if ( syntaxHighlightOn ) {
-				this.getLineHandle( paramLineNum ).innerHTML = this.renderer.renderLine( lineText, this.renderer.SYNTAX_HILITE, paramCursorColumn );
+				lineHandle.innerHTML = this.renderer.renderLine( lineText, this.renderer.SYNTAX_HILITE, paramCursorColumn );
 			}
-			else this.getLineHandle( paramLineNum ).innerHTML = this.renderer.renderLine( lineText, this.renderer.CURSOR, paramCursorColumn );
+			else lineHandle.innerHTML = this.renderer.renderLine( lineText, this.renderer.CURSOR, paramCursorColumn );
 		}
 		// If the line does not contain the cursor, and there is a selection...
 		else if ( this.isSelection ) {
@@ -483,26 +498,26 @@ function TextDocument( paramHTMLDocumentPane )
 			if ( this.currentSelection.startLine == paramLineNum ) {
 				// If the current line is the 'head' of the selection
 				if ( this.currentSelection.startLine < this.currentSelection.endLine ) {
-					this.getLineHandle( paramLineNum ).innerHTML = this.renderer.renderLine( lineText, this.renderer.SELECTION_HEAD, this.currentSelection.startColumn );
+					lineHandle.innerHTML = this.renderer.renderLine( lineText, this.renderer.SELECTION_HEAD, this.currentSelection.startColumn );
 				}
 				// Otherwise, the current line fully part of a selection (it isn't part of the tail, because by definition as I have it, that implies the cursor is present)
-				else this.getLineHandle( paramLineNum ).innerHTML = this.renderer.renderLine( lineText, this.renderer.SELECTION_TAIL, this.currentSelection.startColumn );
+				else lineHandle.innerHTML = this.renderer.renderLine( lineText, this.renderer.SELECTION_TAIL, this.currentSelection.startColumn );
 			}
 			// If the current line is not an enpoint of selection, and the current line is between the start and end lines...
 			else if ( (this.currentSelection.startLine < paramLineNum && this.currentSelection.endLine > paramLineNum ) || ( this.currentSelection.startLine > paramLineNum && this.currentSelection.endLine < paramLineNum ) ) {
-				this.getLineHandle( paramLineNum ).innerHTML = this.renderer.renderLine( lineText, this.renderer.SELECTION_LINE );
+				lineHandle.innerHTML = this.renderer.renderLine( lineText, this.renderer.SELECTION_LINE );
 			}
 			// Otherwise, the current line is outside the selection area
 			else if ( syntaxHighlightOn ) {
-				this.getLineHandle( paramLineNum ).innerHTML = this.renderer.renderLine( lineText, this.renderer.SYNTAX_HILITE );
+				lineHandle.innerHTML = this.renderer.renderLine( lineText, this.renderer.SYNTAX_HILITE );
 			}
-			else this.getLineHandle( paramLineNum ).innerHTML = this.renderer.renderLine( lineText, this.renderer.NORMAL );
+			else lineHandle.innerHTML = this.renderer.renderLine( lineText, this.renderer.NORMAL );
 		}
 		// Otherwise, if the line does not contain the cursor and there is no selection, then
 		else if ( syntaxHighlightOn ) {
-			this.getLineHandle( paramLineNum ).innerHTML = this.renderer.renderLine( lineText, this.renderer.SYNTAX_HILITE );
+			lineHandle.innerHTML = this.renderer.renderLine( lineText, this.renderer.SYNTAX_HILITE );
 		}
-		else this.getLineHandle( paramLineNum ).innerHTML = this.renderer.renderLine( lineText, this.renderer.NORMAL );
+		else lineHandle.innerHTML = this.renderer.renderLine( lineText, this.renderer.NORMAL );
 	}
 	
 	this.renderUpdates = function ( paramCursorLine, paramCursorColumn ) {
