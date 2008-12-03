@@ -43,7 +43,7 @@ function handleUpdateResponse( updateArray ){
 			XPODoc.updateToServer = false;
 			XPODoc.insertLine(lineNum, lineText);
 			// If a new line is inserted above our cursor, we need to move the cursor down
-			if(lineNum < cursorLine){ cursorLine++; }
+			if(lineNum <= cursorLine){ cursorLine++; }
 			XPODoc.renderUpdates( cursorLine, cursorColumn );
 			XPODoc.updateToServer = true;
 		}
