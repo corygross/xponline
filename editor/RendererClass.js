@@ -74,10 +74,12 @@ function Renderer()
 				if ( paramArg1 != 0 )
 					tempCurrentLine.push( this.renderLine( paramLineText.substring(0,paramArg1), myMODE ) );
 				else tempCurrentLine.push( "" );
-		        tempCurrentLine.push( replaceHTMLEntities( paramLineText.substr(paramArg1,1) ) );
-				tempCurrentLine.push( this.renderLine( paramLineText.substr(paramArg1+1), myMODE ) );
+		        tempCurrentLine.push( this.renderLine( paramLineText.substr(paramArg1,1), myMODE ) );
+				if ( paramLineText.substr(paramArg1,1) != "" )
+					tempCurrentLine.push( this.renderLine( paramLineText.substr(paramArg1+1), myMODE ) );
 				tempCurrentLine[1] = "<span id='cursor'>" + tempCurrentLine[1] + "</span>";
-				tempCurrentLine[2] = "<span id='selection'>" + tempCurrentLine[2] + "</span>";
+				if ( tempCurrentLine[2] )
+					tempCurrentLine[2] = "<span id='selection'>" + tempCurrentLine[2] + "</span>";
 				return tempCurrentLine.join("");
 				
 			case this.SELECTION_LINE:
@@ -102,7 +104,9 @@ function Renderer()
 		        tempCurrentLine.push( replaceHTMLEntities( paramLineText.substr(paramArg1,1) ) );
 				tempCurrentLine.push( this.renderLine( paramLineText.substr(paramArg1+1), myMODE ) );
 				tempCurrentLine[0] = "<span id='selection'>" + tempCurrentLine[0] + "</span>";
-				tempCurrentLine[1] = "<span id='cursor'>" + tempCurrentLine[1] + "</span>";
+				if ( tempCurrentLine[1] != "" )
+					tempCurrentLine[1] = "<span id='cursor'>" + tempCurrentLine[1] + "</span>";
+				else tempCurrentLine[1] = "<span id='cursor'>&nbsp</span>";
 				return tempCurrentLine.join("");
 				
 			case this.SELECTION_ENTIRE:
@@ -144,7 +148,9 @@ function Renderer()
 					tempCurrentLine[0] = this.renderLine( tempCurrentLine[0], myMODE );
 					if ( tempCurrentLine[1] != "" )
 						tempCurrentLine[1] = "<span id='selection'>"+this.renderLine( tempCurrentLine[1], myMODE )+"</span>";
-					tempCurrentLine[2] = "<span id='cursor'>"+replaceHTMLEntities( tempCurrentLine[2].substr(0,1) )+"</span>"+this.renderLine( tempCurrentLine[2].substr(1), myMODE );
+					if ( tempCurrentLine[2] != "" )
+						tempCurrentLine[2] = "<span id='cursor'>"+replaceHTMLEntities( tempCurrentLine[2].substr(0,1) )+"</span>"+this.renderLine( tempCurrentLine[2].substr(1), myMODE );
+					else tempCurrentLine[2] = "<span id='cursor'>&nbsp</span>";
 				}
 				// Return this mess
 				return tempCurrentLine.join("");
