@@ -124,23 +124,26 @@ function Renderer()
 				}
 				
 				/* Slice 'n dice */
-				if ( tempPosition1 != 0 ) {
-					tempCurrentLine.push( this.renderLine( paramLineText.substring(0,tempPosition1), myMODE ) );
-				} else tempCurrentLine.push( "" );
+				tempCurrentLine.push( paramLineText.substring(0,tempPosition1) );
 		        tempCurrentLine.push( paramLineText.substring(tempPosition1,tempPosition2) );
 				tempCurrentLine.push( paramLineText.substr(tempPosition2) );
 				
 				/* Determine position of cursor */
 				if ( tempPosition1 == paramArg2 ) {
 					// Cursor is the first position
-					if ( tempCurrentLine[0].substr(1) == "" )
-						tempCurrentLine[1] = "<span id='cursor'>"+ replaceHTMLEntities( tempCurrentLine[1].substring(0,1) )+"</span>";
-					else tempCurrentLine[1] = "<span id='cursor'>"+ replaceHTMLEntities( tempCurrentLine[1].substring(0,1) )+"</span><span id='selection'>"+ this.renderLine( tempCurrentLine[1].substr(1), myMODE )+"</span>";
-					tempCurrentLine[2] = this.renderLine( tempCurrentLine[2], myMODE );
+					if ( tempCurrentLine[0] != "" ) 
+						tempCurrentLine[0] = this.renderLine( tempCurrentLine[0], myMODE );
+					if ( tempCurrentLine[1].length == 1 )
+						tempCurrentLine[1] = "<span id='cursor'>" + this.renderLine( tempCurrentLine[1], myMODE ) + "</span>";
+					else if ( tempCurrentLine[1] != "" )
+						tempCurrentLine[1] = "<span id='cursor'>"+ replaceHTMLEntities( tempCurrentLine[1].substring(0,1) )+"</span><span id='selection'>" + this.renderLine( tempCurrentLine[1].substr(1), myMODE )+"</span>";
+					else tempCurrentLine[2] = "<span id='cursor'>"+ replaceHTMLEntities( tempCurrentLine[2].substring(0,1) )+"</span>"+this.renderLine( tempCurrentLine[2].substr(1), myMODE );
 				}
 				else {
 					// Cursor is the second position
-					tempCurrentLine[1] = "<span id='selection'>"+this.renderLine( tempCurrentLine[1], myMODE )+"</span>";
+					tempCurrentLine[0] = this.renderLine( tempCurrentLine[0], myMODE );
+					if ( tempCurrentLine[1] != "" )
+						tempCurrentLine[1] = "<span id='selection'>"+this.renderLine( tempCurrentLine[1], myMODE )+"</span>";
 					tempCurrentLine[2] = "<span id='cursor'>"+replaceHTMLEntities( tempCurrentLine[2].substr(0,1) )+"</span>"+this.renderLine( tempCurrentLine[2].substr(1), myMODE );
 				}
 				// Return this mess
