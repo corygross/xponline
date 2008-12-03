@@ -41,6 +41,7 @@ td.window_min{
 	width:10%;
 	cursor:pointer;
 	font-weight:bold;
+	background-image:url('images/close.png');
 }
 
 td.window_min:hover{
@@ -105,7 +106,7 @@ td.menu:hover, td.menu_item:hover, td.arrows:hover{
 /** MESSENGER **/
 
 #mess2 {
-	background: #CCCCCC;
+	background: #bebec9;
 }
 
 div.contacts_label{
