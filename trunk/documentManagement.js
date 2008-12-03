@@ -180,7 +180,7 @@ function openDocument(dID, dName)
 		onSuccess: function(transport) {
 			hideLoadingIndicator();
 			if(transport.responseText == "fail"){
-				alert('There was a problem opening the document.  Please try again. failure 1');
+				alert('There was a problem opening the document.  Please try again.');
 			}
 			else{
 				var docInfoArr = transport.responseText.split("&^*");
@@ -191,13 +191,13 @@ function openDocument(dID, dName)
 				setSyntaxFlag(dName); //Set the syntax highlighting flag
 				setHighlightingStyleSheet();
 				
-				loadNewDoc(dID, docInfoArr[1], docInfoArr[0]);
+				loadNewDoc(dID, docInfoArr[2], docInfoArr[0]);				
+				XPODoc.lastReceivedUpdate = docInfoArr[1];
 			}
 		},		
 		onFailure: function(transport)
 		{
-		alert(transport.responseText);
-			alert("There was a problem opening the document.  Please try again. failure 2");
+			alert("There was a problem opening the document.  Please try again.");
 		}		
 	});
 }

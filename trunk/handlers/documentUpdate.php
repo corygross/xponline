@@ -16,8 +16,8 @@ foreach ($updateArray as $updateObject){
 	$action = $updateObject["action"];
 	$lineNum = $updateObject["lineNum"];
 	$text = $updateObject["text"];
-	$updateNumber = $updateObject["updateNum"];
-	
+	$updateNumber = $updateObject["updateNum"];		// For ordering
+	$lastUpdateID = $updateObject["lastUpdateNum"];	// For synchronization
 
 	// Reset the counter on init (the page was either just loaded or refreshed)
 	if( $isInit == true ){
@@ -47,19 +47,23 @@ foreach ($updateArray as $updateObject){
 	else if($lastDocID != $dID){
 		$fileName = "../documents/doc".$lastDocID;
 		file_put_contents($fileName, $masterFileHandle);
+		flock($file, LOCK_UN); // release the lock
 		$masterFileHandle = getDocFileHandle($uID, $dID);
 	}
 	
-	doUpdate($uID, $dID, $masterFileHandle, $action, $lineNum, $text);
+	doUpdate($uID, $dID, $masterFileHandle, $action, $lineNum, $text, $lastUpdateID);
 	
 	$lastDocID = $dID;
 }
+
 
 // After we are done updating, we have to write all the changes we made to disk
 if($masterFileHandle != null){
 	$fileName = "../documents/doc".$lastDocID;
 	file_put_contents($fileName, $masterFileHandle);
+	flock($file, LOCK_UN); // release the lock
 }
+
 
 // This function returns a handle to the physical document
 // We will then pass around a reference so we don't have to keep opening and closing it
@@ -74,20 +78,42 @@ function getDocFileHandle($uID, $dID){
 	
 	$fileName = "../documents/doc".$dID;
 	if(file_exists($fileName)){
-		return file($fileName);
+		global $file;
+		$file = @fopen("../documents/doclock/writeLock".$dID,"w");
+		if (flock($file, LOCK_EX)){
+			return file($fileName);
+		}
+		else{
+			exit("Error getting file lock for master document.");
+		}
 	}
 	else{
 		exit("The document does not exist on the server.");
 	}
 }
 
-function doUpdate($uID, $dID, &$docHandle, $action, $lineNum, $text){
+function doUpdate($uID, $dID, &$docHandle, $action, $lineNum, $text, $lastUpdateID){
 
 	if($uID == "" || $dID == "" || $action == "" || $lineNum === ""){
 		return;
 	}
 
-	// TODO: see if anything needs to be done beforehand - anything that might conflict or change line numbers
+	// Any pending updates for us need to be taken into account
+	// If we have pending deletes, we should move our line num up
+	// If we have pending inserts, we should move our line num down
+	$fix_lines_query = "SELECT * FROM updates WHERE updates.changeByUser!='$uID' AND updates.updateID > $lastUpdateID AND updates.docID='$dID' AND updates.lineID<= $lineNum AND (updates.action='d' OR updates.action='i');";
+	$lineQueryResult = runQuery($fix_lines_query);
+	if(mysql_num_rows($lineQueryResult) > 0){
+		while ($row = mysql_fetch_array($lineQueryResult))
+		{
+			if( $row['action'] == "i" ){				
+				$lineNum++;				
+			}
+			else if( $row['action'] == "d" ){				
+				$lineNum--;				
+			}
+		}
+	}	
 	
 	// Inserts and deletes change the line locks.  Account for that.
 	updateLineLocks($uID, $dID, $lineNum, $action);
