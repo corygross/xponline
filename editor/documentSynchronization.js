@@ -141,7 +141,7 @@ this.sendUpdatesAjax = function( paramUpdatesJSON ){
 	});
 }
 
-// paramAction: i (insert), u (update), d (delete)
+// paramAction: i (insert), u (update), d (delete), n (notify)
 // paramText: the new text for the affected line
 // paramLineNum: the line where the action will take place
 function updateDocument( paramAction, paramText, paramLineNum ) {
@@ -151,7 +151,7 @@ function updateDocument( paramAction, paramText, paramLineNum ) {
 	if(paramAction == "i" || paramAction == "d"){
 		for( var i=0; i < lockedLines.length; i++ )
 		{			
-			if(paramAction == "i" && lockedLines[i].lineID > paramLineNum){
+			if(paramAction == "i" && lockedLines[i].lineID >= paramLineNum){
 				lockedLines[i].lineID = parseInt(lockedLines[i].lineID) + 1;
 			}
 			else if(paramAction == "d" && lockedLines[i].lineID > paramLineNum){
