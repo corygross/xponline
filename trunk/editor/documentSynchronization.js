@@ -27,17 +27,20 @@ function lockLines( newLineLocks ) {
 	// Clear the old line locks
 	for( var i=0; i < lockedLines.length; i++ )
 	{
-		XPODoc.unlockLine( lockedLines[i].lineID );
-		XPODoc.setLineUpdated( lockedLines[i].lineID );		
+		lockedLines[i].isLockedBy = null;
+		XPODoc.renderLine( -1, cursorLine, cursorColumn, lockedLines[i] );
 	}
+	
+	lockedLines = new Array( newLineLocks.length );
+	
 	// Add the new line locks
 	for( var j=0; j < newLineLocks.length; j++ )
 	{		
 		XPODoc.lockLine( newLineLocks[j].lineID, newLineLocks[j].userName );
-		XPODoc.setLineUpdated( newLineLocks[j].lineID );	
+		XPODoc.setLineUpdated( newLineLocks[j].lineID );
+		lockedLines[j] = XPODoc.getLineObject( newLineLocks[j].lineID );
 	}
 	XPODoc.renderUpdates( cursorLine, cursorColumn );
-	lockedLines = newLineLocks;
 }
 
 // This function sends a waiting line lock to the server periodically
@@ -148,6 +151,7 @@ function updateDocument( paramAction, paramText, paramLineNum ) {
 	if(readOnly == true) return;
 
 	// Fix the line locks so we can remove them when we get a new batch
+	/*
 	if(paramAction == "i" || paramAction == "d"){
 		for( var i=0; i < lockedLines.length; i++ )
 		{			
@@ -159,6 +163,7 @@ function updateDocument( paramAction, paramText, paramLineNum ) {
 			}
 		}
 	}
+	*/
 	
 	// Replace any ampersands or plus signs for transmission...	
 	paramText = paramText.replace(/&/g, "aMPerSand");

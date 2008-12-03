@@ -109,6 +109,12 @@ function TextDocument( paramHTMLDocumentPane )
 		return this.document[paramLineNum].isLockedBy;
 	}
 	
+	// Returns a reference to the line object
+	this.getLineObject = function( paramLineNum ) {
+		if ( !this.isLegalPosition( paramLineNum ) ) return false;
+		return this.document[paramLineNum];
+	}
+	
 	// Returns the text of the specified line
 	this.getLineText = function( paramLineNum ) {
 		if ( !this.isLegalPosition( paramLineNum ) ) return false;
