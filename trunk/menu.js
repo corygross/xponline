@@ -173,19 +173,14 @@ function updateLineCol(line, col)
 //	if(lineCol == null){
 		lineCol = document.getElementById('curLineCol');
 		
-		if(line !== "" || col !== ""){lineCol.innerHTML = "Ln:" + line + " Col:" + col; return;}
+		if(line != "" || col != ""){lineCol.innerHTML = "Ln:" + line + " Col:" + col; return;}
 		else { lineCol.innerHTML = ""; return; }
-//	}
-//	else
-//	{
-	//	if(line === "" && col === "")
-	//	{
-		
-	//	}
-//	}		
-		
-
 }
+function getLineDisplayHandle() {
+	return document.getElementById('curLineCol');
+}
+
+
 
 function uploadMenuClick()
 {

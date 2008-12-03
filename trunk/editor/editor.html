@@ -7,6 +7,9 @@
 var myIFrame;
 var mainDoc;
 
+// Timer variable used to manage if/when the line and cursor position are to be displayed in the super-window
+var positionDisplayTimer;
+
 // Browser specific
 var isFF;
 var isIE;
@@ -86,7 +89,8 @@ function insertBookmark( paramBMtext ) {
 
 // This function displays the cursor position in the GUI
 function displayCursorPos() {
-	updateLineCol(cursorLine, cursorColumn);
+	window.clearTimeout( positionDisplayTimer );
+	positionDisplayTimer = window.setTimeout( 'updateLineCol(cursorLine, cursorColumn)', 150 );
 }
 
 // This function gives the document focus.  This is called when the document is loaded and when popup windows are closed
@@ -337,7 +341,7 @@ onKeyPressFunction = function( paramEvent ){
 	// Render any line updates (presumably, showing the newly typed character)
 	XPODoc.renderUpdates( cursorLine, cursorColumn );
 	
-	//displayCursorPos();
+	displayCursorPos();
 }
 
 /* This function is the handler of the mousedown event */

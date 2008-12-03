@@ -126,14 +126,14 @@ function Renderer()
 				/* Slice 'n dice */
 				if ( tempPosition1 != 0 ) {
 					tempCurrentLine.push( this.renderLine( paramLineText.substring(0,tempPosition1), myMODE ) );
-				}
+				} else tempCurrentLine.push( "" );
 		        tempCurrentLine.push( paramLineText.substring(tempPosition1,tempPosition2) );
 				tempCurrentLine.push( paramLineText.substr(tempPosition2) );
 				
 				/* Determine position of cursor */
 				if ( tempPosition1 == paramArg2 ) {
 					// Cursor is the first position
-					if ( tempCurrentLine[1].substr(1) == "" )
+					if ( tempCurrentLine[0].substr(1) == "" )
 						tempCurrentLine[1] = "<span id='cursor'>"+ replaceHTMLEntities( tempCurrentLine[1].substring(0,1) )+"</span>";
 					else tempCurrentLine[1] = "<span id='cursor'>"+ replaceHTMLEntities( tempCurrentLine[1].substring(0,1) )+"</span><span id='selection'>"+ this.renderLine( tempCurrentLine[1].substr(1), myMODE )+"</span>";
 					tempCurrentLine[2] = this.renderLine( tempCurrentLine[2], myMODE );
@@ -270,8 +270,6 @@ function Renderer()
 	}
 	
 	this.tokenizeText = function( paramText ) {
-		// 
-		//return paramText.split(/\.|\;|\{|\}|,|\[|\]|\b/g);
 		return paramText.split(/\.|\;|\(|\)|\{|\}|,|\[|\]|\b/g);
 	}
 
@@ -284,7 +282,6 @@ function Renderer()
 	
 	/* Replace some things like tabs, spaces, < and > */
 	function replaceHTMLEntities( paramText ) {
-		//return paramText;
 		if(paramText.replace && paramText != ""){
 			paramText = paramText.replace(/&/g, "&amp;"); // This one must be first
 			paramText = paramText.replace(/>/g, "&gt;");
