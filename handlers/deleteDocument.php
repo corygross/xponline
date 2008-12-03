@@ -35,6 +35,12 @@ if(file_exists($deleteLockFilePath)){
 	unlink($deleteLockFilePath);
 }
 
+// Delete the file for write lock
+$deleteWriteLockFilePath = "../documents/doclock/writeLock".$dID;
+if(file_exists($deleteWriteLockFilePath)){	
+	unlink($deleteWriteLockFilePath);
+}
+
 // Delete the document from the database
 // Foreign keys are set to cascade deletes, so we don't have to mess with them
 $deldocSQL = "DELETE FROM documents WHERE dID='$dID';";

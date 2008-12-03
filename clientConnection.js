@@ -25,10 +25,13 @@ function handleXMLResponse( response ){
 function handleUpdateResponse( updateArray ){
 	for( var i=0; i < updateArray.contents.length; i++ )
 	{
-		//this isn't the update id I really want... I want the document specific one
+		// The last update number we have received
+		// We will use this so when we send updates to the server, the sever will know which updates we had from other users at the time
 		var updateID = updateArray.contents[i].contents[0].contents[0].value;
+		XPODoc.lastReceivedUpdate = updateID;
+
 		var action = updateArray.contents[i].contents[1].contents[0].value;
-		var lineNum = updateArray.contents[i].contents[2].contents[0].value;
+		var lineNum = parseInt(updateArray.contents[i].contents[2].contents[0].value);
 		var lineText = updateArray.contents[i].contents[3].contents[0].value;
 
 		// Its a line update
@@ -45,6 +48,7 @@ function handleUpdateResponse( updateArray ){
 			// If a new line is inserted above our cursor, we need to move the cursor down
 			if(lineNum <= cursorLine){ cursorLine++; }
 			XPODoc.renderUpdates( cursorLine, cursorColumn );
+			displayCursorPos();
 			XPODoc.updateToServer = true;
 		}
 		// A line delete
@@ -54,6 +58,7 @@ function handleUpdateResponse( updateArray ){
 			// If a line is deleted above our cursor, we need to move the cursor up
 			if(lineNum < cursorLine){ cursorLine--; }
 			XPODoc.renderUpdates( cursorLine, cursorColumn );
+			displayCursorPos();
 			XPODoc.updateToServer = true;				
 		}
 		// A notification from another user
@@ -70,7 +75,7 @@ function handleLockResponse( lockArray ){
 	{
 		// Add line locks to our array
 		// Line locks have the line number that needs to be locked as well as the user that is on that line
-		newLockArray.push(new lockItem(lockArray.contents[i].contents[1].contents[0].value, lockArray.contents[i].contents[2].contents[0].value));
+		newLockArray.push(new lockItem(parseInt(lockArray.contents[i].contents[1].contents[0].value), lockArray.contents[i].contents[2].contents[0].value));
 	}	
 	lockLines(newLockArray);
 }

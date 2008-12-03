@@ -28,6 +28,8 @@ function TextDocument( paramHTMLDocumentPane )
 	this.documentName;
 	this.documentExtension;
 	
+	this.lastReceivedUpdate;	// This is the number of the last update we have received from the server.  We need it for synchronization with other users.
+	
 	this.htmlDocumentPane;		// This is a container for the Document-pane in our iFrame
 	this.htmlDocumentContent;	// This is a container for the 'entireDocument' div in our iFrame's body
 	
@@ -549,6 +551,7 @@ function TextDocument( paramHTMLDocumentPane )
 	/************************************************************/
 	/*********** INITIALIZATION OF THIS INSTANCE ************/
 	this.uniqueNameCounter = 0;
+	this.lastReceivedUpdate = -1;
 	this.updateTracker = new Array();
 	this.htmlDocumentPane = paramHTMLDocumentPane;
 	this.htmlDocumentContent = this.htmlDocumentPane.getElementById("entireDocument");

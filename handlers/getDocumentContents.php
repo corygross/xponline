@@ -22,6 +22,7 @@ if(mysql_num_rows($response) < 1){
 }
 
 $row = mysql_fetch_array($response);
+$accessLvl = $row['accessLvl'];
 $myFile = "../".$row['dLocation']."/doc".$row['dID'];
 $fh = fopen($myFile, 'r');
 if(filesize($myFile) == 0){
@@ -31,6 +32,19 @@ else{
 	$theData = fread($fh, filesize($myFile));
 }
 fclose($fh);
-echo $row['accessLvl']."&^*".$theData;
+
+$latestUpdateSQL = "SELECT MAX(updateID) FROM updates;";
+$response = runQuery($latestUpdateSQL);
+$latestUpdateNum = -1;
+
+if(mysql_num_rows($response) > 0){
+	$row = mysql_fetch_array($response);
+	$latestUpdateNum = $row['MAX(updateID)'];
+	if( $latestUpdateNum == "" ){
+		$latestUpdateNum = -1;
+	}
+}
+
+echo $accessLvl."&^*".$latestUpdateNum."&^*".$theData;
 
 ?>

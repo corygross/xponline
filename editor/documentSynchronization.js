@@ -187,6 +187,7 @@ function updateObject(paramAction, paramText, paramLineNum, paramUpdateNum){
 	this.text = paramText;
 	this.lineNum = paramLineNum;
 	this.documentID = XPODoc.documentID;
+	this.lastUpdateNum = XPODoc.lastReceivedUpdate;
 	if( paramUpdateNum != null ) this.updateNum = paramUpdateNum;
 	else{
 		updateNumber++;
