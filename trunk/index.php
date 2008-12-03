@@ -36,16 +36,15 @@ if(isset($_SESSION['homeDir']) == false){
 <script language="javascript" src="editor/documentSynchronization.js"></script>
 </head>
 
-<body style="margin:0px;padding:0px;" onload="init()">
+<body style="margin:0px;padding:0px;background-color:#bebec" onload="init()">
 
-<table style="width:100%;height:100%;" border="0">
-<tr class="top_row" style="height:32px;">
+<table style="width:100%;height:100%;" border="0" bordercolor="black">
+<tr class="top_row" style="height:32px;" >
 <td>
 
 <table style="width:100%;">
 <tr>
 <td>
-
 <?php
 require_once "menu.php";
 ?>
@@ -83,7 +82,7 @@ require_once "menu.php";
 </tr>
 <tr>
 <td>
-<div id="content">
+<div id="content" style="background-color:white">
 <?php
 require_once "./editor/editor.html";
 ?>

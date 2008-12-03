@@ -15,7 +15,7 @@ Contacts
 </tr>
 <tr>
 <td>
-<div style="overflow:auto;background-color:white;margin-left:5px;margin-right:5px;height:250px;">
+<div style="border:1px black solid;overflow:auto;background-color:white;margin-left:5px;margin-right:5px;height:250px;">
 
 <ul id="contactList" name="contactList" class="contacts">
 <!-- this is updated with the current contact list -->

@@ -114,6 +114,8 @@ div.contacts_label{
 	margin-right:5px;
 	color: #FFFFFF;
 	font-family: arial;
+	text-align:center;
+	font-size: 15px;
 }
 
 ul.contacts{
