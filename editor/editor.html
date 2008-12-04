@@ -106,6 +106,8 @@ function gotoLine( paramLineNum ) {
 
 // This function clears the old cursor and moves to the line specified by paramLineNumber
 function gotoPosition( paramLineNum, paramColNum ) {
+	paramLineNum = parseInt( paramLineNum );
+	paramColNum = parseInt( paramColNum );
 	// Before we move the cursor there, make sure that the line isn't locked
 	if( XPODoc.getLineLockingUser( paramLineNum ) != null ){ alert("Another user is currently on line "+paramLineNum+", and it is locked."); return; }
 	XPODoc.setLineUpdated( cursorLine );
